@@ -5,282 +5,190 @@ import Link from 'next/link'
 import Card from '@/components/Card'
 import StatusBadge from '@/components/StatusBadge'
 import EditableText from '@/components/EditableText'
-import { ChevronDown, ChevronUp, CheckCircle, XCircle, ArrowRight } from 'lucide-react'
-
-interface Task {
-  id: number
-  name: string
-  deadline: string
-  status: 'pending' | 'done'
-  alignedWithFocus: boolean
-}
-
-interface Department {
-  id: string
-  name: string
-  lead: string
-  employees: number
-  lastOneOnOne: string
-  status: 'green' | 'yellow' | 'red'
-  tasks: Task[]
-  metrics: { name: string; value: string; target: string }[]
-  problems: string[]
-  needsHelp: string[]
-  notes: string
-}
-
-const initialDepartments: Department[] = [
-  {
-    id: 'sales-moscow',
-    name: 'Отдел продаж (Москва)',
-    lead: 'Ищем РОПа',
-    employees: 8,
-    lastOneOnOne: '',
-    status: 'yellow',
-    tasks: [
-      { id: 1, name: 'Ускорение просчетов', deadline: '', status: 'pending', alignedWithFocus: true },
-    ],
-    metrics: [
-      { name: 'Выручка', value: '—', target: '—' },
-      { name: 'Время КП', value: '5 дней', target: '3 дня' },
-    ],
-    problems: ['70% времени на операционку', 'Нет РОПа'],
-    needsHelp: [],
-    notes: '',
-  },
-  {
-    id: 'sales-dubai',
-    name: 'Отдел продаж (Дубай)',
-    lead: '',
-    employees: 2,
-    lastOneOnOne: '',
-    status: 'green',
-    tasks: [],
-    metrics: [
-      { name: 'Выручка', value: '—', target: '—' },
-      { name: 'Доля международного оборота', value: '—', target: '10%' },
-    ],
-    problems: [],
-    needsHelp: [],
-    notes: '',
-  },
-  {
-    id: 'china',
-    name: 'Отдел Китая (Закупки)',
-    lead: '',
-    employees: 20,
-    lastOneOnOne: '',
-    status: 'green',
-    tasks: [
-      { id: 1, name: 'Ускорение просчетов (5→3 дня)', deadline: '', status: 'pending', alignedWithFocus: true },
-    ],
-    metrics: [
-      { name: 'Время просчета', value: '5 дней', target: '3 дня' },
-      { name: 'Брак', value: '—', target: '≤1%' },
-    ],
-    problems: ['Долгие просчеты', 'Разница во времени'],
-    needsHelp: [],
-    notes: '',
-  },
-  {
-    id: 'ved',
-    name: 'ВЭД (Логистика)',
-    lead: '',
-    employees: 2,
-    lastOneOnOne: '',
-    status: 'green',
-    tasks: [],
-    metrics: [
-      { name: 'Время доставки', value: '—', target: '—' },
-    ],
-    problems: [],
-    needsHelp: [],
-    notes: '',
-  },
-  {
-    id: 'marketing',
-    name: 'Маркетинг',
-    lead: '',
-    employees: 0,
-    lastOneOnOne: '',
-    status: 'green',
-    tasks: [],
-    metrics: [
-      { name: 'Лиды', value: '—', target: '—' },
-      { name: 'Стоимость лида', value: '—', target: '—' },
-    ],
-    problems: [],
-    needsHelp: [],
-    notes: '',
-  },
-  {
-    id: 'it',
-    name: 'IT',
-    lead: '',
-    employees: 1,
-    lastOneOnOne: '',
-    status: 'green',
-    tasks: [
-      { id: 1, name: 'Поддержка Генератора концепций', deadline: '', status: 'pending', alignedWithFocus: true },
-      { id: 2, name: 'Поддержка Калькулятора', deadline: '', status: 'pending', alignedWithFocus: true },
-    ],
-    metrics: [],
-    problems: [],
-    needsHelp: [],
-    notes: '',
-  },
-]
+import { ChevronDown, ChevronUp, XCircle, ArrowRight, Users } from 'lucide-react'
+import { departments, getDepartmentEmployeeCount, getDepartmentHead, quarterFocus } from '@/lib/data'
 
 export default function DepartmentsPage() {
-  const [departments, setDepartments] = useState(initialDepartments)
-  const [expandedDept, setExpandedDept] = useState<string | null>('sales-moscow')
+  const [expandedDept, setExpandedDept] = useState<string | null>('china')
+  const [notes, setNotes] = useState<Record<string, string>>({})
 
   const toggleDept = (id: string) => {
     setExpandedDept(expandedDept === id ? null : id)
   }
 
-  const updateDepartment = (id: string, field: keyof Department, value: any) => {
-    setDepartments(departments.map(d => 
-      d.id === id ? { ...d, [field]: value } : d
-    ))
+  const updateNotes = (id: string, value: string) => {
+    setNotes({ ...notes, [id]: value })
   }
 
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">Трекер по отделам</h1>
-        <p className="text-dark-400 mt-2">Детальный статус каждого отдела и синхронизация с общим фокусом</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Трекер по отделам</h1>
+          <p className="text-dark-400 mt-2">Детальный статус каждого отдела и синхронизация с общим фокусом</p>
+        </div>
+        <Link 
+          href="/org-structure"
+          className="flex items-center gap-2 px-4 py-2 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors"
+        >
+          <Users size={18} />
+          <span>Оргструктура</span>
+        </Link>
       </div>
 
       {/* Focus Reminder */}
       <div className="bg-primary-600/10 border border-primary-600/30 rounded-xl p-4">
         <p className="text-primary-300 font-medium">
-          🎯 Общий фокус Q1 2026: Рост выручки в 2 раза, КП за 3 дня, NPS 75+
+          🎯 Общий фокус {quarterFocus.quarter}: {quarterFocus.priorities.slice(0, 2).join(', ')}
         </p>
       </div>
 
       {/* Departments */}
       <div className="space-y-4">
-        {departments.map((dept) => (
-          <Card key={dept.id} className="overflow-hidden">
-            {/* Header */}
-            <div 
-              className="flex items-center justify-between p-6 cursor-pointer hover:bg-dark-700/50 transition-colors -m-6 mb-0"
-              onClick={() => toggleDept(dept.id)}
-            >
-              <div className="flex items-center gap-4">
-                <div>
-                  <h3 className="font-semibold text-lg">{dept.name}</h3>
-                  <p className="text-dark-400 text-sm">
-                    {dept.lead || 'Руководитель не указан'} • {dept.employees} чел.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <StatusBadge status={dept.status} />
-                {expandedDept === dept.id ? (
-                  <ChevronUp size={20} className="text-dark-400" />
-                ) : (
-                  <ChevronDown size={20} className="text-dark-400" />
-                )}
-              </div>
-            </div>
+        {departments.map((dept) => {
+          const employeeCount = getDepartmentEmployeeCount(dept)
+          const head = getDepartmentHead(dept)
 
-            {/* Expanded Content */}
-            {expandedDept === dept.id && (
-              <div className="mt-6 pt-6 border-t border-dark-700 space-y-6">
-                {/* Tasks */}
-                <div>
-                  <h4 className="font-medium text-dark-300 mb-3">Задачи/Инициативы</h4>
-                  <div className="space-y-2">
-                    {dept.tasks.length === 0 ? (
-                      <p className="text-dark-500 text-sm">Нет задач</p>
-                    ) : (
-                      dept.tasks.map((task) => (
-                        <div key={task.id} className="flex items-center justify-between p-3 bg-dark-700/50 rounded-lg">
-                          <div className="flex items-center gap-3">
-                            {task.status === 'done' ? (
-                              <CheckCircle size={18} className="text-green-400" />
-                            ) : (
-                              <div className="w-4 h-4 rounded-full border-2 border-dark-500" />
-                            )}
-                            <span className={task.status === 'done' ? 'line-through text-dark-500' : ''}>
-                              {task.name}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {task.alignedWithFocus ? (
-                              <span className="text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded">✓ В фокусе</span>
-                            ) : (
-                              <span className="text-xs text-red-400 bg-red-400/10 px-2 py-1 rounded">✗ Вне фокуса</span>
-                            )}
-                          </div>
-                        </div>
-                      ))
-                    )}
+          return (
+            <Card key={dept.id} className="overflow-hidden">
+              {/* Header */}
+              <div 
+                className="flex items-center justify-between p-6 cursor-pointer hover:bg-dark-700/50 transition-colors -m-6 mb-0"
+                onClick={() => toggleDept(dept.id)}
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`w-3 h-12 rounded-full ${dept.color}`}></div>
+                  <div>
+                    <h3 className="font-semibold text-lg">{dept.name}</h3>
+                    <p className="text-dark-400 text-sm">
+                      {head} • {employeeCount} чел.
+                    </p>
                   </div>
                 </div>
+                <div className="flex items-center gap-4">
+                  <StatusBadge status={dept.status} />
+                  {expandedDept === dept.id ? (
+                    <ChevronUp size={20} className="text-dark-400" />
+                  ) : (
+                    <ChevronDown size={20} className="text-dark-400" />
+                  )}
+                </div>
+              </div>
 
-                {/* Metrics */}
-                {dept.metrics.length > 0 && (
-                  <div>
-                    <h4 className="font-medium text-dark-300 mb-3">Метрики</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {dept.metrics.map((metric, i) => (
-                        <div key={i} className="p-4 bg-dark-700/50 rounded-lg">
-                          <p className="text-dark-400 text-sm">{metric.name}</p>
-                          <p className="text-xl font-bold mt-1">{metric.value}</p>
-                          <p className="text-dark-500 text-xs mt-1">цель: {metric.target}</p>
-                        </div>
-                      ))}
+              {/* Expanded Content */}
+              {expandedDept === dept.id && (
+                <div className="mt-6 pt-6 border-t border-dark-700 space-y-6">
+                  
+                  {/* Focus */}
+                  {dept.focus && (
+                    <div>
+                      <h4 className="font-medium text-dark-300 mb-3">🎯 Текущий фокус</h4>
+                      <div className="p-3 bg-primary-500/10 rounded-lg border border-primary-500/20">
+                        {dept.focus}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* Problems */}
-                {dept.problems.length > 0 && (
+                  {/* Teams (for China) */}
+                  {dept.teams && (
+                    <div>
+                      <h4 className="font-medium text-dark-300 mb-3">👥 Команды ({dept.teams.length} групп)</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {dept.teams.map((team) => (
+                          <div key={team.id} className="p-4 bg-dark-700/50 rounded-lg">
+                            <div className="font-medium text-primary-400">{team.name}</div>
+                            <div className="text-sm text-dark-300 mt-1">{team.lead.name}</div>
+                            <div className="text-xs text-dark-500 mt-2">{team.members.length} сотрудников</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Employees (for other departments) */}
+                  {dept.employees && !dept.teams && (
+                    <div>
+                      <h4 className="font-medium text-dark-300 mb-3">👥 Сотрудники</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                        {dept.employees.map((emp, i) => (
+                          <div 
+                            key={i} 
+                            className={`p-3 rounded-lg ${
+                              emp.type === 'vacant' 
+                                ? 'bg-dark-600 border border-dashed border-dark-500' 
+                                : 'bg-dark-700/50'
+                            }`}
+                          >
+                            <div className={`font-medium text-sm ${emp.type === 'vacant' ? 'text-dark-400' : ''}`}>
+                              {emp.name}
+                            </div>
+                            <div className="text-xs text-dark-500">{emp.role}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* KPIs */}
+                  {dept.kpis && dept.kpis.length > 0 && (
+                    <div>
+                      <h4 className="font-medium text-dark-300 mb-3">📊 Метрики</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {dept.kpis.map((kpi, i) => (
+                          <div key={i} className="p-4 bg-dark-700/50 rounded-lg">
+                            <p className="text-dark-400 text-sm">{kpi.name}</p>
+                            <p className="text-xl font-bold mt-1">{kpi.value}</p>
+                            <p className="text-dark-500 text-xs mt-1">цель: {kpi.target}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Problems */}
+                  {dept.problems && dept.problems.length > 0 && (
+                    <div>
+                      <h4 className="font-medium text-dark-300 mb-3">⚠️ Проблемы/Блокеры</h4>
+                      <ul className="space-y-2">
+                        {dept.problems.map((problem, i) => (
+                          <li key={i} className="flex items-start gap-2 text-red-300">
+                            <XCircle size={16} className="mt-1 flex-shrink-0" />
+                            {problem}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Notes */}
                   <div>
-                    <h4 className="font-medium text-dark-300 mb-3">Проблемы/Блокеры</h4>
-                    <ul className="space-y-2">
-                      {dept.problems.map((problem, i) => (
-                        <li key={i} className="flex items-start gap-2 text-red-300">
-                          <XCircle size={16} className="mt-1 flex-shrink-0" />
-                          {problem}
-                        </li>
-                      ))}
-                    </ul>
+                    <h4 className="font-medium text-dark-300 mb-3">📝 Заметки</h4>
+                    <EditableText
+                      value={notes[dept.id] || ''}
+                      onSave={(value) => updateNotes(dept.id, value)}
+                      placeholder="Добавить заметки после 1:1 или наблюдений..."
+                      multiline
+                      className="bg-dark-700/50 rounded-lg"
+                    />
                   </div>
-                )}
 
-                {/* Notes */}
-                <div>
-                  <h4 className="font-medium text-dark-300 mb-3">Заметки</h4>
-                  <EditableText
-                    value={dept.notes}
-                    onSave={(value) => updateDepartment(dept.id, 'notes', value)}
-                    placeholder="Добавить заметки после 1:1 или наблюдений..."
-                    multiline
-                    className="bg-dark-700/50 rounded-lg"
-                  />
+                  {/* Detail Link for China */}
+                  {dept.id === 'china' && (
+                    <Link 
+                      href="/departments/china"
+                      className="flex items-center justify-center gap-2 p-4 bg-primary-600/20 hover:bg-primary-600/30 border border-primary-600/30 rounded-xl transition-colors text-primary-300"
+                    >
+                      <span className="font-medium">Открыть подробную страницу Отдела Китая</span>
+                      <ArrowRight size={20} />
+                    </Link>
+                  )}
                 </div>
-
-                {/* Detail Link for China */}
-                {dept.id === 'china' && (
-                  <Link 
-                    href="/departments/china"
-                    className="flex items-center justify-center gap-2 p-4 bg-primary-600/20 hover:bg-primary-600/30 border border-primary-600/30 rounded-xl transition-colors text-primary-300"
-                  >
-                    <span className="font-medium">Открыть подробную страницу Отдела Китая</span>
-                    <ArrowRight size={20} />
-                  </Link>
-                )}
-              </div>
-            )}
-          </Card>
-        ))}
+              )}
+            </Card>
+          )
+        })}
       </div>
     </div>
   )
 }
-

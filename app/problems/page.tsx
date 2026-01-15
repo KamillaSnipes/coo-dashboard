@@ -4,307 +4,225 @@ import { useState } from 'react'
 import Card from '@/components/Card'
 import StatusBadge from '@/components/StatusBadge'
 import EditableText from '@/components/EditableText'
-import { AlertTriangle, CheckCircle, Clock, Plus, ChevronDown, ChevronUp } from 'lucide-react'
+import { AlertTriangle, CheckCircle, Clock, XCircle, Plus } from 'lucide-react'
+import { keyProblems } from '@/lib/data'
 
 interface Problem {
   id: string
   title: string
-  description: string
-  discoveredDate: string
+  description?: string
   impact: 'high' | 'medium' | 'low'
-  rootCause: string[]
   status: 'open' | 'in_progress' | 'resolved'
-  plan: { task: string; done: boolean }[]
   owner: string
-  resolvedDate?: string
+  rootCause?: string[]
+  plan?: { task: string; done: boolean }[]
   solution?: string
-  lessons?: string
 }
 
-const initialProblems: Problem[] = [
+const initialProblems: Problem[] = keyProblems.map(p => ({
+  ...p,
+  description: '',
+  rootCause: [],
+  plan: [],
+  solution: '',
+}))
+
+// Дополнительные проблемы из контекста
+const additionalProblems: Problem[] = [
   {
-    id: '1',
-    title: '70% времени продажников на операционку',
-    description: 'Менеджеры по продажам тратят 70% рабочего времени на операционную работу вместо продаж',
-    discoveredDate: '',
-    impact: 'high',
-    rootCause: [
-      'Отсутствие разделения ролей (но разделение невозможно в отрасли)',
-      'Долгий цикл просчета (5 дней)',
-      'Ручное формирование договоров',
-      'Отсутствие автоматизации уведомлений',
-    ],
-    status: 'in_progress',
-    plan: [
-      { task: 'Ускорить просчеты (5→3 дня)', done: false },
-      { task: 'Автоматизировать договоры', done: false },
-      { task: 'Настроить умные уведомления', done: false },
-      { task: 'Внедрить подробные чек-листы', done: false },
-    ],
-    owner: 'COO',
-  },
-  {
-    id: '2',
-    title: '5 дней на просчет от отдела Китая',
-    description: 'Среднее время подготовки просчета — 5 дней, цель — 3 дня',
-    discoveredDate: '',
-    impact: 'high',
-    rootCause: [
-      'Разница во времени Москва-Китай',
-      'Нет типизации запросов',
-      'Нет SLA',
-      'Производство под ключ (нет стандартных товаров)',
-    ],
-    status: 'in_progress',
-    plan: [
-      { task: 'Типизация просчетов (Экспресс/Стандарт/Кастом/Примерный)', done: false },
-      { task: 'Настройка SLA в ПланФиксе', done: false },
-      { task: 'Оптимизация графика с учетом часовых поясов', done: false },
-    ],
-    owner: 'COO + Руководители отдела Китая',
-  },
-  {
-    id: '3',
-    title: 'Отсутствие культуры проактивных продаж',
-    description: 'Менеджеры работают реактивно, не генерируют идеи, не используют Генератор концепций эффективно',
-    discoveredDate: '',
-    impact: 'high',
-    rootCause: [
-      'Отсутствие системы компетенций',
-      'Отсутствие культуры внутри компании',
-      'Менеджеры не умеют работать с ИИ-инструментами',
-      'База ИИ ограничена (1/3 рынка)',
-    ],
+    id: 'ai-usage',
+    title: 'ИИ-генератор используется на 50%',
+    description: 'Сотрудники не умеют критически мыслить и работать с ИИ-инструментами',
+    impact: 'medium',
     status: 'open',
-    plan: [
-      { task: 'Диагностика компетенций', done: false },
-      { task: 'Создание системы компетенций', done: false },
-      { task: 'Обучение работе с Генератором концепций', done: false },
-      { task: 'Построение культуры', done: false },
-    ],
-    owner: 'COO + будущий РОП',
+    owner: 'Камилла Каюмова',
+    rootCause: ['Нет обучения', 'Нет культуры использования'],
   },
   {
-    id: '4',
-    title: 'Нет руководителя отдела продаж',
-    description: 'Отдел продаж без РОПа, менеджеры работают без системы',
-    discoveredDate: '',
-    impact: 'high',
-    rootCause: ['Вакансия открыта'],
-    status: 'in_progress',
-    plan: [
-      { task: 'Найти РОПа', done: false },
-    ],
-    owner: 'COO + Рекрутер',
+    id: 'base-limited',
+    title: 'База ограничена 1/3 рынка',
+    description: 'Калькулятор и генератор построены на базе существующих проектов, не охватывают весь рынок',
+    impact: 'medium',
+    status: 'open',
+    owner: 'Камилла Каюмова + IT',
   },
 ]
-
-const resolvedProblems: Problem[] = [
-  {
-    id: 'resolved-1',
-    title: 'Долгое формирование КП',
-    description: 'КП формировались вручную, занимало много времени',
-    discoveredDate: '',
-    impact: 'high',
-    rootCause: ['Ручной процесс'],
-    status: 'resolved',
-    plan: [],
-    owner: 'COO + IT',
-    resolvedDate: '~2 месяца назад',
-    solution: 'Автоматизация КП через калькулятор просчетов',
-    lessons: '',
-  },
-]
-
-const impactColors = {
-  high: 'bg-red-500/20 text-red-400 border-red-500/30',
-  medium: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-  low: 'bg-green-500/20 text-green-400 border-green-500/30',
-}
-
-const impactLabels = {
-  high: 'Высокое',
-  medium: 'Среднее',
-  low: 'Низкое',
-}
 
 export default function ProblemsPage() {
-  const [problems, setProblems] = useState(initialProblems)
-  const [resolved, setResolved] = useState(resolvedProblems)
-  const [expandedProblem, setExpandedProblem] = useState<string | null>('1')
+  const [problems, setProblems] = useState<Problem[]>([...initialProblems, ...additionalProblems])
+  const [filter, setFilter] = useState<'all' | 'open' | 'in_progress' | 'resolved'>('all')
+  const [notes, setNotes] = useState<Record<string, string>>({})
 
-  const toggleProblem = (id: string) => {
-    setExpandedProblem(expandedProblem === id ? null : id)
+  const filteredProblems = problems.filter(p => 
+    filter === 'all' ? true : p.status === filter
+  )
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'resolved': return <CheckCircle size={20} className="text-green-400" />
+      case 'in_progress': return <Clock size={20} className="text-yellow-400" />
+      default: return <XCircle size={20} className="text-red-400" />
+    }
   }
 
-  const togglePlanItem = (problemId: string, itemIndex: number) => {
-    setProblems(problems.map(p => {
-      if (p.id !== problemId) return p
-      const newPlan = [...p.plan]
-      newPlan[itemIndex].done = !newPlan[itemIndex].done
-      return { ...p, plan: newPlan }
-    }))
+  const getImpactBadge = (impact: string) => {
+    switch (impact) {
+      case 'high': return <span className="text-xs px-2 py-1 bg-red-500/20 text-red-400 rounded">Высокий</span>
+      case 'medium': return <span className="text-xs px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded">Средний</span>
+      default: return <span className="text-xs px-2 py-1 bg-green-500/20 text-green-400 rounded">Низкий</span>
+    }
   }
 
-  const updateProblem = (id: string, field: keyof Problem, value: any) => {
-    setProblems(problems.map(p => 
-      p.id === id ? { ...p, [field]: value } : p
-    ))
+  const updateProblemStatus = (id: string, status: 'open' | 'in_progress' | 'resolved') => {
+    setProblems(problems.map(p => p.id === id ? { ...p, status } : p))
   }
 
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">Проблемы и решения</h1>
-        <p className="text-dark-400 mt-2">Реестр проблем, принятых решений и их результатов</p>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-6">
-        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6">
-          <p className="text-red-400 text-sm">Открытые проблемы</p>
-          <p className="text-3xl font-bold text-red-300 mt-2">
-            {problems.filter(p => p.status === 'open').length}
-          </p>
-        </div>
-        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6">
-          <p className="text-yellow-400 text-sm">В работе</p>
-          <p className="text-3xl font-bold text-yellow-300 mt-2">
-            {problems.filter(p => p.status === 'in_progress').length}
-          </p>
-        </div>
-        <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-6">
-          <p className="text-green-400 text-sm">Решённые</p>
-          <p className="text-3xl font-bold text-green-300 mt-2">
-            {resolved.length}
-          </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Проблемы и решения</h1>
+          <p className="text-dark-400 mt-2">Трекинг проблем, корневых причин и планов решения</p>
         </div>
       </div>
 
-      {/* Open Problems */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <AlertTriangle size={24} className="text-red-400" />
-          Открытые проблемы
-        </h2>
-        <div className="space-y-4">
-          {problems.map((problem) => (
-            <Card key={problem.id} className="overflow-hidden">
-              {/* Header */}
-              <div 
-                className="flex items-start justify-between p-6 cursor-pointer hover:bg-dark-700/50 transition-colors -m-6 mb-0"
-                onClick={() => toggleProblem(problem.id)}
-              >
-                <div className="flex items-start gap-4">
-                  {problem.status === 'in_progress' ? (
-                    <Clock size={24} className="text-yellow-400 mt-1" />
-                  ) : (
-                    <AlertTriangle size={24} className="text-red-400 mt-1" />
-                  )}
-                  <div>
-                    <h3 className="font-semibold text-lg">{problem.title}</h3>
-                    <p className="text-dark-400 text-sm mt-1">{problem.description}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className={`text-xs px-3 py-1 rounded-full border ${impactColors[problem.impact]}`}>
-                    Влияние: {impactLabels[problem.impact]}
-                  </span>
-                  {expandedProblem === problem.id ? (
-                    <ChevronUp size={20} className="text-dark-400" />
-                  ) : (
-                    <ChevronDown size={20} className="text-dark-400" />
-                  )}
-                </div>
-              </div>
+      {/* Filters */}
+      <div className="flex gap-2">
+        {[
+          { id: 'all', label: 'Все' },
+          { id: 'open', label: 'Открытые' },
+          { id: 'in_progress', label: 'В работе' },
+          { id: 'resolved', label: 'Решённые' },
+        ].map((f) => (
+          <button
+            key={f.id}
+            onClick={() => setFilter(f.id as any)}
+            className={`px-4 py-2 rounded-lg transition-colors ${
+              filter === f.id
+                ? 'bg-primary-600 text-white'
+                : 'bg-dark-700 text-dark-300 hover:bg-dark-600'
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
 
-              {/* Expanded Content */}
-              {expandedProblem === problem.id && (
-                <div className="mt-6 pt-6 border-t border-dark-700 space-y-6">
-                  {/* Root Cause */}
-                  <div>
-                    <h4 className="font-medium text-dark-300 mb-3">Корневая причина</h4>
-                    <ul className="space-y-2">
+      {/* Problems List */}
+      <div className="space-y-4">
+        {filteredProblems.map((problem) => (
+          <Card key={problem.id} className="overflow-hidden">
+            <div className="flex items-start gap-4">
+              {getStatusIcon(problem.status)}
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <h3 className="font-semibold text-lg">{problem.title}</h3>
+                  {getImpactBadge(problem.impact)}
+                </div>
+                
+                {problem.description && (
+                  <p className="text-dark-400 text-sm mb-3">{problem.description}</p>
+                )}
+
+                <div className="text-sm text-dark-500 mb-4">
+                  Ответственный: <span className="text-dark-300">{problem.owner}</span>
+                </div>
+
+                {/* Root Causes */}
+                {problem.rootCause && problem.rootCause.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="text-sm font-medium text-dark-400 mb-2">Корневые причины:</h4>
+                    <ul className="space-y-1">
                       {problem.rootCause.map((cause, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm">
-                          <span className="text-primary-400">•</span>
+                        <li key={i} className="text-sm text-dark-300 flex items-center gap-2">
+                          <span className="text-dark-500">•</span>
                           {cause}
                         </li>
                       ))}
                     </ul>
                   </div>
+                )}
 
-                  {/* Plan */}
-                  <div>
-                    <h4 className="font-medium text-dark-300 mb-3">План решения</h4>
-                    <div className="space-y-2">
+                {/* Action Plan */}
+                {problem.plan && problem.plan.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="text-sm font-medium text-dark-400 mb-2">План действий:</h4>
+                    <ul className="space-y-1">
                       {problem.plan.map((item, i) => (
-                        <div 
-                          key={i} 
-                          className="flex items-center gap-3 p-3 bg-dark-700/50 rounded-lg cursor-pointer hover:bg-dark-700 transition-colors"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            togglePlanItem(problem.id, i)
-                          }}
-                        >
-                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-                            item.done 
-                              ? 'bg-green-500 border-green-500' 
-                              : 'border-dark-500'
-                          }`}>
-                            {item.done && <CheckCircle size={12} className="text-white" />}
-                          </div>
-                          <span className={item.done ? 'line-through text-dark-500' : ''}>
-                            {item.task}
-                          </span>
-                        </div>
+                        <li key={i} className={`text-sm flex items-center gap-2 ${item.done ? 'text-dark-500 line-through' : 'text-dark-300'}`}>
+                          {item.done ? <CheckCircle size={14} className="text-green-400" /> : <div className="w-3.5 h-3.5 rounded-full border border-dark-500" />}
+                          {item.task}
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   </div>
+                )}
 
-                  {/* Owner */}
-                  <div>
-                    <p className="text-dark-400 text-sm">
-                      Ответственный: <span className="text-white">{problem.owner}</span>
-                    </p>
-                  </div>
+                {/* Notes */}
+                <div>
+                  <h4 className="text-sm font-medium text-dark-400 mb-2">Заметки:</h4>
+                  <EditableText
+                    value={notes[problem.id] || ''}
+                    onSave={(value) => setNotes({ ...notes, [problem.id]: value })}
+                    placeholder="Добавить заметки..."
+                    multiline
+                    className="bg-dark-700/50 rounded-lg text-sm"
+                  />
                 </div>
-              )}
-            </Card>
-          ))}
-        </div>
-      </div>
 
-      {/* Resolved Problems */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <CheckCircle size={24} className="text-green-400" />
-          Решённые проблемы
-        </h2>
-        <div className="space-y-4">
-          {resolved.map((problem) => (
-            <Card key={problem.id}>
-              <div className="flex items-start gap-4">
-                <CheckCircle size={24} className="text-green-400 mt-1" />
-                <div className="flex-1">
-                  <h3 className="font-semibold">{problem.title}</h3>
-                  <p className="text-dark-400 text-sm mt-1">{problem.description}</p>
-                  <div className="mt-4 p-4 bg-green-500/10 rounded-lg border border-green-500/20">
-                    <p className="text-green-300 text-sm">
-                      <span className="font-medium">Решение:</span> {problem.solution}
-                    </p>
-                    <p className="text-dark-400 text-xs mt-2">
-                      Решено: {problem.resolvedDate}
-                    </p>
-                  </div>
+                {/* Status Actions */}
+                <div className="flex gap-2 mt-4 pt-4 border-t border-dark-700">
+                  <button
+                    onClick={() => updateProblemStatus(problem.id, 'open')}
+                    className={`px-3 py-1 text-sm rounded ${problem.status === 'open' ? 'bg-red-500/20 text-red-400' : 'bg-dark-700 text-dark-400 hover:bg-dark-600'}`}
+                  >
+                    Открыта
+                  </button>
+                  <button
+                    onClick={() => updateProblemStatus(problem.id, 'in_progress')}
+                    className={`px-3 py-1 text-sm rounded ${problem.status === 'in_progress' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-dark-700 text-dark-400 hover:bg-dark-600'}`}
+                  >
+                    В работе
+                  </button>
+                  <button
+                    onClick={() => updateProblemStatus(problem.id, 'resolved')}
+                    className={`px-3 py-1 text-sm rounded ${problem.status === 'resolved' ? 'bg-green-500/20 text-green-400' : 'bg-dark-700 text-dark-400 hover:bg-dark-600'}`}
+                  >
+                    Решена
+                  </button>
                 </div>
               </div>
-            </Card>
-          ))}
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      {/* Summary */}
+      <div className="grid grid-cols-4 gap-4">
+        <div className="p-4 bg-dark-800 rounded-xl text-center">
+          <div className="text-2xl font-bold">{problems.length}</div>
+          <div className="text-sm text-dark-400">Всего</div>
+        </div>
+        <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-center">
+          <div className="text-2xl font-bold text-red-400">
+            {problems.filter(p => p.status === 'open').length}
+          </div>
+          <div className="text-sm text-dark-400">Открытых</div>
+        </div>
+        <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl text-center">
+          <div className="text-2xl font-bold text-yellow-400">
+            {problems.filter(p => p.status === 'in_progress').length}
+          </div>
+          <div className="text-sm text-dark-400">В работе</div>
+        </div>
+        <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-xl text-center">
+          <div className="text-2xl font-bold text-green-400">
+            {problems.filter(p => p.status === 'resolved').length}
+          </div>
+          <div className="text-sm text-dark-400">Решённых</div>
         </div>
       </div>
     </div>
   )
 }
-
