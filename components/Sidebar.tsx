@@ -9,11 +9,13 @@ import {
   Rocket, 
   Calendar, 
   AlertTriangle,
-  Settings
+  Settings,
+  Globe
 } from 'lucide-react'
 
 const navigation = [
   { name: 'Главный дашборд', href: '/', icon: LayoutDashboard },
+  { name: 'Отдел Китая', href: '/china', icon: Globe },
   { name: 'Отделы', href: '/departments', icon: Building2 },
   { name: '1:1 Встречи', href: '/one-on-one', icon: Users },
   { name: 'Стратегия', href: '/initiatives', icon: Rocket },
