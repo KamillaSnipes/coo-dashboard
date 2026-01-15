@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Настройки дашборда
+model Settings {
+  id        String   @id @default("main")
+  data      Json     @default("{}")
+  updatedAt DateTime @updatedAt
+}
+
+// Отделы
+model Department {
+  id        String   @id @default(uuid())
+  name      String
+  lead      String?
+  employees Int      @default(0)
+  status    String   @default("green")
+  focus     String?
+  notes     String?
+  metrics   Json     @default("[]")
+  problems  Json     @default("[]")
+  tasks     Json     @default("[]")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Люди для 1:1
+model Person {
+  id          String    @id @default(uuid())
+  name        String?
+  role        String
+  frequency   String?
+  dayTime     String?
+  nextMeeting String?
+  meetings    Meeting[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// 1:1 встречи
+model Meeting {
+  id         String   @id @default(uuid())
+  date       String
+  status     String   @default("green")
+  notes      String?
+  discussed  Json     @default("[]")
+  agreements Json     @default("[]")
+  person     Person   @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// Стратегические инициативы
+model Initiative {
+  id        String   @id @default(uuid())
+  name      String
+  goal      String?
+  status    String   @default("yellow")
+  owner     String?
+  stages    Json     @default("[]")
+  blockers  Json     @default("[]")
+  nextStep  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Проблемы
+model Problem {
+  id             String   @id @default(uuid())
+  title          String
+  description    String?
+  discoveredDate String?
+  impact         String   @default("medium")
+  rootCause      Json     @default("[]")
+  status         String   @default("open")
+  plan           Json     @default("[]")
+  owner          String?
+  resolvedDate   String?
+  solution       String?
+  lessons        String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// Еженедельные обзоры
+model WeeklyReview {
+  id                   String   @id @default(uuid())
+  weekStart            String
+  weekEnd              String
+  successes            Json     @default("[]")
+  failures             Json     @default("[]")
+  failureReasons       String?
+  decisions            Json     @default("[]")
+  priorities           Json     @default("[]")
+  departmentStatuses   Json     @default("[]")
+  insights             String?
+  nextWeekPriorities   Json     @default("[]")
+  reflectionGood       String?
+  reflectionImprove    String?
+  reflectionFocus      String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
