@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Users, TrendingUp, Clock, Target, ChevronRight, Plus, Trash2, RefreshCw, UserCheck, GitBranch, Calendar } from 'lucide-react'
+import Link from 'next/link'
+import { Users, TrendingUp, Clock, Target, ChevronRight, Plus, Trash2, RefreshCw, UserCheck, GitBranch, Calendar, GraduationCap } from 'lucide-react'
 import Card from '@/components/Card'
 import MetricCard from '@/components/MetricCard'
 import StatusBadge from '@/components/StatusBadge'
@@ -178,6 +179,15 @@ export default function ChinaDepartment() {
             {tab.label}
           </button>
         ))}
+        
+        {/* Link to Competencies */}
+        <Link
+          href="/departments/china/competencies"
+          className="flex items-center gap-2 px-4 py-2 rounded-t-lg transition-colors text-primary-400 hover:text-primary-300 hover:bg-primary-500/10 ml-auto"
+        >
+          <GraduationCap size={18} />
+          <span>Матрица компетенций</span>
+        </Link>
       </div>
 
       {activeTab === 'overview' && (
