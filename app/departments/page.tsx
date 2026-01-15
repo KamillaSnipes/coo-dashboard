@@ -1,10 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import Card from '@/components/Card'
 import StatusBadge from '@/components/StatusBadge'
 import EditableText from '@/components/EditableText'
-import { ChevronDown, ChevronUp, CheckCircle, XCircle } from 'lucide-react'
+import { ChevronDown, ChevronUp, CheckCircle, XCircle, ArrowRight } from 'lucide-react'
 
 interface Task {
   id: number
@@ -263,6 +264,17 @@ export default function DepartmentsPage() {
                     className="bg-dark-700/50 rounded-lg"
                   />
                 </div>
+
+                {/* Detail Link for China */}
+                {dept.id === 'china' && (
+                  <Link 
+                    href="/departments/china"
+                    className="flex items-center justify-center gap-2 p-4 bg-primary-600/20 hover:bg-primary-600/30 border border-primary-600/30 rounded-xl transition-colors text-primary-300"
+                  >
+                    <span className="font-medium">Открыть подробную страницу Отдела Китая</span>
+                    <ArrowRight size={20} />
+                  </Link>
+                )}
               </div>
             )}
           </Card>
