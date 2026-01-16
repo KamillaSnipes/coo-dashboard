@@ -178,11 +178,49 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Focus & Alerts */}
+      {/* My KPI Summary - Link to full page */}
+      <Card 
+        title="🎯 Мои KPI & OKR" 
+        action={
+          <Link href="/my-okr" className="text-primary-400 hover:text-primary-300 text-sm flex items-center gap-1">
+            Подробнее <ArrowRight size={14} />
+          </Link>
+        }
+      >
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="p-3 bg-dark-700/50 rounded-lg text-center">
+            <div className="text-xl font-bold">—</div>
+            <div className="text-xs text-dark-400">Выручка</div>
+            <div className="text-xs text-dark-500">цель: 1,5 млрд</div>
+          </div>
+          <div className="p-3 bg-dark-700/50 rounded-lg text-center">
+            <div className="text-xl font-bold">—</div>
+            <div className="text-xs text-dark-400">Маржа</div>
+            <div className="text-xs text-dark-500">цель: 30%</div>
+          </div>
+          <div className="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-center">
+            <div className="text-xl font-bold text-yellow-400">5 дн</div>
+            <div className="text-xs text-dark-400">Время КП</div>
+            <div className="text-xs text-yellow-500">цель: 3 дня</div>
+          </div>
+          <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-center">
+            <div className="text-xl font-bold text-red-400">70%</div>
+            <div className="text-xs text-dark-400">Опер. нагрузка</div>
+            <div className="text-xs text-red-500">цель: 40-50%</div>
+          </div>
+          <div className="p-3 bg-dark-700/50 rounded-lg text-center">
+            <div className="text-xl font-bold">—</div>
+            <div className="text-xs text-dark-400">Производ.</div>
+            <div className="text-xs text-dark-500">цель: &gt; 1.0x</div>
+          </div>
+        </div>
+      </Card>
+
+      {/* Business Goals & Alerts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Strategic Focus - EDITABLE */}
+        {/* Strategic Focus - EDITABLE (Business Goals) */}
         <Card 
-          title="🎯 Стратегический фокус" 
+          title="🏢 Цели бизнеса" 
           action={
             <button 
               onClick={() => setEditingFocus(!editingFocus)}
