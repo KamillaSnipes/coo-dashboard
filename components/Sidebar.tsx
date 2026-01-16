@@ -15,7 +15,8 @@ import {
   UserCog,
   Target,
   FileText,
-  Briefcase
+  Briefcase,
+  CalendarDays
 } from 'lucide-react'
 
 const navigation = [
@@ -25,6 +26,7 @@ const navigation = [
   { name: 'Оргструктура', href: '/org-structure', icon: Network },
   { name: 'Отделы', href: '/departments', icon: Building2 },
   { name: 'Клиенты', href: '/clients', icon: Briefcase },
+  { name: 'Выставки 2026', href: '/events', icon: CalendarDays },
   { name: '1:1 Встречи', href: '/one-on-one', icon: Users },
   { name: 'Стратегия', href: '/initiatives', icon: Rocket },
   { name: 'Неделя', href: '/weekly', icon: Calendar },
