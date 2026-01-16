@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronDown, ChevronUp, Building2, Users } from 'lucide-react'
+import Link from 'next/link'
+import { ChevronDown, ChevronUp, Building2, Users, Edit2 } from 'lucide-react'
 import Card from '@/components/Card'
 import { departments, leadership, companyStats, getDepartmentEmployeeCount, Department } from '@/lib/data'
 
@@ -46,6 +47,13 @@ export default function OrgStructurePage() {
           >
             📋 Список
           </button>
+          <Link
+            href="/org-structure/edit"
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition-colors"
+          >
+            <Edit2 size={16} />
+            Редактировать
+          </Link>
         </div>
       </div>
 

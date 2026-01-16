@@ -45,16 +45,26 @@ model Person {
 
 // 1:1 встречи
 model Meeting {
-  id         String   @id @default(uuid())
-  date       String
-  status     String   @default("green")
-  notes      String?
-  discussed  Json     @default("[]")
-  agreements Json     @default("[]")
-  person     Person   @relation(fields: [personId], references: [id], onDelete: Cascade)
-  personId   String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id                String   @id @default(uuid())
+  date              String
+  status            String   @default("green")
+  notes             String?
+  // Шаблон встречи
+  goals             String?  // Цели/планы
+  planFact          String?  // План/факт
+  risksProblems     String?  // Риски/проблемы
+  initiatives       String?  // Инициативы
+  personalPriorities String? // Личные приоритеты
+  // Транскрибация
+  transcript        String?
+  summary           String?
+  // Legacy
+  discussed         Json     @default("[]")
+  agreements        Json     @default("[]")
+  person            Person   @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId          String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 // Стратегические инициативы
