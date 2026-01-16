@@ -40,7 +40,12 @@ export const leadership = {
     { name: 'Рэшад Бакиров', role: 'CEO/COO' },
     { name: 'Игорь Богатиков', role: 'CEO/CFO' },
   ],
+  cLevel: [
+    { name: 'Камилла Каюмова', role: 'COO (Операционный директор)', area: 'Операции, HR, Китай, ВЭД, Развитие' },
+    { name: 'Виктория Бакирова', role: 'CCO (Коммерческий директор)', area: 'Продажи' },
+  ],
   coo: { name: 'Камилла Каюмова', role: 'COO (Операционный директор)' },
+  cco: { name: 'Виктория Бакирова', role: 'CCO (Коммерческий директор)' },
 }
 
 // Все отделы компании
@@ -145,9 +150,9 @@ export const departments: Department[] = [
       { name: 'Выручка', value: '—', target: '1,5 млрд' },
       { name: 'Время КП', value: '5 дней', target: '3 дня' },
     ],
-    head: { name: 'Виктория Бакирова', role: 'Руководитель команды' },
+    head: { name: 'VACANT', role: 'Руководитель отдела продаж (РОП)', type: 'vacant' as EmploymentType },
     employees: [
-      { name: 'Виктория Бакирова', role: 'Руководитель команды' },
+      { name: 'VACANT', role: 'Руководитель отдела продаж (РОП)', type: 'vacant' as EmploymentType },
       { name: 'Наталья Лактистова', role: 'Менеджер по продажам' },
       { name: 'Полина Коник', role: 'Менеджер по продажам' },
       { name: 'Алина Титова', role: 'Менеджер по продажам' },
@@ -308,7 +313,7 @@ export const oneOnOnePeople = [
   
   // Руководители других отделов
   { name: 'Анастасия Мирскова', role: 'Руководитель развития', department: 'dev-projects', frequency: '2 раза в месяц' },
-  { name: 'Виктория Бакирова', role: 'Руководитель продаж', department: 'sales', frequency: 'Еженедельно' },
+  { name: 'Виктория Бакирова', role: 'CCO (Коммерческий директор)', department: 'cco', frequency: 'Еженедельно' },
   { name: 'Александр Сергеенко', role: 'Руководитель логистики', department: 'logistics', frequency: '2 раза в месяц' },
   { name: 'Павел Хохлов', role: 'Руководитель ВЭД', department: 'ved', frequency: '2 раза в месяц' },
   { name: 'Константин Макаров', role: 'CMO Москва', department: 'marketing', frequency: '2 раза в месяц' },

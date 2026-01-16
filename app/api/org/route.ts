@@ -27,15 +27,24 @@ export async function GET() {
   }
 }
 
-// POST update organization data
+// POST update organization data (merges with existing)
 export async function POST(request: Request) {
   try {
-    const data = await request.json()
+    const newData = await request.json()
+    
+    // Get existing data first
+    const existing = await prisma.settings.findUnique({
+      where: { id: 'main' }
+    })
+    
+    // Merge existing data with new data
+    const existingData = (existing?.data as Record<string, unknown>) || {}
+    const mergedData = { ...existingData, ...newData }
     
     const settings = await prisma.settings.upsert({
       where: { id: 'main' },
-      update: { data },
-      create: { id: 'main', data }
+      update: { data: mergedData },
+      create: { id: 'main', data: mergedData }
     })
     
     return NextResponse.json(settings.data)

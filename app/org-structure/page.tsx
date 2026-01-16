@@ -81,15 +81,26 @@ export default function OrgStructurePage() {
               <div className="w-px h-8 bg-dark-500"></div>
             </div>
 
-            {/* Level 2: COO */}
-            <div className="flex justify-center mb-4">
+            {/* Level 2: COO & CCO */}
+            <div className="flex justify-center gap-8 mb-4">
+              {/* COO */}
               <div className="bg-gradient-to-br from-green-500/30 to-green-600/30 border-2 border-green-500 rounded-xl p-4 text-center min-w-[220px] shadow-lg shadow-green-500/20">
                 <div className="font-bold text-lg">{leadership.coo.name}</div>
                 <div className="text-green-300 text-sm">{leadership.coo.role}</div>
+                <div className="text-xs text-dark-400 mt-1">Операции, HR, Китай, ВЭД</div>
+              </div>
+              {/* CCO */}
+              <div className="bg-gradient-to-br from-emerald-500/30 to-teal-600/30 border-2 border-emerald-500 rounded-xl p-4 text-center min-w-[220px] shadow-lg shadow-emerald-500/20">
+                <div className="font-bold text-lg">{leadership.cco.name}</div>
+                <div className="text-emerald-300 text-sm">{leadership.cco.role}</div>
+                <div className="text-xs text-dark-400 mt-1">Продажи</div>
               </div>
             </div>
 
-            {/* Connector line */}
+            {/* Connector lines to departments */}
+            <div className="flex justify-center">
+              <div className="w-[60%] h-px bg-dark-500"></div>
+            </div>
             <div className="flex justify-center">
               <div className="w-px h-8 bg-dark-500"></div>
             </div>
