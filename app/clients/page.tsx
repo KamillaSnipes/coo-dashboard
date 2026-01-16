@@ -713,25 +713,59 @@ export default function ClientsPage() {
         </button>
       </div>
 
-      {/* Stats */}
+      {/* Stats - Clickable Filters */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="text-center">
+        <Card 
+          className={`text-center cursor-pointer transition-all hover:scale-[1.02] ${!filterStatus && !filterSegment ? 'ring-2 ring-primary-500' : 'hover:ring-1 hover:ring-dark-500'}`}
+          onClick={() => { setFilterStatus(''); setFilterSegment(''); }}
+        >
           <div className="text-3xl font-bold text-primary-400">{stats.total}</div>
           <div className="text-sm text-dark-400">Всего клиентов</div>
         </Card>
-        <Card className="text-center">
+        <Card 
+          className={`text-center cursor-pointer transition-all hover:scale-[1.02] ${filterStatus === 'active' ? 'ring-2 ring-green-500' : 'hover:ring-1 hover:ring-dark-500'}`}
+          onClick={() => { setFilterStatus(filterStatus === 'active' ? '' : 'active'); setFilterSegment(''); }}
+        >
           <div className="text-3xl font-bold text-green-400">{stats.active}</div>
           <div className="text-sm text-dark-400">Активных</div>
         </Card>
-        <Card className="text-center">
+        <Card 
+          className={`text-center cursor-pointer transition-all hover:scale-[1.02] ${filterStatus === 'potential' ? 'ring-2 ring-yellow-500' : 'hover:ring-1 hover:ring-dark-500'}`}
+          onClick={() => { setFilterStatus(filterStatus === 'potential' ? '' : 'potential'); setFilterSegment(''); }}
+        >
           <div className="text-3xl font-bold text-yellow-400">{stats.potential}</div>
           <div className="text-sm text-dark-400">Потенциальных</div>
         </Card>
-        <Card className="text-center">
+        <Card 
+          className={`text-center cursor-pointer transition-all hover:scale-[1.02] ${filterSegment === 'enterprise' ? 'ring-2 ring-purple-500' : 'hover:ring-1 hover:ring-dark-500'}`}
+          onClick={() => { setFilterSegment(filterSegment === 'enterprise' ? '' : 'enterprise'); setFilterStatus(''); }}
+        >
           <div className="text-3xl font-bold text-purple-400">{stats.enterprise}</div>
           <div className="text-sm text-dark-400">Enterprise</div>
         </Card>
       </div>
+
+      {/* Active Filter Indicator */}
+      {(filterStatus || filterSegment) && (
+        <div className="flex items-center gap-2 text-sm">
+          <span className="text-dark-400">Фильтр:</span>
+          <span className={`px-3 py-1 rounded-full ${
+            filterStatus === 'active' ? 'bg-green-500/20 text-green-300' :
+            filterStatus === 'potential' ? 'bg-yellow-500/20 text-yellow-300' :
+            filterSegment === 'enterprise' ? 'bg-purple-500/20 text-purple-300' : ''
+          }`}>
+            {filterStatus === 'active' && 'Активные'}
+            {filterStatus === 'potential' && 'Потенциальные'}
+            {filterSegment === 'enterprise' && 'Enterprise'}
+          </span>
+          <button 
+            onClick={() => { setFilterStatus(''); setFilterSegment(''); }}
+            className="text-dark-400 hover:text-white"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
 
       {/* Search and filters */}
       <Card>

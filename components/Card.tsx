@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode } from 'react'
+import { ReactNode, MouseEventHandler } from 'react'
 
 interface CardProps {
   title?: string
@@ -8,11 +8,15 @@ interface CardProps {
   children: ReactNode
   className?: string
   action?: ReactNode
+  onClick?: MouseEventHandler<HTMLDivElement>
 }
 
-export default function Card({ title, subtitle, children, className = '', action }: CardProps) {
+export default function Card({ title, subtitle, children, className = '', action, onClick }: CardProps) {
   return (
-    <div className={`bg-dark-800 rounded-xl border border-dark-700 card ${className}`}>
+    <div 
+      className={`bg-dark-800 rounded-xl border border-dark-700 card ${className}`}
+      onClick={onClick}
+    >
       {(title || action) && (
         <div className="flex items-center justify-between px-6 py-4 border-b border-dark-700">
           <div>
