@@ -183,6 +183,37 @@ export default function DepartmentsPage() {
                       <ArrowRight size={20} />
                     </Link>
                   )}
+
+                  {/* Detail Links for Sales */}
+                  {dept.id === 'sales' && (
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <Link 
+                        href="/sales-weekly"
+                        className="flex items-center justify-center gap-2 p-4 bg-green-600/20 hover:bg-green-600/30 border border-green-600/30 rounded-xl transition-colors text-green-300"
+                      >
+                        <span className="font-medium">📋 Еженедельные планы продаж</span>
+                        <ArrowRight size={20} />
+                      </Link>
+                      <Link 
+                        href="/clients"
+                        className="flex items-center justify-center gap-2 p-4 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-600/30 rounded-xl transition-colors text-blue-300"
+                      >
+                        <span className="font-medium">👥 База клиентов</span>
+                        <ArrowRight size={20} />
+                      </Link>
+                    </div>
+                  )}
+
+                  {/* Detail Link for HR */}
+                  {dept.id === 'hr' && (
+                    <Link 
+                      href="/hr"
+                      className="flex items-center justify-center gap-2 p-4 bg-rose-600/20 hover:bg-rose-600/30 border border-rose-600/30 rounded-xl transition-colors text-rose-300"
+                    >
+                      <span className="font-medium">Открыть подробную страницу HR</span>
+                      <ArrowRight size={20} />
+                    </Link>
+                  )}
                 </div>
               )}
             </Card>

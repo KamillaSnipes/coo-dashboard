@@ -54,13 +54,161 @@ const statuses: { value: Client['status']; label: string; color: string }[] = [
 ]
 
 const salesTeam = [
+  'Алина Титова',
   'Наталья Лактистова',
   'Полина Коник',
-  'Алина Титова',
-  'Ирина Ветера',
   'Максим Можкин',
+  'Елизавета Барабаш',
+  'Ирина Ветера',
   'Сизиков Тимур',
   'Диёр Дадаев',
+]
+
+// Initial clients from sales reports
+const initialClients: Client[] = [
+  {
+    id: 'client-s7', name: 'S7 Airlines', company: 'АО «Авиакомпания «Сибирь»',
+    industry: 'Другое', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://www.s7.ru',
+    needs: 'Тендеры: кроссовки, детские наборы, органайзеры, шнурки, сумки машиниста, косметички, полотенца',
+    orderFrequency: 'Тендеры периодически', averageOrder: '', lastOrder: 'Январь 2026',
+    notes: 'Активные тендеры по нескольким позициям', assignedTo: 'Алина Титова', status: 'active',
+    createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-12T00:00:00.000Z'
+  },
+  {
+    id: 'client-tbank', name: 'Т-Банк', company: 'АО «Тинькофф Банк»',
+    industry: 'Финансы и банки', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://www.tbank.ru',
+    needs: 'Бомберы, мерч питомцы, одежда, рюкзаки, детские подарки, кармашки, ланъярды, кликеры, веер',
+    orderFrequency: 'Регулярно', averageOrder: '', lastOrder: 'Январь 2026',
+    notes: 'Крупный клиент с множеством направлений', assignedTo: 'Полина Коник', status: 'active',
+    createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-12T00:00:00.000Z'
+  },
+  {
+    id: 'client-illan', name: 'Иллан', company: 'ООО «Иллан»',
+    industry: 'Рекламное агентство', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: '',
+    needs: 'Сумки Тедди, тех карты, фарфор ДомКлик, Тиффани, варежки ВТБ, рюкзаки, бутылки ГПБ, шнурки, вазы, ежики, сквиш, значки',
+    orderFrequency: 'Постоянно', averageOrder: '', lastOrder: 'Январь 2026',
+    notes: 'Работает с множеством брендов: ВТБ, ГПБ, ДомКлик, МТС, ЛДПР, Лемана про', assignedTo: 'Полина Коник', status: 'active',
+    createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-12T00:00:00.000Z'
+  },
+  {
+    id: 'client-alfabank', name: 'Альфа-Банк', company: 'АО «Альфа-Банк»',
+    industry: 'Финансы и банки', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://alfabank.ru',
+    needs: 'Образцы: пуш, НСК, ВиТ, поверы, каталог, текстиль',
+    orderFrequency: 'Регулярно', averageOrder: '', lastOrder: 'Январь 2026',
+    notes: 'Ожидаем даты образцов', assignedTo: 'Наталья Лактистова', status: 'active',
+    createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-12T00:00:00.000Z'
+  },
+  {
+    id: 'client-yandexpay', name: 'Яндекс Пэй', company: 'ООО «Яндекс»',
+    industry: 'IT и технологии', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://pay.yandex.ru',
+    needs: 'Рюкзаки, кроссовки, просчеты',
+    orderFrequency: '', averageOrder: '', lastOrder: 'Январь 2026',
+    notes: 'Новый запрос на просчет', assignedTo: 'Наталья Лактистова', status: 'potential',
+    createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-12T00:00:00.000Z'
+  },
+  {
+    id: 'client-zeits', name: 'Зейтс', company: 'ООО «Зейтс»',
+    industry: 'Рекламное агентство', segment: 'mid', contactPerson: '', phone: '', email: '', website: '',
+    needs: 'Коробки, тираж Весны, Ростикс отгрузки, КП по Лету, зеркала, ручки Янго, холодовые пады, лампы',
+    orderFrequency: 'Регулярно', averageOrder: '', lastOrder: 'Январь 2026',
+    notes: '', assignedTo: 'Полина Коник', status: 'active',
+    createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-12T00:00:00.000Z'
+  },
+  {
+    id: 'client-konfest', name: 'Конфест', company: 'ООО «Конфест»',
+    industry: 'Рекламное агентство', segment: 'mid', contactPerson: '', phone: '', email: '', website: '',
+    needs: 'ВК, Игла, ОДК позиции, полароиды',
+    orderFrequency: '', averageOrder: '', lastOrder: 'Январь 2026',
+    notes: 'Работа с ОДК, ОАК', assignedTo: 'Полина Коник', status: 'active',
+    createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-12T00:00:00.000Z'
+  },
+  {
+    id: 'client-tochkabank', name: 'Точка Банк', company: 'АО «Точка»',
+    industry: 'Финансы и банки', segment: 'mid', contactPerson: '', phone: '', email: '', website: 'https://tochka.com',
+    needs: 'Брелоки, калькуляторы, подарки',
+    orderFrequency: '', averageOrder: '', lastOrder: 'Январь 2026',
+    notes: 'Ждём решения по брелоку и калькулятору', assignedTo: 'Алина Титова', status: 'potential',
+    createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-12T00:00:00.000Z'
+  },
+  {
+    id: 'client-tsum', name: 'ЦУМ', company: 'ЦУМ',
+    industry: 'Ритейл', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://www.tsum.ru',
+    needs: 'Ракетки, гендерные подарки, развитие линейки мерча',
+    orderFrequency: '', averageOrder: '', lastOrder: 'Январь 2026',
+    notes: 'Дожать подписание договора', assignedTo: 'Ирина Ветера', status: 'potential',
+    createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-12T00:00:00.000Z'
+  },
+  {
+    id: 'client-ozon', name: 'Ozon', company: 'ООО «Озон»',
+    industry: 'IT и технологии', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://ozon.ru',
+    needs: 'Тендер: награды, рюкзаки, статуэтки',
+    orderFrequency: 'Тендеры', averageOrder: '', lastOrder: 'Январь 2026',
+    notes: 'Делаем образцы для тендера, нужны кейсы без НДА', assignedTo: 'Ирина Ветера', status: 'potential',
+    createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-12T00:00:00.000Z'
+  },
+  {
+    id: 'client-megafon', name: 'МегаФон', company: 'ПАО «МегаФон»',
+    industry: 'Телеком', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://megafon.ru',
+    needs: '', orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: 'Назначить встречу', assignedTo: 'Ирина Ветера', status: 'potential',
+    createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-12T00:00:00.000Z'
+  },
+  {
+    id: 'client-skolkovo', name: 'Сколково', company: 'Фонд «Сколково»',
+    industry: 'IT и технологии', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://sk.ru',
+    needs: 'Брелоки, исходящие предложения',
+    orderFrequency: '', averageOrder: '', lastOrder: 'Январь 2026',
+    notes: '13.01 отгрузка готовой партии брелоков', assignedTo: 'Ирина Ветера', status: 'active',
+    createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-12T00:00:00.000Z'
+  },
+  {
+    id: 'client-vodokhod', name: 'ВодоходЪ', company: 'ООО «ВодоходЪ»',
+    industry: 'Другое', segment: 'mid', contactPerson: '', phone: '', email: '', website: '',
+    needs: 'Монеты, обувь',
+    orderFrequency: '', averageOrder: '', lastOrder: 'Январь 2026',
+    notes: 'Производство завершено, отгрузка в Иркутск. Ждем ОС от начальницы после 25 января', assignedTo: 'Елизавета Барабаш', status: 'active',
+    createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-12T00:00:00.000Z'
+  },
+  {
+    id: 'client-molecule', name: 'Molecule', company: 'Molecule',
+    industry: 'Другое', segment: 'mid', contactPerson: '', phone: '', email: '', website: '',
+    needs: 'Косметички, гипсовые арома-саше, образцы тканей',
+    orderFrequency: '', averageOrder: '', lastOrder: 'Январь 2026',
+    notes: 'КП на стадии принятия решения, новый запрос на гипсовые ароматизаторы', assignedTo: 'Елизавета Барабаш', status: 'potential',
+    createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-12T00:00:00.000Z'
+  },
+  {
+    id: 'client-perekrestok', name: 'Перекресток Селект', company: 'X5 Group',
+    industry: 'Ритейл', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: '',
+    needs: 'Производство тиража через предтиражники',
+    orderFrequency: '', averageOrder: '', lastOrder: 'Январь 2026',
+    notes: '', assignedTo: 'Алина Титова', status: 'active',
+    createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-12T00:00:00.000Z'
+  },
+  {
+    id: 'client-sdmbank', name: 'СДМ-Банк', company: 'ПАО «СДМ-Банк»',
+    industry: 'Финансы и банки', segment: 'mid', contactPerson: '', phone: '', email: '', website: '',
+    needs: 'Лампы',
+    orderFrequency: '', averageOrder: '', lastOrder: 'Январь 2026',
+    notes: 'Ждем в Москве', assignedTo: 'Максим Можкин', status: 'active',
+    createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-12T00:00:00.000Z'
+  },
+  {
+    id: 'client-ostrovok', name: 'Островок', company: 'Ostrovok.ru',
+    industry: 'IT и технологии', segment: 'mid', contactPerson: '', phone: '', email: '', website: 'https://ostrovok.ru',
+    needs: 'Согласование запуска',
+    orderFrequency: '', averageOrder: '', lastOrder: 'Январь 2026',
+    notes: 'Ждем согласование от клиента', assignedTo: 'Ирина Ветера', status: 'potential',
+    createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-12T00:00:00.000Z'
+  },
+  {
+    id: 'client-kfs', name: 'КФС', company: 'KFC Russia',
+    industry: 'FMCG', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: '',
+    needs: 'Игрушки',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: 'Расчет', assignedTo: 'Наталья Лактистова', status: 'potential',
+    createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-12T00:00:00.000Z'
+  },
 ]
 
 const emptyClient: Omit<Client, 'id' | 'createdAt' | 'updatedAt'> = {
@@ -102,12 +250,21 @@ export default function ClientsPage() {
         const response = await fetch('/api/clients')
         if (response.ok) {
           const data = await response.json()
-          if (data.clients) {
+          if (data.clients && data.clients.length > 0) {
             setClients(data.clients)
+          } else {
+            // No saved clients - use initial data and save
+            setClients(initialClients)
+            await fetch('/api/clients', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ clients: initialClients })
+            })
           }
         }
       } catch (error) {
         console.error('Error loading:', error)
+        setClients(initialClients)
       } finally {
         setLoading(false)
       }
