@@ -156,15 +156,24 @@ export default function OrgStructureEditPage() {
   const [newEmployeeRole, setNewEmployeeRole] = useState('')
   const [addingTo, setAddingTo] = useState<{deptId: string, teamId?: string} | null>(null)
 
-  // Load saved data
+  // Load saved data or initialize with defaults
   useEffect(() => {
     const loadData = async () => {
       try {
         const response = await fetch('/api/org')
         if (response.ok) {
           const data = await response.json()
+          console.log('Edit page loaded data:', data)
           if (data.orgDepartments?.length > 0) {
             setDepartments(data.orgDepartments)
+          } else {
+            // No saved data - save initial data to DB
+            console.log('No saved orgDepartments, saving initial data...')
+            await fetch('/api/org', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ orgDepartments: initialDepartments })
+            })
           }
         }
       } catch (error) {
@@ -174,15 +183,19 @@ export default function OrgStructureEditPage() {
     loadData()
   }, [])
 
-  // Save data
-  const saveData = async () => {
+  // Save data to API
+  const saveData = async (deptData?: Department[]) => {
+    const dataToSave = deptData || departments
     setSaving(true)
     try {
-      await fetch('/api/org', {
+      console.log('Saving orgDepartments:', dataToSave)
+      const response = await fetch('/api/org', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orgDepartments: departments })
+        body: JSON.stringify({ orgDepartments: dataToSave })
       })
+      const result = await response.json()
+      console.log('Save result:', result)
     } catch (error) {
       console.error('Error saving:', error)
     }
@@ -195,48 +208,51 @@ export default function OrgStructureEditPage() {
 
     const { emp, fromDept, fromTeam } = selectedEmployee
 
-    setDepartments(depts => {
-      return depts.map(dept => {
-        // Remove from source
-        if (dept.id === fromDept) {
-          if (fromTeam && dept.teams) {
-            return {
-              ...dept,
-              teams: dept.teams.map(team => {
-                if (team.id === fromTeam) {
-                  return { ...team, members: team.members.filter(m => m.id !== emp.id) }
-                }
-                return team
-              })
-            }
-          } else if (dept.employees) {
-            return { ...dept, employees: dept.employees.filter(e => e.id !== emp.id) }
+    // Calculate new state first
+    const newDepts = departments.map(dept => {
+      let updatedDept = { ...dept }
+      
+      // Remove from source
+      if (dept.id === fromDept) {
+        if (fromTeam && dept.teams) {
+          updatedDept = {
+            ...dept,
+            teams: dept.teams.map(team => {
+              if (team.id === fromTeam) {
+                return { ...team, members: team.members.filter(m => m.id !== emp.id) }
+              }
+              return team
+            })
           }
+        } else if (dept.employees) {
+          updatedDept = { ...dept, employees: dept.employees.filter(e => e.id !== emp.id) }
         }
-        
-        // Add to destination
-        if (dept.id === toDeptId) {
-          if (toTeamId && dept.teams) {
-            return {
-              ...dept,
-              teams: dept.teams.map(team => {
-                if (team.id === toTeamId) {
-                  return { ...team, members: [...team.members, emp] }
-                }
-                return team
-              })
-            }
-          } else if (dept.employees) {
-            return { ...dept, employees: [...dept.employees, emp] }
+      }
+      
+      // Add to destination
+      if (dept.id === toDeptId) {
+        if (toTeamId && updatedDept.teams) {
+          updatedDept = {
+            ...updatedDept,
+            teams: updatedDept.teams.map(team => {
+              if (team.id === toTeamId) {
+                return { ...team, members: [...team.members, emp] }
+              }
+              return team
+            })
           }
+        } else if (updatedDept.employees) {
+          updatedDept = { ...updatedDept, employees: [...updatedDept.employees, emp] }
         }
-        
-        return dept
-      })
+      }
+      
+      return updatedDept
     })
 
+    // Update state and save
+    setDepartments(newDepts)
     setSelectedEmployee(null)
-    saveData()
+    saveData(newDepts) // Pass new data directly
   }
 
   // Add new employee
@@ -249,58 +265,57 @@ export default function OrgStructureEditPage() {
       role: newEmployeeRole || 'Сотрудник'
     }
 
-    setDepartments(depts => {
-      return depts.map(dept => {
-        if (dept.id === addingTo.deptId) {
-          if (addingTo.teamId && dept.teams) {
-            return {
-              ...dept,
-              teams: dept.teams.map(team => {
-                if (team.id === addingTo.teamId) {
-                  return { ...team, members: [...team.members, newEmp] }
-                }
-                return team
-              })
-            }
-          } else if (dept.employees) {
-            return { ...dept, employees: [...dept.employees, newEmp] }
+    const newDepts = departments.map(dept => {
+      if (dept.id === addingTo.deptId) {
+        if (addingTo.teamId && dept.teams) {
+          return {
+            ...dept,
+            teams: dept.teams.map(team => {
+              if (team.id === addingTo.teamId) {
+                return { ...team, members: [...team.members, newEmp] }
+              }
+              return team
+            })
           }
+        } else if (dept.employees) {
+          return { ...dept, employees: [...dept.employees, newEmp] }
         }
-        return dept
-      })
+      }
+      return dept
     })
 
+    setDepartments(newDepts)
     setNewEmployeeName('')
     setNewEmployeeRole('')
     setAddingTo(null)
-    saveData()
+    saveData(newDepts)
   }
 
   // Delete employee
   const deleteEmployee = (deptId: string, empId: string, teamId?: string) => {
     if (!confirm('Удалить сотрудника?')) return
 
-    setDepartments(depts => {
-      return depts.map(dept => {
-        if (dept.id === deptId) {
-          if (teamId && dept.teams) {
-            return {
-              ...dept,
-              teams: dept.teams.map(team => {
-                if (team.id === teamId) {
-                  return { ...team, members: team.members.filter(m => m.id !== empId) }
-                }
-                return team
-              })
-            }
-          } else if (dept.employees) {
-            return { ...dept, employees: dept.employees.filter(e => e.id !== empId) }
+    const newDepts = departments.map(dept => {
+      if (dept.id === deptId) {
+        if (teamId && dept.teams) {
+          return {
+            ...dept,
+            teams: dept.teams.map(team => {
+              if (team.id === teamId) {
+                return { ...team, members: team.members.filter(m => m.id !== empId) }
+              }
+              return team
+            })
           }
+        } else if (dept.employees) {
+          return { ...dept, employees: dept.employees.filter(e => e.id !== empId) }
         }
-        return dept
-      })
+      }
+      return dept
     })
-    saveData()
+
+    setDepartments(newDepts)
+    saveData(newDepts)
   }
 
   return (
@@ -317,7 +332,7 @@ export default function OrgStructureEditPage() {
           </div>
         </div>
         <button
-          onClick={saveData}
+          onClick={() => saveData(departments)}
           disabled={saving}
           className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-500 disabled:opacity-50 rounded-lg"
         >
