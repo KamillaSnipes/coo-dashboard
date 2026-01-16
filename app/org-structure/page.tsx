@@ -33,19 +33,31 @@ export default function OrgStructurePage() {
         const response = await fetch('/api/org')
         if (response.ok) {
           const data = await response.json()
+          console.log('Loaded org data:', data)
           if (data.orgDepartments?.length > 0) {
-            // Merge saved data with static data
+            // Use saved departments for China, merge with static for others
             const merged = staticDepartments.map(staticDept => {
               const savedDept = data.orgDepartments.find((d: any) => d.id === staticDept.id)
-              if (savedDept && staticDept.id === 'china' && savedDept.teams) {
-                return { ...staticDept, teams: savedDept.teams }
-              }
-              if (savedDept && savedDept.employees) {
-                return { ...staticDept, employees: savedDept.employees }
+              if (savedDept) {
+                // For China department, use saved teams directly
+                if (staticDept.id === 'china' && savedDept.teams) {
+                  return { 
+                    ...staticDept, 
+                    teams: savedDept.teams.map((t: any) => ({
+                      ...t,
+                      lead: t.lead || { id: t.id, name: 'Unknown', role: 'РГ' },
+                      members: t.members || []
+                    }))
+                  }
+                }
+                // For other departments, use saved employees
+                if (savedDept.employees) {
+                  return { ...staticDept, employees: savedDept.employees }
+                }
               }
               return staticDept
             })
-            setDepartments(merged)
+            setDepartments(merged as typeof staticDepartments)
           }
         }
       } catch (error) {
