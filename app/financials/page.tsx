@@ -43,7 +43,7 @@ export default function FinancialsPage() {
   const [showAddForm, setShowAddForm] = useState(false)
   const [newPeriod, setNewPeriod] = useState({
     period: '2026-01',
-    type: 'month' as const,
+    type: 'month' as 'month' | 'quarter' | 'year',
     revenueStarted: 0,
     revenueClosed: 0,
     marginClosed: 0,
