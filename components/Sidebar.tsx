@@ -13,7 +13,9 @@ import {
   Network,
   BarChart3,
   UserCog,
-  Target
+  Target,
+  FileText,
+  Briefcase
 } from 'lucide-react'
 
 const navigation = [
@@ -22,6 +24,8 @@ const navigation = [
   { name: 'Финансы COO', href: '/financials', icon: BarChart3 },
   { name: 'Оргструктура', href: '/org-structure', icon: Network },
   { name: 'Отделы', href: '/departments', icon: Building2 },
+  { name: 'Клиенты', href: '/clients', icon: Briefcase },
+  { name: 'Планы продаж', href: '/sales-weekly', icon: FileText },
   { name: '1:1 Встречи', href: '/one-on-one', icon: Users },
   { name: 'Стратегия', href: '/initiatives', icon: Rocket },
   { name: 'Неделя', href: '/weekly', icon: Calendar },
