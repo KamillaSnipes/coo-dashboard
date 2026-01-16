@@ -191,7 +191,7 @@ export default function DepartmentsPage() {
                         href="/sales-weekly"
                         className="flex items-center justify-center gap-2 p-4 bg-green-600/20 hover:bg-green-600/30 border border-green-600/30 rounded-xl transition-colors text-green-300"
                       >
-                        <span className="font-medium">📋 Еженедельные планы продаж</span>
+                        <span className="font-medium">📋 Еженедельные планы</span>
                         <ArrowRight size={20} />
                       </Link>
                       <Link 
@@ -199,6 +199,20 @@ export default function DepartmentsPage() {
                         className="flex items-center justify-center gap-2 p-4 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-600/30 rounded-xl transition-colors text-blue-300"
                       >
                         <span className="font-medium">👥 База клиентов</span>
+                        <ArrowRight size={20} />
+                      </Link>
+                      <Link 
+                        href="/events"
+                        className="flex items-center justify-center gap-2 p-4 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-600/30 rounded-xl transition-colors text-purple-300"
+                      >
+                        <span className="font-medium">📅 Календарь выставок</span>
+                        <ArrowRight size={20} />
+                      </Link>
+                      <Link 
+                        href="/launches"
+                        className="flex items-center justify-center gap-2 p-4 bg-orange-600/20 hover:bg-orange-600/30 border border-orange-600/30 rounded-xl transition-colors text-orange-300"
+                      >
+                        <span className="font-medium">🚀 План запусков</span>
                         <ArrowRight size={20} />
                       </Link>
                     </div>
