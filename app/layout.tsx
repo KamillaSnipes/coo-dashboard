@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import Sidebar from '@/components/Sidebar'
+import { DataProvider } from '@/contexts/DataContext'
 
 export const metadata: Metadata = {
   title: 'COO Dashboard | Headcorn',
@@ -15,10 +16,12 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className="flex min-h-screen">
-        <Sidebar />
-        <main className="flex-1 ml-64 p-8">
-          {children}
-        </main>
+        <DataProvider>
+          <Sidebar />
+          <main className="flex-1 ml-64 p-8">
+            {children}
+          </main>
+        </DataProvider>
       </body>
     </html>
   )

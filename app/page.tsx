@@ -1,135 +1,57 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
-import { TrendingUp, Clock, Users, Target, AlertTriangle, ArrowRight, RefreshCw, Plus, Trash2, Edit2, Save, X } from 'lucide-react'
+import { TrendingUp, Clock, Users, Target, AlertTriangle, ArrowRight, RefreshCw, Plus, Trash2, Edit2, X } from 'lucide-react'
 import Card from '@/components/Card'
 import MetricCard from '@/components/MetricCard'
 import StatusBadge from '@/components/StatusBadge'
 import { departments, companyStats, getDepartmentEmployeeCount, getDepartmentHead } from '@/lib/data'
-
-interface Alert {
-  id: string
-  text: string
-  owner: string
-  priority: 'high' | 'medium' | 'low'
-}
-
-interface FocusData {
-  quarter: string
-  priorities: string[]
-}
+import { useData } from '@/contexts/DataContext'
 
 export default function Dashboard() {
-  const [alerts, setAlerts] = useState<Alert[]>([
-    { id: '1', text: '70% времени продажников на операционку', owner: 'Камилла Каюмова', priority: 'high' },
-    { id: '2', text: '5 дней на просчёт от отдела Китая', owner: 'Камилла Каюмова + РГ Китая', priority: 'high' },
-    { id: '3', text: 'Нет руководителя отдела продаж', owner: 'Камилла Каюмова + HR', priority: 'high' },
-    { id: '4', text: 'HR-система отсутствует (нужен HRBP)', owner: 'Камилла Каюмова + Людковский Пётр', priority: 'high' },
-    { id: '5', text: 'Нет матрицы компетенций (кроме ОК)', owner: 'Камилла Каюмова', priority: 'medium' },
-  ])
-  const [focus, setFocus] = useState<FocusData>({
-    quarter: 'Q1 2026',
-    priorities: [
-      'Рост выручки в 2 раза → 1,5 млрд руб.',
-      'Маржинальность 30%',
-      'КП за 3 дня (сейчас 5 дней)',
-      'NPS 75+, Брак ≤1%',
-    ]
-  })
+  const { alerts, setAlerts, focus, setFocus, saving, loading } = useData()
   
   const [editingAlert, setEditingAlert] = useState<string | null>(null)
   const [editingFocus, setEditingFocus] = useState(false)
   const [newAlert, setNewAlert] = useState({ text: '', owner: '', priority: 'high' as const })
   const [newPriority, setNewPriority] = useState('')
-  const [saving, setSaving] = useState(false)
-  const [loading, setLoading] = useState(true)
-
-  // Load data
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const response = await fetch('/api/org')
-        if (response.ok) {
-          const data = await response.json()
-          if (data.alerts?.length > 0) setAlerts(data.alerts)
-          if (data.focus?.quarter) setFocus(data.focus)
-        }
-      } catch (error) {
-        console.error('Error loading data:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    loadData()
-  }, [])
-
-  // Save data
-  const saveData = useCallback(async (newAlerts?: Alert[], newFocus?: FocusData) => {
-    setSaving(true)
-    try {
-      await fetch('/api/org', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          alerts: newAlerts || alerts,
-          focus: newFocus || focus
-        })
-      })
-    } catch (error) {
-      console.error('Error saving:', error)
-    } finally {
-      setSaving(false)
-    }
-  }, [alerts, focus])
 
   // Alert functions
   const addAlert = () => {
     if (!newAlert.text.trim()) return
-    const alert: Alert = {
+    const alert = {
       id: Date.now().toString(),
       text: newAlert.text,
       owner: newAlert.owner || 'Не назначен',
       priority: newAlert.priority
     }
-    const updated = [...alerts, alert]
-    setAlerts(updated)
+    setAlerts([...alerts, alert])
     setNewAlert({ text: '', owner: '', priority: 'high' })
-    saveData(updated)
   }
 
-  const updateAlert = (id: string, updates: Partial<Alert>) => {
-    const updated = alerts.map(a => a.id === id ? { ...a, ...updates } : a)
-    setAlerts(updated)
+  const updateAlert = (id: string, updates: Record<string, unknown>) => {
+    setAlerts(alerts.map(a => a.id === id ? { ...a, ...updates } : a))
     setEditingAlert(null)
-    saveData(updated)
   }
 
   const deleteAlert = (id: string) => {
-    const updated = alerts.filter(a => a.id !== id)
-    setAlerts(updated)
-    saveData(updated)
+    setAlerts(alerts.filter(a => a.id !== id))
   }
 
   // Focus functions
   const addPriority = () => {
     if (!newPriority.trim()) return
-    const updated = { ...focus, priorities: [...focus.priorities, newPriority] }
-    setFocus(updated)
+    setFocus({ ...focus, priorities: [...focus.priorities, newPriority] })
     setNewPriority('')
-    saveData(undefined, updated)
   }
 
   const removePriority = (index: number) => {
-    const updated = { ...focus, priorities: focus.priorities.filter((_, i) => i !== index) }
-    setFocus(updated)
-    saveData(undefined, updated)
+    setFocus({ ...focus, priorities: focus.priorities.filter((_, i) => i !== index) })
   }
 
   const updateQuarter = (quarter: string) => {
-    const updated = { ...focus, quarter }
-    setFocus(updated)
-    saveData(undefined, updated)
+    setFocus({ ...focus, quarter })
   }
 
   return (
