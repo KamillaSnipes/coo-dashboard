@@ -163,8 +163,8 @@ export default function OrgStructureEditPage() {
         const response = await fetch('/api/org')
         if (response.ok) {
           const data = await response.json()
-          if (data.departments?.length > 0) {
-            setDepartments(data.departments)
+          if (data.orgDepartments?.length > 0) {
+            setDepartments(data.orgDepartments)
           }
         }
       } catch (error) {
@@ -181,7 +181,7 @@ export default function OrgStructureEditPage() {
       await fetch('/api/org', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ departments })
+        body: JSON.stringify({ orgDepartments: departments })
       })
     } catch (error) {
       console.error('Error saving:', error)

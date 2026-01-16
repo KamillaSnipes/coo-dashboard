@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ChevronDown, ChevronUp, Building2, Users, Edit2 } from 'lucide-react'
+import { ChevronDown, ChevronUp, Building2, Users, Edit2, RefreshCw } from 'lucide-react'
 import Card from '@/components/Card'
-import { departments, leadership, companyStats, getDepartmentEmployeeCount, Department } from '@/lib/data'
+import { departments as staticDepartments, leadership, companyStats, getDepartmentEmployeeCount, Department } from '@/lib/data'
 
 // Цвета для отделов
 const deptColors: Record<string, string> = {
@@ -17,11 +17,45 @@ const deptColors: Record<string, string> = {
   uae: 'bg-cyan-500/30 border-cyan-500',
   backoffice: 'bg-gray-500/30 border-gray-500',
   it: 'bg-indigo-500/30 border-indigo-500',
+  hr: 'bg-rose-500/30 border-rose-500',
 }
 
 export default function OrgStructurePage() {
   const [expandedDept, setExpandedDept] = useState<string | null>('china')
   const [viewMode, setViewMode] = useState<'tree' | 'list'>('tree')
+  const [departments, setDepartments] = useState(staticDepartments)
+  const [loading, setLoading] = useState(true)
+
+  // Load saved org structure from API
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const response = await fetch('/api/org')
+        if (response.ok) {
+          const data = await response.json()
+          if (data.orgDepartments?.length > 0) {
+            // Merge saved data with static data
+            const merged = staticDepartments.map(staticDept => {
+              const savedDept = data.orgDepartments.find((d: any) => d.id === staticDept.id)
+              if (savedDept && staticDept.id === 'china' && savedDept.teams) {
+                return { ...staticDept, teams: savedDept.teams }
+              }
+              if (savedDept && savedDept.employees) {
+                return { ...staticDept, employees: savedDept.employees }
+              }
+              return staticDept
+            })
+            setDepartments(merged)
+          }
+        }
+      } catch (error) {
+        console.error('Error loading org data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadData()
+  }, [])
 
   const chinaDept = departments.find(d => d.id === 'china')
   const otherDepts = departments.filter(d => d.id !== 'china')
