@@ -698,7 +698,7 @@ export default function ClientsPage() {
   const [loading, setLoading] = useState(true)
   const [showFilters, setShowFilters] = useState(false)
 
-  // Load data
+  // Load data - merge with initialClients if new ones are added
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -706,7 +706,24 @@ export default function ClientsPage() {
         if (response.ok) {
           const data = await response.json()
           if (data.clients && data.clients.length > 0) {
-            setClients(data.clients)
+            // Check if there are new clients in initialClients that aren't in saved data
+            const savedIds = new Set(data.clients.map((c: Client) => c.id))
+            const newClients = initialClients.filter(c => !savedIds.has(c.id))
+            
+            if (newClients.length > 0) {
+              // Merge new clients with saved ones
+              const mergedClients = [...data.clients, ...newClients]
+              setClients(mergedClients)
+              // Save merged data
+              await fetch('/api/clients', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ clients: mergedClients })
+              })
+              console.log(`Added ${newClients.length} new clients`)
+            } else {
+              setClients(data.clients)
+            }
           } else {
             // No saved clients - use initial data and save
             setClients(initialClients)

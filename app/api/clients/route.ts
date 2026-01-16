@@ -37,3 +37,17 @@ export async function POST(request: Request) {
   }
 }
 
+// DELETE - reset clients data to force reload from initialClients
+export async function DELETE() {
+  try {
+    await prisma.settings.delete({
+      where: { id: 'clients' }
+    }).catch(() => {}) // Ignore if not found
+    
+    return NextResponse.json({ success: true, message: 'Clients data reset' })
+  } catch (error) {
+    console.error('Error resetting clients data:', error)
+    return NextResponse.json({ error: 'Failed to reset data' }, { status: 500 })
+  }
+}
+
