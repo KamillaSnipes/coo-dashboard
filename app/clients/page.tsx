@@ -38,6 +38,7 @@ const industries = [
   'Медиа и реклама',
   'Производство',
   'Рекламное агентство',
+  'Логистика',
   'Другое'
 ]
 
@@ -208,6 +209,339 @@ const initialClients: Client[] = [
     orderFrequency: '', averageOrder: '', lastOrder: '',
     notes: 'Расчет', assignedTo: 'Наталья Лактистова', status: 'potential',
     createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-12T00:00:00.000Z'
+  },
+
+  // =============================================
+  // ЮБИЛЕИ 2026 - ПОТЕНЦИАЛЬНЫЕ КЛИЕНТЫ
+  // =============================================
+
+  // === АВТО-ЮБИЛЕИ (Государственный масштаб) ===
+  {
+    id: 'client-kamaz', name: 'КАМАЗ', company: 'ПАО «КАМАЗ»',
+    industry: 'Автопром', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://kamaz.ru',
+    needs: 'Сувениры для сотрудников, VIP-подарки партнерам, юбилейная коллекция',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 50 лет (16 февраля). Празднование закреплено указом Президента РФ. Масштабные мероприятия!', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-avtovaz', name: 'АВТОВАЗ', company: 'ПАО «АВТОВАЗ»',
+    industry: 'Автопром', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://www.lada.ru',
+    needs: 'Юбилейный мерч, подарки для сотрудников и дилеров',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 60 лет со дня основания. Завод в Тольятти планирует масштабное обновление и празднование', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-lada-izhevsk', name: 'Lada Ижевский автозавод', company: 'Ижевский автомобильный завод',
+    industry: 'Автопром', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: '',
+    needs: 'Юбилейная продукция',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 60 лет (12 декабря) со дня выпуска первого авто', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+
+  // === ДОБЫЧА, ПРОМЫШЛЕННОСТЬ И ЭНЕРГЕТИКА ===
+  // 35 лет (1991)
+  {
+    id: 'client-lukoil', name: 'ЛУКОЙЛ', company: 'ПАО «ЛУКОЙЛ»',
+    industry: 'Производство', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://lukoil.ru',
+    needs: 'Корпоративные подарки, мерч для сотрудников',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 35 лет (ноябрь 1991). Крупнейшая частная нефтяная компания', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-gazprom-export', name: 'Газпром экспорт', company: 'ООО «Газпром экспорт»',
+    industry: 'Производство', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: '',
+    needs: 'VIP-подарки, корпоративная продукция',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 35 лет. Дочерняя структура Газпрома', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  // 30 лет (1996)
+  {
+    id: 'client-tvel', name: 'ТВЭЛ', company: 'АО «ТВЭЛ»',
+    industry: 'Производство', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://www.tvel.ru',
+    needs: 'Корпоративные подарки',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 30 лет. Топливная компания Росатома (ядерное топливо)', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-gazprom-mezhregiongaz', name: 'Газпром межрегионгаз', company: 'ООО «Газпром межрегионгаз»',
+    industry: 'Производство', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: '',
+    needs: 'Мерч для сотрудников по всей РФ',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 30 лет. Поставки газа по всей РФ', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-metall-profil', name: 'Металл Профиль', company: 'Компания «Металл Профиль»',
+    industry: 'Производство', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://metallprofil.ru',
+    needs: 'Корпоративная продукция',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 30 лет. Лидер рынка кровельных и стеновых материалов', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-traktornye-zavody', name: 'Тракторные заводы', company: 'Концерн «Тракторные заводы»',
+    industry: 'Производство', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: '',
+    needs: 'Корпоративные подарки',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 30 лет. Крупный машиностроительный холдинг', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  // 25 лет (2001)
+  {
+    id: 'client-suek', name: 'СУЭК', company: 'АО «СУЭК»',
+    industry: 'Производство', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://www.suek.ru',
+    needs: 'Корпоративная продукция для тысяч сотрудников',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 25 лет. Сибирская угольная энергетическая компания - мировой лидер отрасли', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-tmk', name: 'ТМК', company: 'ПАО «ТМК»',
+    industry: 'Производство', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://www.tmk-group.ru',
+    needs: 'Корпоративные подарки',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 25 лет. Трубная металлургическая компания', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-eurohim', name: 'ЕвроХим', company: 'АО «МХК «ЕвроХим»',
+    industry: 'Производство', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://www.eurochemgroup.com',
+    needs: 'Корпоративная продукция',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 25 лет. Крупнейший в РФ производитель минеральных удобрений', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  // 20 лет (2006)
+  {
+    id: 'client-oak', name: 'ОАК', company: 'ПАО «ОАК»',
+    industry: 'Производство', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://www.uacrussia.ru',
+    needs: 'Корпоративные подарки, VIP-продукция',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 20 лет. Объединённая авиастроительная корпорация - весь авиапром страны. Уже работаем через Конфест', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-metalloinvest', name: 'Металлоинвест', company: 'УК «Металлоинвест»',
+    industry: 'Производство', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://www.metalloinvest.com',
+    needs: 'Корпоративная продукция',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 20 лет. Крупнейший горно-металлургический холдинг', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-atomenergomash', name: 'Атомэнергомаш', company: 'АО «Атомэнергомаш»',
+    industry: 'Производство', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://www.aem-group.ru',
+    needs: 'Корпоративные подарки',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 20 лет. Машиностроительный дивизион Росатома', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+
+  // === IT, ТЕЛЕКОМ И ТЕХНОЛОГИИ ===
+  // 35 лет (1991)
+  {
+    id: 'client-1c', name: '1С', company: 'Фирма «1С»',
+    industry: 'IT и технологии', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://1c.ru',
+    needs: 'Кастомный мерч, гаджеты, инновационные материалы',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 35 лет. Лидер софтверного рынка РФ', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-gs-group', name: 'GS Group', company: 'GS Group',
+    industry: 'IT и технологии', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://www.gs-group.com',
+    needs: 'Технологичный мерч',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 35 лет. Инвестиционно-промышленный холдинг (микроэлектроника)', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  // 25 лет (2001)
+  {
+    id: 'client-1c-rarus', name: '1С-Рарус', company: '1С-Рарус',
+    industry: 'IT и технологии', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://rarus.ru',
+    needs: 'Корпоративный мерч',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 25 лет. Крупнейший ИТ-интегратор', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-r-pharm', name: 'Р-Фарм', company: 'АО «Р-Фарм»',
+    industry: 'Фарма', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://r-pharm.com',
+    needs: 'Корпоративная продукция',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 25 лет. Высокотехнологичная фармацевтическая компания', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-geropharm', name: 'Герофарм', company: 'АО «Герофарм»',
+    industry: 'Фарма', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://geropharm.ru',
+    needs: 'Корпоративные подарки',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 25 лет. Биотехнологическая компания', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  // 20 лет (2006)
+  {
+    id: 'client-vk', name: 'ВКонтакте (VK)', company: 'ООО «ВКонтакте»',
+    industry: 'IT и технологии', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://vk.com',
+    needs: 'Имиджевый мерч, коллекции к юбилею, гаджеты',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 20 лет (октябрь). Огромный потенциал для выпуска юбилейных коллекций мерча!', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-regru', name: 'Reg.ru', company: 'АО «Рег.ру»',
+    industry: 'IT и технологии', segment: 'mid', contactPerson: '', phone: '', email: '', website: 'https://www.reg.ru',
+    needs: 'Корпоративный мерч',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 20 лет. Крупнейший регистратор доменов и хостинг-провайдер', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  // 15 лет (2011)
+  {
+    id: 'client-okko', name: 'Okko', company: 'Okko',
+    industry: 'IT и технологии', segment: 'mid', contactPerson: '', phone: '', email: '', website: 'https://okko.tv',
+    needs: 'Мерч, промо-продукция',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 15 лет. Мультимедийный сервис', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-onetwotrip', name: 'OneTwoTrip', company: 'OneTwoTrip',
+    industry: 'IT и технологии', segment: 'mid', contactPerson: '', phone: '', email: '', website: 'https://www.onetwotrip.com',
+    needs: 'Тревел-мерч',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 15 лет. Лидер онлайн-тревела', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-dodo', name: 'Dodo Pizza', company: 'Dodo Pizza',
+    industry: 'FMCG', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://dodopizza.ru',
+    needs: 'Промо-продукция, мерч для сотрудников',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 15 лет. Международная сеть пиццерий', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+
+  // === РИТЕЙЛ И FMCG ===
+  // 30 лет (1996)
+  {
+    id: 'client-rusproduct', name: 'Русский Продукт', company: 'ООО «Русский Продукт»',
+    industry: 'FMCG', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: '',
+    needs: 'Промо-продукция',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 30 лет. Крупнейший производитель бакалеи', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-medsi', name: 'МЕДСИ', company: 'АО «Группа компаний «МЕДСИ»',
+    industry: 'Другое', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://medsi.ru',
+    needs: 'Welcome Packs для новых сотрудников',
+    orderFrequency: 'Регулярно (активный найм)', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 30 лет. Сеть частных клиник', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  // 20 лет (2006)
+  {
+    id: 'client-krasnoeibeloe', name: 'Красное & Белое', company: '«Красное & Белое»',
+    industry: 'Ритейл', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://www.krasnoeibeloe.ru',
+    needs: 'Массовые тиражи мерча для огромной сети филиалов',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 20 лет. Гигант ритейла', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-fixprice', name: 'Fix Price', company: 'Fix Price',
+    industry: 'Ритейл', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://fix-price.com',
+    needs: 'Массовые промо-товары',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 20 лет. Международная сеть магазинов', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-mothernchild', name: 'Мать и дитя', company: 'ГК «Мать и дитя»',
+    industry: 'Другое', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://mamadeti.ru',
+    needs: 'Корпоративная продукция',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 20 лет. Сеть клиник', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  // 15 лет (2011)
+  {
+    id: 'client-vkusvill', name: 'ВкусВилл', company: '«ВкусВилл»',
+    industry: 'Ритейл', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://vkusvill.ru',
+    needs: 'Эко-мерч, промо-продукция',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 15 лет. Сеть магазинов здорового питания', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-lamoda', name: 'Lamoda', company: 'Lamoda',
+    industry: 'Ритейл', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://www.lamoda.ru',
+    needs: 'Fashion-мерч, коллаборации',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 15 лет. Крупнейший маркетплейс одежды', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+
+  // === ЛОГИСТИКА И ФИНАНСЫ ===
+  // 35 лет (1991)
+  {
+    id: 'client-rolf', name: 'Рольф', company: 'ГК «Рольф»',
+    industry: 'Автопром', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://rolf.ru',
+    needs: 'Корпоративные подарки для клиентов и сотрудников',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 35 лет. Крупнейший автодилер', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  // 30 лет (1996)
+  {
+    id: 'client-maks', name: 'МАКС', company: 'САО «МАКС»',
+    industry: 'Финансы и банки', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://makc.ru',
+    needs: 'Корпоративная продукция',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 30 лет. Страховая группа', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-rusklimat', name: 'Русклимат', company: 'ТПХ «Русклимат»',
+    industry: 'Производство', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://rusklimat.ru',
+    needs: 'Корпоративные подарки',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 30 лет', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  // 25 лет (2001)
+  {
+    id: 'client-dellin', name: 'Деловые Линии', company: 'ГК «Деловые Линии»',
+    industry: 'Другое', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://www.dellin.ru',
+    needs: 'Мерч для тысяч сотрудников',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 25 лет. Лидер рынка грузоперевозок - огромный штат!', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  {
+    id: 'client-rosagrolizing', name: 'Росагролизинг', company: 'АО «Росагролизинг»',
+    industry: 'Финансы и банки', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://www.rosagroleasing.ru',
+    needs: 'Корпоративная продукция',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 25 лет', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
+  },
+  // 20 лет (2006)
+  {
+    id: 'client-transcontainer', name: 'ТрансКонтейнер', company: 'ПАО «ТрансКонтейнер»',
+    industry: 'Другое', segment: 'enterprise', contactPerson: '', phone: '', email: '', website: 'https://trcont.ru',
+    needs: 'Корпоративные подарки',
+    orderFrequency: '', averageOrder: '', lastOrder: '',
+    notes: '🎉 ЮБИЛЕЙ 2026: 20 лет. Крупнейший контейнерный оператор', assignedTo: '', status: 'potential',
+    createdAt: '2026-01-16T00:00:00.000Z', updatedAt: '2026-01-16T00:00:00.000Z'
   },
 ]
 
