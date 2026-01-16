@@ -25,6 +25,8 @@ export default function Dashboard() {
     { id: '1', text: '70% времени продажников на операционку', owner: 'Камилла Каюмова', priority: 'high' },
     { id: '2', text: '5 дней на просчёт от отдела Китая', owner: 'Камилла Каюмова + РГ Китая', priority: 'high' },
     { id: '3', text: 'Нет руководителя отдела продаж', owner: 'Камилла Каюмова + HR', priority: 'high' },
+    { id: '4', text: 'HR-система отсутствует (нужен HRBP)', owner: 'Камилла Каюмова + Людковский Пётр', priority: 'high' },
+    { id: '5', text: 'Нет матрицы компетенций (кроме ОК)', owner: 'Камилла Каюмова', priority: 'medium' },
   ])
   const [focus, setFocus] = useState<FocusData>({
     quarter: 'Q1 2026',
@@ -369,24 +371,34 @@ export default function Dashboard() {
       </Card>
 
       {/* Quick Links */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <Link href="/financials" className="p-4 bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-500/30 hover:border-green-500/50 rounded-xl transition-colors text-center">
+          <div className="text-2xl mb-2">📊</div>
+          <div className="font-medium">Финансы COO</div>
+          <div className="text-xs text-dark-400 mt-1">Ключевые метрики</div>
+        </Link>
         <Link href="/org-structure" className="p-4 bg-dark-800 hover:bg-dark-700 rounded-xl transition-colors text-center">
           <div className="text-2xl mb-2">🏢</div>
           <div className="font-medium">Оргструктура</div>
           <div className="text-xs text-dark-400 mt-1">Редактировать</div>
         </Link>
-        <Link href="/one-on-one" className="p-4 bg-dark-800 hover:bg-dark-700 rounded-xl transition-colors text-center">
+        <Link href="/hr" className="p-4 bg-gradient-to-br from-rose-500/20 to-pink-500/20 border border-rose-500/30 hover:border-rose-500/50 rounded-xl transition-colors text-center">
           <div className="text-2xl mb-2">👥</div>
+          <div className="font-medium">HR</div>
+          <div className="text-xs text-red-400 mt-1">Нужен HRBP</div>
+        </Link>
+        <Link href="/one-on-one" className="p-4 bg-dark-800 hover:bg-dark-700 rounded-xl transition-colors text-center">
+          <div className="text-2xl mb-2">📝</div>
           <div className="font-medium">1:1 Встречи</div>
-          <div className="text-xs text-dark-400 mt-1">Архив встреч</div>
+          <div className="text-xs text-dark-400 mt-1">Архив</div>
         </Link>
         <Link href="/initiatives" className="p-4 bg-dark-800 hover:bg-dark-700 rounded-xl transition-colors text-center">
           <div className="text-2xl mb-2">🚀</div>
           <div className="font-medium">Стратегия</div>
         </Link>
-        <Link href="/weekly" className="p-4 bg-dark-800 hover:bg-dark-700 rounded-xl transition-colors text-center">
-          <div className="text-2xl mb-2">📅</div>
-          <div className="font-medium">Неделя</div>
+        <Link href="/problems" className="p-4 bg-dark-800 hover:bg-dark-700 rounded-xl transition-colors text-center">
+          <div className="text-2xl mb-2">🚨</div>
+          <div className="font-medium">Проблемы</div>
         </Link>
       </div>
 

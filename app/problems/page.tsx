@@ -14,6 +14,7 @@ interface Problem {
   impact: 'high' | 'medium' | 'low'
   status: 'open' | 'in_progress' | 'resolved'
   owner: string
+  category?: string
   rootCause?: string[]
   plan?: { task: string; done: boolean }[]
   solution?: string
@@ -36,6 +37,7 @@ const additionalProblems: Problem[] = [
     impact: 'medium',
     status: 'open',
     owner: 'Камилла Каюмова',
+    category: 'culture',
     rootCause: ['Нет обучения', 'Нет культуры использования'],
   },
   {
@@ -45,17 +47,30 @@ const additionalProblems: Problem[] = [
     impact: 'medium',
     status: 'open',
     owner: 'Камилла Каюмова + IT',
+    category: 'operations',
   },
 ]
+
+const categoryLabels: Record<string, string> = {
+  operations: '⚙️ Операции',
+  hr: '👥 HR',
+  culture: '🎭 Культура',
+  hiring: '🎯 Наём',
+}
 
 export default function ProblemsPage() {
   const [problems, setProblems] = useState<Problem[]>([...initialProblems, ...additionalProblems])
   const [filter, setFilter] = useState<'all' | 'open' | 'in_progress' | 'resolved'>('all')
+  const [categoryFilter, setCategoryFilter] = useState<string>('all')
   const [notes, setNotes] = useState<Record<string, string>>({})
 
-  const filteredProblems = problems.filter(p => 
-    filter === 'all' ? true : p.status === filter
-  )
+  const filteredProblems = problems.filter(p => {
+    const statusMatch = filter === 'all' ? true : p.status === filter
+    const categoryMatch = categoryFilter === 'all' ? true : p.category === categoryFilter
+    return statusMatch && categoryMatch
+  })
+
+  const hrProblemsCount = problems.filter(p => p.category === 'hr').length
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -87,8 +102,8 @@ export default function ProblemsPage() {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex gap-2">
+      {/* Status Filters */}
+      <div className="flex flex-wrap gap-2">
         {[
           { id: 'all', label: 'Все' },
           { id: 'open', label: 'Открытые' },
@@ -107,6 +122,26 @@ export default function ProblemsPage() {
             {f.label}
           </button>
         ))}
+        <div className="w-px bg-dark-600 mx-2" />
+        {[
+          { id: 'all', label: '📋 Все категории' },
+          { id: 'operations', label: '⚙️ Операции' },
+          { id: 'hr', label: `👥 HR (${hrProblemsCount})` },
+          { id: 'culture', label: '🎭 Культура' },
+          { id: 'hiring', label: '🎯 Наём' },
+        ].map((f) => (
+          <button
+            key={f.id}
+            onClick={() => setCategoryFilter(f.id)}
+            className={`px-3 py-2 rounded-lg transition-colors text-sm ${
+              categoryFilter === f.id
+                ? f.id === 'hr' ? 'bg-rose-500/30 text-rose-300' : 'bg-primary-600 text-white'
+                : 'bg-dark-700 text-dark-300 hover:bg-dark-600'
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
       </div>
 
       {/* Problems List */}
@@ -116,9 +151,14 @@ export default function ProblemsPage() {
             <div className="flex items-start gap-4">
               {getStatusIcon(problem.status)}
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
+                <div className="flex items-center gap-3 mb-2 flex-wrap">
                   <h3 className="font-semibold text-lg">{problem.title}</h3>
                   {getImpactBadge(problem.impact)}
+                  {problem.category && categoryLabels[problem.category] && (
+                    <span className="text-xs px-2 py-1 bg-dark-600 text-dark-300 rounded">
+                      {categoryLabels[problem.category]}
+                    </span>
+                  )}
                 </div>
                 
                 {problem.description && (

@@ -214,6 +214,32 @@ export const departments: Department[] = [
     ],
   },
   {
+    id: 'hr',
+    name: 'HR Department',
+    shortName: 'HR',
+    color: 'bg-rose-500/20',
+    borderColor: 'border-rose-500/50',
+    status: 'red',
+    focus: 'Создать HR-систему с нуля для масштабирования бизнеса',
+    problems: [
+      'Руководители неэффективно управляют командами',
+      'Нет матрицы компетенций (кроме ОК)',
+      'Нет цикла оценки сотрудников',
+      'Нет кадрового резерва',
+      'Корпоративная культура отсутствует',
+      'Нет системы обучения',
+    ],
+    kpis: [
+      { name: 'Матрица компетенций', value: '1/10', target: '10/10' },
+      { name: 'Оценка персонала', value: 'Нет', target: '360°' },
+    ],
+    head: { name: 'Людковский Пётр', role: 'HR менеджер' },
+    employees: [
+      { name: 'Людковский Пётр', role: 'HR менеджер' },
+      { name: 'VACANT', role: 'HR-бизнес-партнер (HRBP)', type: 'vacant' },
+    ],
+  },
+  {
     id: 'backoffice',
     name: 'Back Office',
     shortName: 'Бэк-офис',
@@ -222,11 +248,9 @@ export const departments: Department[] = [
     status: 'green',
     employees: [
       { name: 'Анастасия Василевская', role: 'Администратор' },
-      { name: 'Людковский Пётр', role: 'HR менеджер' },
       { name: 'Косенкова Наталья', role: 'Главный бухгалтер' },
       { name: 'Ольга Муравьёва', role: 'Офис-менеджер' },
       { name: 'Клининг', role: 'Клининг', type: 'project' },
-      { name: 'VACANT?', role: 'Позиция', type: 'vacant' },
     ],
   },
   {
@@ -290,7 +314,7 @@ export const oneOnOnePeople = [
   { name: 'Константин Макаров', role: 'CMO Москва', department: 'marketing', frequency: '2 раза в месяц' },
   { name: 'Никита Жирнов', role: 'CMO/COO Dubai', department: 'uae', frequency: 'Еженедельно' },
   { name: 'Евгений Якубин', role: 'IT/Planfix', department: 'it', frequency: '2 раза в месяц' },
-  { name: 'Людковский Пётр', role: 'HR', department: 'backoffice', frequency: '2 раза в месяц' },
+  { name: 'Людковский Пётр', role: 'HR менеджер', department: 'hr', frequency: 'Еженедельно' },
   
   // CEO
   { name: 'Рэшад Бакиров', role: 'CEO/COO', department: 'ceo', frequency: 'Еженедельно' },
@@ -313,6 +337,24 @@ export const strategicInitiatives = [
     ],
   },
   {
+    id: 'hr-system',
+    name: 'Создание HR-системы с нуля',
+    goal: 'Обеспечить готовность команды к масштабированию бизнеса',
+    status: 'red' as const,
+    owner: 'Камилла Каюмова + HR',
+    stages: [
+      { name: 'Найм HRBP', status: 'in_progress' },
+      { name: 'Повышение управленческой эффективности', status: 'pending' },
+      { name: 'Кадровый резерв и планы замены', status: 'pending' },
+      { name: 'Формирование корп. культуры', status: 'pending' },
+      { name: 'Матрица компетенций (все отделы)', status: 'in_progress' },
+      { name: 'Цикл оценки персонала (360°/пульс)', status: 'pending' },
+      { name: 'Система обучения и развития', status: 'pending' },
+      { name: 'Управление конфликтами и коммуникациями', status: 'pending' },
+    ],
+    blockers: ['Нужен HRBP'],
+  },
+  {
     id: 'culture',
     name: 'Трансформация культуры продаж',
     goal: 'Перейти от реактивных продаж к проактивным',
@@ -328,6 +370,19 @@ export const strategicInitiatives = [
     owner: 'Камилла Каюмова + Людковский Пётр',
   },
   {
+    id: 'hrbp',
+    name: 'Найм HR-бизнес-партнёра',
+    goal: 'Найти HRBP для построения HR-системы',
+    status: 'in_progress' as const,
+    owner: 'Камилла Каюмова + Людковский Пётр',
+    stages: [
+      { name: 'Вакансия опубликована на HH', status: 'done' },
+      { name: 'Отбор кандидатов', status: 'in_progress' },
+      { name: 'Интервью', status: 'pending' },
+      { name: 'Оффер', status: 'pending' },
+    ],
+  },
+  {
     id: 'finplan',
     name: 'Финансовое планирование 2026',
     goal: 'Рост x2, выручка 1,5 млрд руб.',
@@ -338,12 +393,14 @@ export const strategicInitiatives = [
 
 // Ключевые проблемы
 export const keyProblems = [
+  // Операционные
   {
     id: 'ops-load',
     title: '70% времени продажников на операционку',
     impact: 'high' as const,
     status: 'in_progress' as const,
     owner: 'Камилла Каюмова',
+    category: 'operations',
   },
   {
     id: 'kp-time',
@@ -351,6 +408,7 @@ export const keyProblems = [
     impact: 'high' as const,
     status: 'in_progress' as const,
     owner: 'Камилла Каюмова + РГ Китая',
+    category: 'operations',
   },
   {
     id: 'no-rop',
@@ -358,6 +416,7 @@ export const keyProblems = [
     impact: 'high' as const,
     status: 'open' as const,
     owner: 'Камилла Каюмова + HR',
+    category: 'hiring',
   },
   {
     id: 'culture',
@@ -365,6 +424,72 @@ export const keyProblems = [
     impact: 'high' as const,
     status: 'open' as const,
     owner: 'Камилла Каюмова + будущий РОП',
+    category: 'culture',
+  },
+  // HR проблемы
+  {
+    id: 'hr-managers',
+    title: 'Руководители неэффективно управляют командами',
+    impact: 'high' as const,
+    status: 'open' as const,
+    owner: 'HR + Камилла Каюмова',
+    category: 'hr',
+  },
+  {
+    id: 'hr-reserve',
+    title: 'Нет кадрового резерва и планов замены',
+    impact: 'high' as const,
+    status: 'open' as const,
+    owner: 'HR',
+    category: 'hr',
+  },
+  {
+    id: 'hr-culture',
+    title: 'Корпоративная культура отсутствует',
+    impact: 'high' as const,
+    status: 'open' as const,
+    owner: 'HR + Камилла Каюмова',
+    category: 'hr',
+  },
+  {
+    id: 'hr-competency',
+    title: 'Нет матрицы компетенций (кроме ОК)',
+    impact: 'medium' as const,
+    status: 'in_progress' as const,
+    owner: 'Камилла Каюмова',
+    category: 'hr',
+  },
+  {
+    id: 'hr-assessment',
+    title: 'Нет цикла оценки сотрудников',
+    impact: 'medium' as const,
+    status: 'open' as const,
+    owner: 'HR',
+    category: 'hr',
+  },
+  {
+    id: 'hr-training',
+    title: 'Нет системы обучения и развития',
+    impact: 'medium' as const,
+    status: 'open' as const,
+    owner: 'HR',
+    category: 'hr',
+  },
+  {
+    id: 'hr-conflicts',
+    title: 'Нет системы управления конфликтами',
+    impact: 'medium' as const,
+    status: 'open' as const,
+    owner: 'HR',
+    category: 'hr',
+  },
+  {
+    id: 'hr-motivation',
+    title: 'Нет матрицы мотиваций',
+    impact: 'medium' as const,
+    status: 'open' as const,
+    owner: 'HR',
+    category: 'hr',
   },
 ]
 
@@ -376,6 +501,59 @@ export const quarterFocus = {
     'Маржинальность 30%',
     'КП за 3 дня (сейчас 5 дней)',
     'NPS 75+, Брак ≤1%',
+  ],
+}
+
+// ===== ФИНАНСОВЫЕ МЕТРИКИ COO =====
+
+// Типы для финансовых данных
+export interface FinancialPeriod {
+  period: string // "2026-01" для месяца, "2026-Q1" для квартала, "2026" для года
+  type: 'month' | 'quarter' | 'year'
+  // Выручка
+  revenueStarted: number    // По запущенным проектам
+  revenueClosed: number     // По закрытым проектам
+  // Маржинальность
+  marginClosed: number      // % по закрытым проектам
+  // Производительность
+  projectsSum: number       // Сумма запущенных проектов
+  fot: number               // ФОТ (ЗП + ДМС + расходы отделов)
+  productivity?: number     // = projectsSum / fot (вычисляется)
+}
+
+// Начальные данные (редактируемые)
+export const initialFinancials: FinancialPeriod[] = [
+  // Январь 2026
+  {
+    period: '2026-01',
+    type: 'month',
+    revenueStarted: 0,
+    revenueClosed: 0,
+    marginClosed: 0,
+    projectsSum: 0,
+    fot: 0,
+  },
+]
+
+// HR цели на год
+export const hrGoals = {
+  mainGoal: 'Обеспечить готовность команды к масштабированию бизнеса через создание работающей HR-системы (с нуля)',
+  year1Goals: [
+    'Повысить управленческую эффективность',
+    'Сформировать кадровый резерв и планы замены для всех ключевых позиций',
+    'Сформировать корпоративную культуру, соответствующую бизнес целям компании',
+    'Внедрить матрицу компетенций для всех подразделений',
+    'Запустить цикл оценки персонала (пульс/360)',
+    'Построить систему обучения и развития',
+    'Выстроить управление конфликтами и коммуникациями',
+  ],
+  vacancies: [
+    {
+      title: 'HR-бизнес-партнёр (HRBP)',
+      url: 'https://hh.ru/vacancy/129463745',
+      status: 'active',
+      publishedDate: '2026-01-15',
+    },
   ],
 }
 

@@ -10,13 +10,17 @@ import {
   Calendar, 
   AlertTriangle,
   Settings,
-  Network
+  Network,
+  BarChart3,
+  UserCog
 } from 'lucide-react'
 
 const navigation = [
   { name: 'Главный дашборд', href: '/', icon: LayoutDashboard },
+  { name: 'Финансы COO', href: '/financials', icon: BarChart3 },
   { name: 'Оргструктура', href: '/org-structure', icon: Network },
   { name: 'Отделы', href: '/departments', icon: Building2 },
+  { name: 'HR', href: '/hr', icon: UserCog },
   { name: '1:1 Встречи', href: '/one-on-one', icon: Users },
   { name: 'Стратегия', href: '/initiatives', icon: Rocket },
   { name: 'Неделя', href: '/weekly', icon: Calendar },
