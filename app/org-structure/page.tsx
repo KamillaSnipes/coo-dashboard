@@ -82,55 +82,68 @@ export default function OrgStructurePage() {
             </div>
 
             {/* Level 2: COO & CCO */}
-            <div className="flex justify-center gap-8 mb-4">
-              {/* COO */}
-              <div className="bg-gradient-to-br from-green-500/30 to-green-600/30 border-2 border-green-500 rounded-xl p-4 text-center min-w-[220px] shadow-lg shadow-green-500/20">
-                <div className="font-bold text-lg">{leadership.coo.name}</div>
-                <div className="text-green-300 text-sm">{leadership.coo.role}</div>
-                <div className="text-xs text-dark-400 mt-1">Операции, HR, Китай, ВЭД</div>
-              </div>
-              {/* CCO */}
-              <div className="bg-gradient-to-br from-emerald-500/30 to-teal-600/30 border-2 border-emerald-500 rounded-xl p-4 text-center min-w-[220px] shadow-lg shadow-emerald-500/20">
-                <div className="font-bold text-lg">{leadership.cco.name}</div>
-                <div className="text-emerald-300 text-sm">{leadership.cco.role}</div>
-                <div className="text-xs text-dark-400 mt-1">Продажи</div>
-              </div>
-            </div>
-
-            {/* Connector lines to departments */}
-            <div className="flex justify-center">
-              <div className="w-[60%] h-px bg-dark-500"></div>
-            </div>
-            <div className="flex justify-center">
-              <div className="w-px h-8 bg-dark-500"></div>
-            </div>
-
-            {/* Horizontal line across all departments */}
-            <div className="flex justify-center mb-4">
-              <div className="w-[90%] h-px bg-dark-500"></div>
-            </div>
-
-            {/* Level 3: Departments */}
-            <div className="flex justify-center gap-3 mb-4">
-              {departments.map((dept) => {
-                const count = getDepartmentEmployeeCount(dept)
-                const colors = deptColors[dept.id] || 'bg-dark-700 border-dark-500'
+            <div className="flex justify-center gap-16 mb-4">
+              {/* COO Block */}
+              <div className="flex flex-col items-center">
+                <div className="bg-gradient-to-br from-green-500/30 to-green-600/30 border-2 border-green-500 rounded-xl p-4 text-center min-w-[220px] shadow-lg shadow-green-500/20">
+                  <div className="font-bold text-lg">{leadership.coo.name}</div>
+                  <div className="text-green-300 text-sm">{leadership.coo.role}</div>
+                  <div className="text-xs text-dark-400 mt-1">Операции, HR, Китай, ВЭД, Развитие</div>
+                </div>
                 
-                return (
-                  <div key={dept.id} className="flex flex-col items-center">
-                    {/* Vertical connector */}
-                    <div className="w-px h-4 bg-dark-500 -mt-4"></div>
+                {/* COO departments connector */}
+                <div className="w-px h-6 bg-green-500/50"></div>
+                <div className="w-[400px] h-px bg-green-500/50"></div>
+                
+                {/* COO Departments */}
+                <div className="flex gap-2 mt-4 flex-wrap justify-center max-w-[500px]">
+                  {departments.filter(d => d.id !== 'sales').map((dept) => {
+                    const count = getDepartmentEmployeeCount(dept)
+                    const colors = deptColors[dept.id] || 'bg-dark-700 border-dark-500'
                     
+                    return (
+                      <button
+                        key={dept.id}
+                        onClick={() => setExpandedDept(expandedDept === dept.id ? null : dept.id)}
+                        className={`${colors} border-2 rounded-xl p-2 text-center min-w-[90px] transition-all hover:scale-105 ${expandedDept === dept.id ? 'ring-2 ring-white/30' : ''}`}
+                      >
+                        <div className="font-semibold text-xs">{dept.shortName}</div>
+                        <div className="text-xs text-dark-400">{count}</div>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* CCO Block */}
+              <div className="flex flex-col items-center">
+                <div className="bg-gradient-to-br from-emerald-500/30 to-teal-600/30 border-2 border-emerald-500 rounded-xl p-4 text-center min-w-[220px] shadow-lg shadow-emerald-500/20">
+                  <div className="font-bold text-lg">{leadership.cco.name}</div>
+                  <div className="text-emerald-300 text-sm">{leadership.cco.role}</div>
+                  <div className="text-xs text-dark-400 mt-1">Продажи</div>
+                </div>
+                
+                {/* CCO department connector */}
+                <div className="w-px h-6 bg-emerald-500/50"></div>
+                
+                {/* Sales Department */}
+                {(() => {
+                  const salesDept = departments.find(d => d.id === 'sales')
+                  if (!salesDept) return null
+                  const count = getDepartmentEmployeeCount(salesDept)
+                  
+                  return (
                     <button
-                      onClick={() => setExpandedDept(expandedDept === dept.id ? null : dept.id)}
-                      className={`${colors} border-2 rounded-xl p-3 text-center min-w-[110px] transition-all hover:scale-105 ${expandedDept === dept.id ? 'ring-2 ring-white/30' : ''}`}
+                      onClick={() => setExpandedDept(expandedDept === 'sales' ? null : 'sales')}
+                      className={`bg-green-500/30 border-green-500 border-2 rounded-xl p-3 text-center min-w-[120px] transition-all hover:scale-105 ${expandedDept === 'sales' ? 'ring-2 ring-white/30' : ''}`}
                     >
-                      <div className="font-semibold text-sm">{dept.shortName}</div>
+                      <div className="font-semibold text-sm">Продажи</div>
                       <div className="text-xs text-dark-300 mt-1">{count} чел.</div>
+                      <div className="text-xs text-red-400 mt-1">РОП: вакансия</div>
                     </button>
-                  </div>
-                )
-              })}
+                  )
+                })()}
+              </div>
             </div>
 
             {/* Level 4: Expanded department details */}
