@@ -20,8 +20,8 @@ const verifyTOTP = (token: string, secret: string): boolean => {
 // Default admin credentials
 const DEFAULT_ADMIN = {
   email: 'kamilla@megamind.ru',
-  // Password: Headcorn2026! (hashed with bcrypt)
-  passwordHash: '$2b$12$KUd6HeX4r4hDSeEKEv7yMekd3Wr5P1IpKZKcgrxs1SreOGirdEGCO',
+  // Password: HeadcornCOO2026! (hashed with bcrypt)
+  passwordHash: '$2b$12$iEMsuyMrFVjDp21Lb87yh.kAvA5CsV5Viq0FK0o0YfN.AenR6v0BO',
 }
 
 export const authOptions: NextAuthOptions = {
