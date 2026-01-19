@@ -8,6 +8,7 @@ import MetricCard from '@/components/MetricCard'
 import StatusBadge from '@/components/StatusBadge'
 import { departments, companyStats, getDepartmentEmployeeCount, getDepartmentHead } from '@/lib/data'
 import { useData } from '@/contexts/DataContext'
+import { totals, currentQuarter, formatMoney } from '@/lib/financials'
 
 export default function Dashboard() {
   const { alerts, setAlerts, focus, setFocus, saving, loading } = useData()
@@ -73,10 +74,20 @@ export default function Dashboard() {
       {/* Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <MetricCard
-          title="Выручка MTD"
-          value="—"
-          subtitle="/ план —"
+          title="Выручка (запуски)"
+          value={formatMoney(totals.revenueLaunched)}
+          subtitle="за всё время"
           icon={<TrendingUp size={24} />}
+          trend="up"
+          trendValue="456 млн ₽"
+        />
+        <MetricCard
+          title="Маржинальность"
+          value={`${totals.avgMargin.toFixed(2)}x`}
+          subtitle="цель: 1.7x"
+          icon={<Target size={24} />}
+          trend={totals.avgMargin >= 1.7 ? 'up' : 'down'}
+          trendValue={totals.avgMargin >= 1.7 ? 'в плане' : 'ниже плана'}
         />
         <MetricCard
           title="Время КП"
@@ -85,12 +96,6 @@ export default function Dashboard() {
           icon={<Clock size={24} />}
           trend="down"
           trendValue="нужно ускорить"
-        />
-        <MetricCard
-          title="Сделок в работе"
-          value="—"
-          subtitle="на сумму —"
-          icon={<Target size={24} />}
         />
         <MetricCard
           title="Сотрудников"
@@ -110,15 +115,20 @@ export default function Dashboard() {
         }
       >
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <div className="p-3 bg-dark-700/50 rounded-lg text-center">
-            <div className="text-xl font-bold">—</div>
-            <div className="text-xs text-dark-400">Выручка</div>
-            <div className="text-xs text-dark-500">цель: 1,5 млрд</div>
+          <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-center">
+            <div className="text-xl font-bold text-green-400">{formatMoney(totals.revenueLaunched)}</div>
+            <div className="text-xs text-dark-400">Сумма запусков</div>
+            <div className="text-xs text-green-500">цель: 1,5 млрд</div>
           </div>
-          <div className="p-3 bg-dark-700/50 rounded-lg text-center">
-            <div className="text-xl font-bold">—</div>
-            <div className="text-xs text-dark-400">Маржа</div>
-            <div className="text-xs text-dark-500">цель: 30%</div>
+          <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg text-center">
+            <div className="text-xl font-bold text-blue-400">{formatMoney(totals.revenueCompleted)}</div>
+            <div className="text-xs text-dark-400">Сумма завершений</div>
+            <div className="text-xs text-blue-500">290.7 млн ₽</div>
+          </div>
+          <div className="p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg text-center">
+            <div className="text-xl font-bold text-purple-400">{totals.avgMargin.toFixed(2)}x</div>
+            <div className="text-xs text-dark-400">Маржинальность</div>
+            <div className="text-xs text-purple-500">цель: 1.7x</div>
           </div>
           <div className="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-center">
             <div className="text-xl font-bold text-yellow-400">5 дн</div>
@@ -129,11 +139,6 @@ export default function Dashboard() {
             <div className="text-xl font-bold text-red-400">70%</div>
             <div className="text-xs text-dark-400">Опер. нагрузка</div>
             <div className="text-xs text-red-500">цель: 40-50%</div>
-          </div>
-          <div className="p-3 bg-dark-700/50 rounded-lg text-center">
-            <div className="text-xl font-bold">—</div>
-            <div className="text-xs text-dark-400">Производ.</div>
-            <div className="text-xs text-dark-500">цель: &gt; 1.0x</div>
           </div>
         </div>
       </Card>

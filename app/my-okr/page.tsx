@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Card from '@/components/Card'
 import { Target, TrendingUp, CheckCircle, Clock, AlertTriangle, Plus, Trash2, Edit2, Save, RefreshCw } from 'lucide-react'
+import { totals, formatMoney } from '@/lib/financials'
 
 interface KPI {
   id: string
@@ -29,31 +30,31 @@ interface OKR {
 
 const defaultKPIs: KPI[] = [
   {
-    id: 'revenue',
-    name: 'Выручка',
-    current: '—',
+    id: 'revenue-launched',
+    name: 'Сумма запусков',
+    current: formatMoney(totals.revenueLaunched),
     target: '1,5 млрд ₽',
     unit: '₽',
-    progress: 0,
-    status: 'on_track',
+    progress: Math.round((totals.revenueLaunched / 1500000000) * 100),
+    status: totals.revenueLaunched >= 1000000000 ? 'on_track' : 'at_risk',
+  },
+  {
+    id: 'revenue-completed',
+    name: 'Сумма завершений',
+    current: formatMoney(totals.revenueCompleted),
+    target: '1 млрд ₽',
+    unit: '₽',
+    progress: Math.round((totals.revenueCompleted / 1000000000) * 100),
+    status: totals.revenueCompleted >= 500000000 ? 'on_track' : 'at_risk',
   },
   {
     id: 'margin',
     name: 'Маржинальность',
-    current: '—',
-    target: '30%',
-    unit: '%',
-    progress: 0,
-    status: 'on_track',
-  },
-  {
-    id: 'productivity',
-    name: 'Производительность',
-    current: '—',
-    target: '> 1.0x',
+    current: `${totals.avgMargin.toFixed(2)}x`,
+    target: '1.7x',
     unit: 'x',
-    progress: 0,
-    status: 'on_track',
+    progress: Math.round((totals.avgMargin / 1.7) * 100),
+    status: totals.avgMargin >= 1.7 ? 'on_track' : totals.avgMargin >= 1.5 ? 'at_risk' : 'behind',
   },
   {
     id: 'kp-time',
@@ -72,6 +73,15 @@ const defaultKPIs: KPI[] = [
     unit: '%',
     progress: 30,
     status: 'behind',
+  },
+  {
+    id: 'expenses',
+    name: 'Расходы',
+    current: formatMoney(totals.expenses),
+    target: '< 200 млн ₽',
+    unit: '₽',
+    progress: totals.expenses < 200000000 ? 100 : 50,
+    status: totals.expenses < 200000000 ? 'on_track' : 'at_risk',
   },
 ]
 
