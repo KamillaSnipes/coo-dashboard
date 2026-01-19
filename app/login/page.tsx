@@ -18,32 +18,45 @@ function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!login.trim() || !password) {
+      setError('Введите логин и пароль')
+      return
+    }
+
     setLoading(true)
     setError('')
 
     try {
       const result = await signIn('credentials', {
-        login: login.trim(),
+        login: login.trim().toLowerCase(),
         password: password,
         redirect: false,
-        callbackUrl: callbackUrl,
       })
 
-      if (result?.error) {
+      if (!result) {
+        setError('Ошибка соединения')
         setLoading(false)
-        setError(result.error === 'CredentialsSignin' 
-          ? 'Неверный логин или пароль' 
-          : result.error)
-      } else if (result?.ok) {
-        // Принудительный редирект через window.location
-        window.location.href = callbackUrl
-      } else {
-        setLoading(false)
-        setError('Ошибка авторизации')
+        return
       }
-    } catch (err) {
+
+      if (result.error) {
+        setError('Неверный логин или пароль')
+        setLoading(false)
+        return
+      }
+
+      if (result.ok) {
+        // Успешная авторизация - редирект
+        window.location.replace('/')
+        return
+      }
+
+      setError('Неизвестная ошибка')
       setLoading(false)
-      setError('Произошла ошибка. Попробуйте снова.')
+    } catch (err) {
+      setError('Ошибка сервера. Попробуйте позже.')
+      setLoading(false)
     }
   }
 
