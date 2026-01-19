@@ -26,22 +26,24 @@ function LoginForm() {
         login: login.trim(),
         password: password,
         redirect: false,
+        callbackUrl: callbackUrl,
       })
 
       if (result?.error) {
+        setLoading(false)
         setError(result.error === 'CredentialsSignin' 
           ? 'Неверный логин или пароль' 
           : result.error)
       } else if (result?.ok) {
-        router.push(callbackUrl)
-        router.refresh()
+        // Принудительный редирект через window.location
+        window.location.href = callbackUrl
       } else {
+        setLoading(false)
         setError('Ошибка авторизации')
       }
     } catch (err) {
-      setError('Произошла ошибка. Попробуйте снова.')
-    } finally {
       setLoading(false)
+      setError('Произошла ошибка. Попробуйте снова.')
     }
   }
 
