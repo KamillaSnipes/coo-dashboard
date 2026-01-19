@@ -1,8 +1,21 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
-import { authenticator } from 'otplib'
+import * as OTPAuth from 'otpauth'
 import { prisma } from './prisma'
+
+// TOTP helper functions
+const verifyTOTP = (token: string, secret: string): boolean => {
+  const totp = new OTPAuth.TOTP({
+    issuer: 'COO Dashboard',
+    label: 'Headcorn',
+    algorithm: 'SHA1',
+    digits: 6,
+    period: 30,
+    secret: OTPAuth.Secret.fromBase32(secret),
+  })
+  return totp.validate({ token, window: 1 }) !== null
+}
 
 // Default admin credentials
 const DEFAULT_ADMIN = {
@@ -59,10 +72,7 @@ export const authOptions: NextAuthOptions = {
             throw new Error('2FA_REQUIRED')
           }
           
-          const isValidTotp = authenticator.verify({
-            token: credentials.totpCode,
-            secret: user.totpSecret,
-          })
+          const isValidTotp = verifyTOTP(credentials.totpCode, user.totpSecret)
           
           if (!isValidTotp) {
             throw new Error('Неверный код 2FA')

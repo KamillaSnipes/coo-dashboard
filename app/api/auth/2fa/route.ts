@@ -1,10 +1,42 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authenticator } from 'otplib'
+import * as OTPAuth from 'otpauth'
 import QRCode from 'qrcode'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 import { authOptions } from '@/lib/auth'
+
+// Generate random secret
+const generateSecret = (): string => {
+  const secret = new OTPAuth.Secret({ size: 20 })
+  return secret.base32
+}
+
+// Generate TOTP URI for QR code
+const generateTOTPUri = (email: string, secret: string): string => {
+  const totp = new OTPAuth.TOTP({
+    issuer: 'COO Dashboard (Headcorn)',
+    label: email,
+    algorithm: 'SHA1',
+    digits: 6,
+    period: 30,
+    secret: OTPAuth.Secret.fromBase32(secret),
+  })
+  return totp.toString()
+}
+
+// Verify TOTP code
+const verifyTOTP = (token: string, secret: string): boolean => {
+  const totp = new OTPAuth.TOTP({
+    issuer: 'COO Dashboard',
+    label: 'Headcorn',
+    algorithm: 'SHA1',
+    digits: 6,
+    period: 30,
+    secret: OTPAuth.Secret.fromBase32(secret),
+  })
+  return totp.validate({ token, window: 1 }) !== null
+}
 
 // GET - Get 2FA status and generate secret if needed
 export async function GET() {
@@ -28,12 +60,8 @@ export async function GET() {
     }
 
     // Generate new secret for setup
-    const secret = authenticator.generateSecret()
-    const otpauth = authenticator.keyuri(
-      session.user?.email || 'user',
-      'COO Dashboard (Headcorn)',
-      secret
-    )
+    const secret = generateSecret()
+    const otpauth = generateTOTPUri(session.user?.email || 'user', secret)
 
     // Generate QR code
     const qrCode = await QRCode.toDataURL(otpauth)
@@ -60,7 +88,7 @@ export async function POST(request: Request) {
     const { secret, code } = await request.json()
 
     // Verify the code
-    const isValid = authenticator.verify({ token: code, secret })
+    const isValid = verifyTOTP(code, secret)
     if (!isValid) {
       return NextResponse.json({ error: 'Неверный код. Попробуйте снова.' }, { status: 400 })
     }
