@@ -4,9 +4,9 @@ import bcrypt from 'bcryptjs'
 import { authenticator } from 'otplib'
 import { prisma } from './prisma'
 
-// Default admin credentials - CHANGE THESE IN PRODUCTION!
+// Default admin credentials
 const DEFAULT_ADMIN = {
-  email: 'kamilla@headcorn.ru',
+  email: 'kamilla@megamind.ru',
   // Password: Headcorn2026! (hashed with bcrypt)
   passwordHash: '$2b$12$KUd6HeX4r4hDSeEKEv7yMekd3Wr5P1IpKZKcgrxs1SreOGirdEGCO',
 }
