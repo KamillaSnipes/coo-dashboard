@@ -7,7 +7,6 @@ const ADMIN_PASSWORD = 'admin123'
 const ADMIN_EMAIL = 'snipeskamilla1@gmail.com'
 
 export const authOptions: NextAuthOptions = {
-  debug: true, // Enable debug mode
   providers: [
     CredentialsProvider({
       id: 'credentials',
@@ -17,14 +16,10 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials, req) {
-        console.log('=== AUTH AUTHORIZE CALLED ===')
-        console.log('Credentials received:', JSON.stringify(credentials))
-        
         const login = credentials?.login?.toLowerCase().trim()
         const password = credentials?.password
 
         if (!login || !password) {
-          console.log('Missing login or password')
           return null
         }
 
@@ -32,10 +27,7 @@ export const authOptions: NextAuthOptions = {
         const isValidLogin = login === ADMIN_LOGIN || login === ADMIN_EMAIL.toLowerCase()
         const isValidPassword = password === ADMIN_PASSWORD
 
-        console.log('Check results:', { login, isValidLogin, isValidPassword })
-
         if (isValidLogin && isValidPassword) {
-          console.log('=== AUTH SUCCESS ===')
           return {
             id: '1',
             email: ADMIN_EMAIL,
@@ -44,7 +36,6 @@ export const authOptions: NextAuthOptions = {
           }
         }
 
-        console.log('=== AUTH FAILED ===')
         return null
       },
     }),

@@ -132,11 +132,6 @@ function LoginForm() {
             </button>
           </form>
 
-          {/* Hint */}
-          <div className="mt-4 p-3 bg-dark-700/50 rounded-lg text-xs text-dark-400 text-center">
-            Логин: <span className="text-white font-mono">admin</span> • Пароль: <span className="text-white font-mono">admin123</span>
-          </div>
-
           {/* Security Notice */}
           <div className="mt-6 pt-6 border-t border-dark-700">
             <div className="flex items-center gap-2 text-xs text-dark-500">
