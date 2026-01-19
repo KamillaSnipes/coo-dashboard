@@ -1,43 +1,12 @@
 import { NextResponse } from 'next/server'
-import bcrypt from 'bcryptjs'
-import { prisma } from '@/lib/prisma'
 
-// This endpoint initializes the admin user
-// It will only create the user if it doesn't exist
+// This endpoint just confirms the system is ready
+// Auth uses default credentials from lib/auth.ts
 export async function GET() {
-  try {
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email: 'kamilla@megamind.ru' }
-    })
-
-    if (existingUser) {
-      return NextResponse.json({ 
-        message: 'Пользователь уже существует',
-        email: existingUser.email 
-      })
-    }
-
-    // Create admin user
-    const hashedPassword = await bcrypt.hash('HeadcornCOO2026!', 12)
-    
-    const user = await prisma.user.create({
-      data: {
-        email: 'kamilla@megamind.ru',
-        name: 'Камилла Каюмова',
-        password: hashedPassword,
-        role: 'admin',
-        totpEnabled: false,
-      }
-    })
-
-    return NextResponse.json({ 
-      message: 'Пользователь создан успешно',
-      email: user.email 
-    })
-  } catch (error) {
-    console.error('Error initializing user:', error)
-    return NextResponse.json({ error: 'Ошибка при создании пользователя' }, { status: 500 })
-  }
+  return NextResponse.json({ 
+    message: 'Система готова к работе',
+    login: 'admin',
+    hint: 'Используйте логин: admin, пароль: admin123'
+  })
 }
 

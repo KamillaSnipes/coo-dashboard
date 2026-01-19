@@ -10,7 +10,7 @@ function LoginForm() {
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/'
   
-  const [email, setEmail] = useState('')
+  const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
   const [totpCode, setTotpCode] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -25,7 +25,7 @@ function LoginForm() {
 
     try {
       const result = await signIn('credentials', {
-        email,
+        login,
         password,
         totpCode: show2FA ? totpCode : undefined,
         redirect: false,
@@ -76,21 +76,21 @@ function LoginForm() {
 
             {!show2FA ? (
               <>
-                {/* Email */}
+                {/* Login */}
                 <div>
                   <label className="block text-sm font-medium text-dark-300 mb-2">
-                    Email
+                    Логин
                   </label>
                   <div className="relative">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-dark-400" size={20} />
                     <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      type="text"
+                      value={login}
+                      onChange={(e) => setLogin(e.target.value)}
                       className="w-full bg-dark-700/50 border border-dark-600 rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
-                      placeholder="kamilla@megamind.ru"
+                      placeholder="admin"
                       required
-                      autoComplete="email"
+                      autoComplete="username"
                     />
                   </div>
                 </div>

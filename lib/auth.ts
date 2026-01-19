@@ -19,9 +19,10 @@ const verifyTOTP = (token: string, secret: string): boolean => {
 
 // Default admin credentials
 const DEFAULT_ADMIN = {
-  email: 'kamilla@megamind.ru',
-  // Password: HeadcornCOO2026! (hashed with bcrypt)
-  passwordHash: '$2b$12$iEMsuyMrFVjDp21Lb87yh.kAvA5CsV5Viq0FK0o0YfN.AenR6v0BO',
+  login: 'admin',
+  email: 'snipeskamilla1@gmail.com',
+  // Password: admin123 (hashed with bcrypt)
+  passwordHash: '$2b$10$s9ZtD4lb9KnEZY4viAQVD.ETIm94eLQDTEJIs3tYxiIpoIxO1ExXa',
 }
 
 export const authOptions: NextAuthOptions = {
@@ -29,13 +30,13 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        email: { label: 'Email', type: 'email' },
+        login: { label: 'Login', type: 'text' },
         password: { label: 'Password', type: 'password' },
         totpCode: { label: '2FA Code', type: 'text' },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error('Введите email и пароль')
+        if (!credentials?.login || !credentials?.password) {
+          throw new Error('Введите логин и пароль')
         }
 
         // Get user settings
@@ -48,6 +49,7 @@ export const authOptions: NextAuthOptions = {
         // If no user in DB, use default
         if (!user) {
           user = {
+            login: DEFAULT_ADMIN.login,
             email: DEFAULT_ADMIN.email,
             passwordHash: DEFAULT_ADMIN.passwordHash,
             totpEnabled: false,
@@ -55,15 +57,19 @@ export const authOptions: NextAuthOptions = {
           }
         }
 
-        // Check email
-        if (credentials.email !== user.email) {
-          throw new Error('Неверный email или пароль')
+        // Check login (can be login or email)
+        const inputLogin = credentials.login.toLowerCase()
+        const isValidLogin = inputLogin === (user.login || DEFAULT_ADMIN.login).toLowerCase() || 
+                            inputLogin === (user.email || DEFAULT_ADMIN.email).toLowerCase()
+        
+        if (!isValidLogin) {
+          throw new Error('Неверный логин или пароль')
         }
 
         // Check password
-        const isValidPassword = await bcrypt.compare(credentials.password, user.passwordHash)
+        const isValidPassword = await bcrypt.compare(credentials.password, user.passwordHash || DEFAULT_ADMIN.passwordHash)
         if (!isValidPassword) {
-          throw new Error('Неверный email или пароль')
+          throw new Error('Неверный логин или пароль')
         }
 
         // Check 2FA if enabled
