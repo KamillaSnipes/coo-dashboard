@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { signOut, useSession } from 'next-auth/react'
 import { 
   LayoutDashboard, 
   Building2, 
@@ -9,13 +10,12 @@ import {
   Rocket, 
   Calendar, 
   AlertTriangle,
-  Settings,
+  Shield,
   Network,
   BarChart3,
-  UserCog,
   Target,
-  FileText,
-  Briefcase
+  Briefcase,
+  LogOut
 } from 'lucide-react'
 
 const navigation = [
@@ -33,6 +33,7 @@ const navigation = [
 
 export default function Sidebar() {
   const pathname = usePathname()
+  const { data: session } = useSession()
 
   return (
     <aside className="fixed left-0 top-0 h-full w-64 bg-dark-900 border-r border-dark-700 flex flex-col">
@@ -43,7 +44,7 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1">
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
         {navigation.map((item) => {
           const isActive = pathname === item.href
           const Icon = item.icon
@@ -65,12 +66,35 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Footer */}
-      <div className="p-4 border-t border-dark-700">
-        <div className="flex items-center gap-3 px-4 py-3 text-dark-400 hover:text-white transition-colors cursor-pointer rounded-lg hover:bg-dark-800">
-          <Settings size={20} />
-          <span className="font-medium">Настройки</span>
-        </div>
+      {/* Footer - Security & User */}
+      <div className="p-4 border-t border-dark-700 space-y-2">
+        <Link 
+          href="/settings/security"
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+            pathname === '/settings/security'
+              ? 'bg-primary-600 text-white'
+              : 'text-dark-400 hover:text-white hover:bg-dark-800'
+          }`}
+        >
+          <Shield size={20} />
+          <span className="font-medium">Безопасность</span>
+        </Link>
+        
+        {session?.user && (
+          <div className="flex items-center gap-3 px-4 py-2">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">{session.user.name}</p>
+              <p className="text-xs text-dark-500 truncate">{session.user.email}</p>
+            </div>
+            <button
+              onClick={() => signOut({ callbackUrl: '/login' })}
+              className="p-2 text-dark-400 hover:text-red-400 hover:bg-dark-800 rounded-lg transition-colors"
+              title="Выйти"
+            >
+              <LogOut size={18} />
+            </button>
+          </div>
+        )}
       </div>
     </aside>
   )
