@@ -12,9 +12,7 @@ function LoginForm() {
   
   const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
-  const [totpCode, setTotpCode] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [show2FA, setShow2FA] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -25,22 +23,20 @@ function LoginForm() {
 
     try {
       const result = await signIn('credentials', {
-        login,
-        password,
-        totpCode: show2FA ? totpCode : undefined,
+        login: login.trim(),
+        password: password,
         redirect: false,
       })
 
       if (result?.error) {
-        if (result.error === '2FA_REQUIRED') {
-          setShow2FA(true)
-          setError('')
-        } else {
-          setError(result.error)
-        }
+        setError(result.error === 'CredentialsSignin' 
+          ? 'Неверный логин или пароль' 
+          : result.error)
       } else if (result?.ok) {
         router.push(callbackUrl)
         router.refresh()
+      } else {
+        setError('Ошибка авторизации')
       }
     } catch (err) {
       setError('Произошла ошибка. Попробуйте снова.')
@@ -74,93 +70,55 @@ function LoginForm() {
               </div>
             )}
 
-            {!show2FA ? (
-              <>
-                {/* Login */}
-                <div>
-                  <label className="block text-sm font-medium text-dark-300 mb-2">
-                    Логин
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-dark-400" size={20} />
-                    <input
-                      type="text"
-                      value={login}
-                      onChange={(e) => setLogin(e.target.value)}
-                      className="w-full bg-dark-700/50 border border-dark-600 rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
-                      placeholder="admin"
-                      required
-                      autoComplete="username"
-                    />
-                  </div>
-                </div>
+            {/* Login */}
+            <div>
+              <label className="block text-sm font-medium text-dark-300 mb-2">
+                Логин
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-dark-400" size={20} />
+                <input
+                  type="text"
+                  value={login}
+                  onChange={(e) => setLogin(e.target.value)}
+                  className="w-full bg-dark-700/50 border border-dark-600 rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                  placeholder="admin"
+                  required
+                  autoComplete="username"
+                />
+              </div>
+            </div>
 
-                {/* Password */}
-                <div>
-                  <label className="block text-sm font-medium text-dark-300 mb-2">
-                    Пароль
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-dark-400" size={20} />
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full bg-dark-700/50 border border-dark-600 rounded-xl pl-12 pr-12 py-3 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
-                      placeholder="••••••••••"
-                      required
-                      autoComplete="current-password"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-dark-400 hover:text-white transition-colors"
-                    >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                  </div>
-                </div>
-              </>
-            ) : (
-              /* 2FA Code */
-              <div>
-                <div className="text-center mb-4">
-                  <div className="w-16 h-16 mx-auto bg-primary-500/20 rounded-full flex items-center justify-center mb-3">
-                    <Shield size={32} className="text-primary-400" />
-                  </div>
-                  <h2 className="text-xl font-bold">Двухфакторная аутентификация</h2>
-                  <p className="text-dark-400 text-sm mt-1">
-                    Введите код из Google Authenticator
-                  </p>
-                </div>
-                
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={totpCode}
-                    onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    className="w-full bg-dark-700/50 border border-dark-600 rounded-xl px-4 py-4 text-center text-2xl tracking-[0.5em] font-mono focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
-                    placeholder="000000"
-                    maxLength={6}
-                    autoFocus
-                    autoComplete="one-time-code"
-                  />
-                </div>
-
+            {/* Password */}
+            <div>
+              <label className="block text-sm font-medium text-dark-300 mb-2">
+                Пароль
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-dark-400" size={20} />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-dark-700/50 border border-dark-600 rounded-xl pl-12 pr-12 py-3 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                  placeholder="admin123"
+                  required
+                  autoComplete="current-password"
+                />
                 <button
                   type="button"
-                  onClick={() => { setShow2FA(false); setTotpCode(''); }}
-                  className="w-full text-center text-sm text-dark-400 hover:text-white mt-4 transition-colors"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-dark-400 hover:text-white transition-colors"
                 >
-                  ← Вернуться к входу
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
-            )}
+            </div>
 
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={loading || (show2FA && totpCode.length !== 6)}
+              disabled={loading}
               className="w-full py-3 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl font-semibold transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary-500/20"
             >
               {loading ? (
@@ -168,19 +126,22 @@ function LoginForm() {
                   <Loader2 size={20} className="animate-spin" />
                   Проверка...
                 </>
-              ) : show2FA ? (
-                'Подтвердить'
               ) : (
                 'Войти'
               )}
             </button>
           </form>
 
+          {/* Hint */}
+          <div className="mt-4 p-3 bg-dark-700/50 rounded-lg text-xs text-dark-400 text-center">
+            Логин: <span className="text-white font-mono">admin</span> • Пароль: <span className="text-white font-mono">admin123</span>
+          </div>
+
           {/* Security Notice */}
           <div className="mt-6 pt-6 border-t border-dark-700">
             <div className="flex items-center gap-2 text-xs text-dark-500">
               <Lock size={14} />
-              <span>Защищённое соединение • Только для авторизованных пользователей</span>
+              <span>Защищённое соединение</span>
             </div>
           </div>
         </div>

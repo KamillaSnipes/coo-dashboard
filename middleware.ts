@@ -24,19 +24,20 @@ export default withAuth(
   }
 )
 
-// Protect all routes except login, api/auth, api/init, and static files
+// Protect all routes except login, api/auth, api/init, api/test-auth, and static files
 export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
      * - api/auth (auth API routes)
      * - api/init (init API route)
+     * - api/test-auth (test auth route)
      * - login (login page)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    '/((?!api/auth|api/init|login|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api/auth|api/init|api/test-auth|login|_next/static|_next/image|favicon.ico).*)',
   ],
 }
 
