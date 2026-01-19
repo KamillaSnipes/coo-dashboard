@@ -82,7 +82,7 @@ function LoginForm() {
                   value={login}
                   onChange={(e) => setLogin(e.target.value)}
                   className="w-full bg-dark-700/50 border border-dark-600 rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
-                  placeholder="admin"
+                  placeholder="Введите логин"
                   required
                   autoComplete="username"
                 />
@@ -101,7 +101,7 @@ function LoginForm() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-dark-700/50 border border-dark-600 rounded-xl pl-12 pr-12 py-3 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
-                  placeholder="admin123"
+                  placeholder="Введите пароль"
                   required
                   autoComplete="current-password"
                 />
