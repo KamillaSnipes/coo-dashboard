@@ -30,18 +30,18 @@ interface Group {
   problems: string[]
 }
 
-// Real data synced with leadership reports
+// Реальная структура команды (по слайду 3)
 const initialGroups: Group[] = [
   {
     id: 'artem',
     name: 'Группа Артёма',
-    lead: 'Артём Василевский',
+    lead: 'Артём',
     leadFullName: 'Артём',
     membersCount: 3,
     members: [
-      { id: '1', name: 'Арина', role: 'E2E менеджер' },
-      { id: '2', name: 'Света Л', role: 'E2E менеджер' },
-      { id: '3', name: 'Юля', role: 'E2E менеджер (новая)' },
+      { id: '1', name: 'Светлана', role: 'Менеджер по проектам' },
+      { id: '2', name: 'Киселёва', role: 'Менеджер по закупкам' },
+      { id: '3', name: 'Алёна', role: 'Менеджер по закупкам' },
     ],
     focus: 'Адаптация нового сотрудника, мерч проработка',
     status: 'green',
@@ -69,14 +69,16 @@ const initialGroups: Group[] = [
   {
     id: 'evgeny',
     name: 'Группа Евгения',
-    lead: 'Евгений Косицын',
+    lead: 'Евгений',
     leadFullName: 'Женя',
-    membersCount: 4,
+    membersCount: 6,
     members: [
-      { id: '1', name: 'Саша', role: 'E2E менеджер' },
-      { id: '2', name: 'Настя', role: 'E2E менеджер' },
-      { id: '3', name: 'Марина', role: 'E2E менеджер' },
-      { id: '4', name: 'Анастасия', role: 'E2E менеджер' },
+      { id: '1', name: 'Фёдор', role: 'Менеджер по закупкам' },
+      { id: '2', name: 'Екатерина', role: 'Менеджер по закупкам' },
+      { id: '3', name: 'Виктория', role: 'Менеджер по закупкам' },
+      { id: '4', name: 'Мария', role: 'Менеджер по проектам' },
+      { id: '5', name: 'Марина', role: 'Менеджер по закупкам' },
+      { id: '6', name: 'Анастасия', role: 'Менеджер по закупкам' },
     ],
     focus: 'Контроль статусов, распределение отпусков',
     status: 'green',
@@ -99,12 +101,12 @@ const initialGroups: Group[] = [
   {
     id: 'alexandra',
     name: 'Группа Александры',
-    lead: 'Александра Комардина',
+    lead: 'Александра',
     leadFullName: 'Саша',
     membersCount: 2,
     members: [
-      { id: '1', name: 'Сотрудник 1', role: 'E2E менеджер' },
-      { id: '2', name: 'Сотрудник 2', role: 'E2E менеджер' },
+      { id: '1', name: 'Дарья', role: 'Менеджер по закупкам' },
+      { id: '2', name: 'Анастасия', role: 'Менеджер по проектам' },
     ],
     focus: '',
     status: 'green',
@@ -117,14 +119,13 @@ const initialGroups: Group[] = [
   {
     id: 'nastya',
     name: 'Группа Насти А.',
-    lead: 'Анастасия Андрианова',
+    lead: 'Анастасия',
     leadFullName: 'Настя А',
-    membersCount: 4,
+    membersCount: 3,
     members: [
-      { id: '1', name: 'Сотрудник 1', role: 'E2E менеджер' },
-      { id: '2', name: 'Сотрудник 2', role: 'E2E менеджер' },
-      { id: '3', name: 'Сотрудник 3', role: 'E2E менеджер' },
-      { id: '4', name: 'Арина (выход)', role: 'E2E менеджер' },
+      { id: '1', name: 'Светлана', role: 'Менеджер по проектам' },
+      { id: '2', name: 'Елена', role: 'Менеджер по закупкам' },
+      { id: '3', name: 'Чаплыгина', role: 'Менеджер по закупкам' },
     ],
     focus: 'Ревизия задач, работа с браком, выходная встреча',
     status: 'yellow',
@@ -156,9 +157,9 @@ const initialGroups: Group[] = [
   {
     id: 'yulia',
     name: 'Группа Юлии',
-    lead: 'Юлия Лелик',
+    lead: 'Юлия',
     leadFullName: 'Юля',
-    membersCount: 2,
+    membersCount: 0,
     members: [],
     focus: '',
     status: 'green',
@@ -171,9 +172,9 @@ const initialGroups: Group[] = [
   {
     id: 'sergey',
     name: 'Группа Сергея',
-    lead: 'Сергей Кумашев',
+    lead: 'Сергей',
     leadFullName: 'Сергей',
-    membersCount: 1,
+    membersCount: 0,
     members: [],
     focus: 'Новая группа — интеграция',
     status: 'yellow',
