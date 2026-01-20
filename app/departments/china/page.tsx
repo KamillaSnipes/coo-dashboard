@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Users, TrendingUp, Clock, Target, ChevronRight, Plus, Trash2, RefreshCw, UserCheck, GitBranch, Calendar, GraduationCap, ArrowRight, AlertTriangle, CheckCircle, FileText } from 'lucide-react'
+import { Users, TrendingUp, Clock, Target, ChevronRight, RefreshCw, UserCheck, GitBranch, Calendar, GraduationCap, AlertTriangle, CheckCircle, FileText } from 'lucide-react'
 import Card from '@/components/Card'
 import MetricCard from '@/components/MetricCard'
 import StatusBadge from '@/components/StatusBadge'
@@ -187,36 +187,23 @@ const initialGroups: Group[] = [
 
 export default function ChinaDepartment() {
   const [groups, setGroups] = useState<Group[]>(initialGroups)
-  const [settings, setSettings] = useState<any>({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [activeTab, setActiveTab] = useState<'overview' | 'structure' | 'changes'>('overview')
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null)
-  const [leadershipReports, setLeadershipReports] = useState<any[]>([])
+  const [chinaFocus, setChinaFocus] = useState('Сократить время просчёта с 5 до 3 дней')
+  const [chinaNotes, setChinaNotes] = useState('')
 
-  // Load settings and leadership reports
+  // Load saved data
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Load settings
-        const settingsResponse = await fetch('/api/settings')
-        if (settingsResponse.ok) {
-          const data = await settingsResponse.json()
-          if (data.chinaGroups) {
-            setGroups(data.chinaGroups)
-          }
-          setSettings(data)
-        }
-        
-        // Load leadership reports to sync data
-        const reportsResponse = await fetch('/api/leadership-reports')
-        if (reportsResponse.ok) {
-          const data = await reportsResponse.json()
-          if (data.reports) {
-            setLeadershipReports(data.reports)
-            // Sync with groups
-            syncWithLeadershipReports(data.reports)
-          }
+        const response = await fetch('/api/page-data?page=china-department')
+        if (response.ok) {
+          const data = await response.json()
+          if (data.groups) setGroups(data.groups)
+          if (data.chinaFocus) setChinaFocus(data.chinaFocus)
+          if (data.chinaNotes) setChinaNotes(data.chinaNotes)
         }
       } catch (error) {
         console.error('Error loading data:', error)
@@ -227,57 +214,45 @@ export default function ChinaDepartment() {
     loadData()
   }, [])
 
-  // Sync leadership reports with groups
-  const syncWithLeadershipReports = (reports: any[]) => {
-    const currentWeek = getMonday(new Date())
-    const thisWeekReports = reports.filter(r => r.weekStart === currentWeek)
-    
-    setGroups(prevGroups => {
-      return prevGroups.map(group => {
-        const report = thisWeekReports.find(r => 
-          r.salesPerson?.toLowerCase().includes(group.leadFullName.toLowerCase()) ||
-          group.leadFullName.toLowerCase().includes(r.salesPerson?.toLowerCase() || '')
-        )
-        if (report) {
-          return {
-            ...group,
-            weeklyPlan: report.plan || group.weeklyPlan,
-            weeklyFact: report.fact || group.weeklyFact,
-            problems: report.problems || group.problems,
-          }
-        }
-        return group
-      })
-    })
-  }
-
-  // Save settings
-  const saveSettings = useCallback(async (newGroups: Group[]) => {
+  // Save data
+  const saveData = async (newGroups?: Group[], newFocus?: string, newNotes?: string) => {
     setSaving(true)
     try {
-      await fetch('/api/settings', {
+      await fetch('/api/page-data?page=china-department', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...settings, chinaGroups: newGroups })
+        body: JSON.stringify({
+          groups: newGroups || groups,
+          chinaFocus: newFocus !== undefined ? newFocus : chinaFocus,
+          chinaNotes: newNotes !== undefined ? newNotes : chinaNotes,
+        })
       })
     } catch (error) {
       console.error('Error saving:', error)
     } finally {
       setSaving(false)
     }
-  }, [settings])
+  }
 
   const updateGroup = (index: number, field: keyof Group, value: any) => {
     const newGroups = [...groups]
     newGroups[index] = { ...newGroups[index], [field]: value }
     setGroups(newGroups)
-    saveSettings(newGroups)
+    saveData(newGroups)
   }
 
   const totalEmployees = groups.reduce((sum, g) => sum + g.membersCount, 0) + groups.length
   const avgKpiTime = Math.round(groups.reduce((sum, g) => sum + g.avgKpiTime, 0) / groups.length)
   const totalProjects = groups.reduce((sum, g) => sum + g.projects, 0)
   const totalProblems = groups.reduce((sum, g) => sum + (g.problems?.length || 0), 0)
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <RefreshCw className="animate-spin text-primary-500" size={32} />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-8">
@@ -348,11 +323,10 @@ export default function ChinaDepartment() {
           <Card title="🎯 Текущий фокус">
             <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
               <EditableText
-                value={settings.chinaFocus || 'Сократить время просчёта с 5 до 3 дней'}
+                value={chinaFocus}
                 onSave={(value) => {
-                  const newSettings = { ...settings, chinaFocus: value }
-                  setSettings(newSettings)
-                  saveSettings(groups)
+                  setChinaFocus(value)
+                  saveData(undefined, value)
                 }}
                 className="font-medium"
               />
@@ -362,7 +336,7 @@ export default function ChinaDepartment() {
           {/* Teams Grid - Clickable */}
           <Card title={`👥 Команды (${groups.length} групп)`}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {groups.map((group, i) => (
+              {groups.map((group) => (
                 <div 
                   key={group.id}
                   onClick={() => setSelectedGroup(group)}
@@ -429,11 +403,10 @@ export default function ChinaDepartment() {
           {/* Notes */}
           <Card title="📝 Заметки">
             <EditableText
-              value={settings.chinaNotes || ''}
+              value={chinaNotes}
               onSave={(value) => {
-                const newSettings = { ...settings, chinaNotes: value }
-                setSettings(newSettings)
-                saveSettings(groups)
+                setChinaNotes(value)
+                saveData(undefined, undefined, value)
               }}
               placeholder="Добавить заметки после 1:1 или наблюдений..."
               multiline
@@ -446,7 +419,7 @@ export default function ChinaDepartment() {
             href="/departments/china/competencies"
             className="block w-full p-4 bg-primary-600/20 hover:bg-primary-600/30 border border-primary-600/30 rounded-xl text-center text-primary-300 transition-colors"
           >
-            Открыть подробную страницу Отдела Китая →
+            Открыть матрицу компетенций Отдела Китая →
           </Link>
         </>
       )}
@@ -724,12 +697,4 @@ export default function ChinaDepartment() {
       )}
     </div>
   )
-}
-
-function getMonday(date: Date): string {
-  const d = new Date(date)
-  const day = d.getDay()
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1)
-  d.setDate(diff)
-  return d.toISOString().split('T')[0]
 }
