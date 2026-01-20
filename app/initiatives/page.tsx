@@ -1,15 +1,147 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Card from '@/components/Card'
 import StatusBadge from '@/components/StatusBadge'
-import EditableText from '@/components/EditableText'
-import { ChevronDown, ChevronUp, Target, AlertTriangle, CheckCircle, Clock } from 'lucide-react'
-import { strategicInitiatives, quarterFocus } from '@/lib/data'
+import { ChevronDown, ChevronUp, Target, AlertTriangle, CheckCircle, Clock, Plus, Trash2, Edit2, X, RefreshCw, Save } from 'lucide-react'
+
+interface Stage {
+  id: string
+  name: string
+  status: 'done' | 'in_progress' | 'pending'
+}
+
+interface Initiative {
+  id: string
+  name: string
+  goal: string
+  owner: string
+  status: 'green' | 'yellow' | 'red'
+  stages: Stage[]
+  blockers: string[]
+  notes: string
+}
+
+interface InitiativesData {
+  quarter: string
+  priorities: string[]
+  initiatives: Initiative[]
+}
+
+const defaultData: InitiativesData = {
+  quarter: 'Q1 2026',
+  priorities: [
+    'Сократить время КП до 3 дней',
+    'Найти и онбордить HRBP',
+    'Запустить систему оценки компетенций',
+    'Снизить операционную нагрузку до 50%'
+  ],
+  initiatives: [
+    {
+      id: 'ops',
+      name: 'Оптимизация операций',
+      goal: 'Сократить время КП с 5 до 3 дней, автоматизировать рутину',
+      owner: 'Камилла Каюмова',
+      status: 'yellow',
+      stages: [
+        { id: '1', name: 'Аудит текущих процессов КП', status: 'done' },
+        { id: '2', name: 'Карта bottlenecks в воронке', status: 'done' },
+        { id: '3', name: 'Автоматизация шаблонов КП', status: 'in_progress' },
+        { id: '4', name: 'Интеграция с CRM', status: 'pending' },
+      ],
+      blockers: ['Зависимость от IT для интеграций'],
+      notes: ''
+    },
+    {
+      id: 'hr',
+      name: 'HR-система',
+      goal: 'Создать HR-систему с нуля, найти HRBP',
+      owner: 'Петр + Камилла',
+      status: 'red',
+      stages: [
+        { id: '1', name: 'Найти HRBP', status: 'in_progress' },
+        { id: '2', name: 'Описать HR-процессы', status: 'pending' },
+        { id: '3', name: 'Внедрить систему грейдов', status: 'pending' },
+      ],
+      blockers: ['Нет HRBP', 'Нет времени на HR-задачи'],
+      notes: ''
+    },
+    {
+      id: 'competencies',
+      name: 'Система компетенций',
+      goal: 'Разработать и внедрить оценку компетенций МОК',
+      owner: 'Камилла + Артем + Женя',
+      status: 'yellow',
+      stages: [
+        { id: '1', name: 'Разработка таблицы компетенций', status: 'in_progress' },
+        { id: '2', name: 'Синхронизация с руководителями', status: 'in_progress' },
+        { id: '3', name: 'Пилотная оценка', status: 'pending' },
+        { id: '4', name: 'Масштабирование', status: 'pending' },
+      ],
+      blockers: [],
+      notes: ''
+    },
+    {
+      id: 'sales-culture',
+      name: 'Культура проактивных продаж',
+      goal: 'Переход от реактивных к проактивным продажам',
+      owner: 'Виктория Бакирова',
+      status: 'yellow',
+      stages: [
+        { id: '1', name: 'Анализ текущей культуры', status: 'done' },
+        { id: '2', name: 'Обучение команды', status: 'in_progress' },
+        { id: '3', name: 'Внедрение новых KPI', status: 'pending' },
+      ],
+      blockers: ['70% операционной нагрузки'],
+      notes: ''
+    }
+  ]
+}
 
 export default function InitiativesPage() {
-  const [expandedInit, setExpandedInit] = useState<string | null>('operations')
-  const [notes, setNotes] = useState<Record<string, string>>({})
+  const [data, setData] = useState<InitiativesData>(defaultData)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [editMode, setEditMode] = useState(false)
+  const [expandedInit, setExpandedInit] = useState<string | null>('ops')
+  const [editingInit, setEditingInit] = useState<string | null>(null)
+  const [newPriority, setNewPriority] = useState('')
+
+  // Load data
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const response = await fetch('/api/page-data?page=initiatives')
+        if (response.ok) {
+          const saved = await response.json()
+          if (saved && Object.keys(saved).length > 0) {
+            setData({ ...defaultData, ...saved })
+          }
+        }
+      } catch (error) {
+        console.error('Error loading:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadData()
+  }, [])
+
+  // Save data
+  const saveData = async (newData: InitiativesData) => {
+    setSaving(true)
+    setData(newData)
+    try {
+      await fetch('/api/page-data?page=initiatives', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newData)
+      })
+    } catch (error) {
+      console.error('Error saving:', error)
+    }
+    setSaving(false)
+  }
 
   const toggleInit = (id: string) => {
     setExpandedInit(expandedInit === id ? null : id)
@@ -23,29 +155,127 @@ export default function InitiativesPage() {
     }
   }
 
+  // Priority functions
+  const addPriority = () => {
+    if (!newPriority.trim()) return
+    saveData({ ...data, priorities: [...data.priorities, newPriority] })
+    setNewPriority('')
+  }
+
+  const removePriority = (index: number) => {
+    saveData({ ...data, priorities: data.priorities.filter((_, i) => i !== index) })
+  }
+
+  // Initiative functions
+  const updateInitiative = (id: string, updates: Partial<Initiative>) => {
+    saveData({ 
+      ...data, 
+      initiatives: data.initiatives.map(i => i.id === id ? { ...i, ...updates } : i) 
+    })
+  }
+
+  const updateStage = (initId: string, stageId: string, status: Stage['status']) => {
+    const init = data.initiatives.find(i => i.id === initId)
+    if (!init) return
+    const newStages = init.stages.map(s => s.id === stageId ? { ...s, status } : s)
+    updateInitiative(initId, { stages: newStages })
+  }
+
+  const addBlocker = (initId: string, blocker: string) => {
+    const init = data.initiatives.find(i => i.id === initId)
+    if (!init || !blocker.trim()) return
+    updateInitiative(initId, { blockers: [...init.blockers, blocker] })
+  }
+
+  const removeBlocker = (initId: string, index: number) => {
+    const init = data.initiatives.find(i => i.id === initId)
+    if (!init) return
+    updateInitiative(initId, { blockers: init.blockers.filter((_, i) => i !== index) })
+  }
+
+  const addStage = (initId: string, name: string) => {
+    const init = data.initiatives.find(i => i.id === initId)
+    if (!init || !name.trim()) return
+    const newStage: Stage = { id: Date.now().toString(), name, status: 'pending' }
+    updateInitiative(initId, { stages: [...init.stages, newStage] })
+  }
+
+  const removeStage = (initId: string, stageId: string) => {
+    const init = data.initiatives.find(i => i.id === initId)
+    if (!init) return
+    updateInitiative(initId, { stages: init.stages.filter(s => s.id !== stageId) })
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <RefreshCw className="animate-spin text-primary-500" size={32} />
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">Стратегические инициативы</h1>
-        <p className="text-dark-400 mt-2">Ключевые проекты и их прогресс</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Стратегические инициативы</h1>
+          <p className="text-dark-400 mt-2">Ключевые проекты и их прогресс</p>
+        </div>
+        <div className="flex items-center gap-2">
+          {saving && (
+            <div className="flex items-center gap-2 text-primary-400 text-sm">
+              <RefreshCw size={14} className="animate-spin" />
+              Сохранение...
+            </div>
+          )}
+          <button
+            onClick={() => setEditMode(!editMode)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              editMode ? 'bg-primary-600 text-white' : 'bg-dark-700 hover:bg-dark-600'
+            }`}
+          >
+            {editMode ? <X size={18} /> : <Edit2 size={18} />}
+            {editMode ? 'Готово' : 'Редактировать'}
+          </button>
+        </div>
       </div>
 
       {/* Quarter Focus */}
-      <Card title={`🎯 Фокус ${quarterFocus.quarter}`}>
+      <Card title={`🎯 Фокус ${data.quarter}`}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {quarterFocus.priorities.map((priority, i) => (
+          {data.priorities.map((priority, i) => (
             <div key={i} className="flex items-center gap-3 p-3 bg-primary-500/10 rounded-lg">
               <Target size={20} className="text-primary-400 flex-shrink-0" />
-              <span>{priority}</span>
+              <span className="flex-1">{priority}</span>
+              {editMode && (
+                <button onClick={() => removePriority(i)} className="p-1 text-dark-400 hover:text-red-400">
+                  <Trash2 size={14} />
+                </button>
+              )}
             </div>
           ))}
         </div>
+        {editMode && (
+          <div className="flex gap-2 mt-4">
+            <input
+              type="text"
+              value={newPriority}
+              onChange={(e) => setNewPriority(e.target.value)}
+              placeholder="Добавить приоритет..."
+              className="flex-1 bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-sm"
+              onKeyDown={(e) => e.key === 'Enter' && addPriority()}
+            />
+            <button onClick={addPriority} className="px-3 py-2 bg-primary-600 hover:bg-primary-500 rounded-lg">
+              <Plus size={18} />
+            </button>
+          </div>
+        )}
       </Card>
 
       {/* Initiatives */}
       <div className="space-y-4">
-        {strategicInitiatives.map((init) => (
+        {data.initiatives.map((init) => (
           <Card key={init.id} className="overflow-hidden">
             {/* Header */}
             <div 
@@ -59,6 +289,21 @@ export default function InitiativesPage() {
                 </div>
               </div>
               <div className="flex items-center gap-4">
+                {editMode && (
+                  <select
+                    value={init.status}
+                    onChange={(e) => {
+                      e.stopPropagation()
+                      updateInitiative(init.id, { status: e.target.value as any })
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="bg-dark-700 border border-dark-600 rounded px-2 py-1 text-sm"
+                  >
+                    <option value="green">Зелёный</option>
+                    <option value="yellow">Жёлтый</option>
+                    <option value="red">Красный</option>
+                  </select>
+                )}
                 <StatusBadge status={init.status} />
                 {expandedInit === init.id ? (
                   <ChevronUp size={20} className="text-dark-400" />
@@ -74,76 +319,117 @@ export default function InitiativesPage() {
                 {/* Owner */}
                 <div>
                   <h4 className="font-medium text-dark-300 mb-2">👤 Ответственный</h4>
-                  <p className="text-dark-200">{init.owner}</p>
+                  {editMode ? (
+                    <input
+                      type="text"
+                      value={init.owner}
+                      onChange={(e) => updateInitiative(init.id, { owner: e.target.value })}
+                      className="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2"
+                    />
+                  ) : (
+                    <p className="text-dark-200">{init.owner}</p>
+                  )}
                 </div>
 
                 {/* Stages */}
-                {init.stages && init.stages.length > 0 && (
-                  <div>
-                    <h4 className="font-medium text-dark-300 mb-3">📋 Этапы</h4>
-                    <div className="space-y-2">
-                      {init.stages.map((stage, i) => (
-                        <div key={i} className="flex items-center gap-3 p-3 bg-dark-700/50 rounded-lg">
+                <div>
+                  <h4 className="font-medium text-dark-300 mb-3">📋 Этапы</h4>
+                  <div className="space-y-2">
+                    {init.stages.map((stage) => (
+                      <div key={stage.id} className="flex items-center gap-3 p-3 bg-dark-700/50 rounded-lg">
+                        <button 
+                          onClick={() => updateStage(init.id, stage.id, 
+                            stage.status === 'done' ? 'pending' : 
+                            stage.status === 'pending' ? 'in_progress' : 'done'
+                          )}
+                        >
                           {getStatusIcon(stage.status)}
-                          <span className={stage.status === 'done' ? 'line-through text-dark-500' : ''}>
-                            {stage.name}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
+                        </button>
+                        <span className={`flex-1 ${stage.status === 'done' ? 'line-through text-dark-500' : ''}`}>
+                          {stage.name}
+                        </span>
+                        {editMode && (
+                          <button 
+                            onClick={() => removeStage(init.id, stage.id)}
+                            className="p-1 text-dark-400 hover:text-red-400"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                )}
+                  {editMode && (
+                    <div className="mt-2">
+                      <input
+                        type="text"
+                        placeholder="Добавить этап..."
+                        className="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-sm"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && e.currentTarget.value) {
+                            addStage(init.id, e.currentTarget.value)
+                            e.currentTarget.value = ''
+                          }
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
 
                 {/* Blockers */}
-                {init.blockers && init.blockers.length > 0 && (
-                  <div>
-                    <h4 className="font-medium text-dark-300 mb-3">🚫 Блокеры</h4>
-                    <div className="space-y-2">
+                <div>
+                  <h4 className="font-medium text-dark-300 mb-3">🚫 Блокеры</h4>
+                  {init.blockers.length > 0 ? (
+                    <ul className="space-y-2">
                       {init.blockers.map((blocker, i) => (
-                        <div key={i} className="flex items-center gap-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-300">
-                          <AlertTriangle size={16} className="flex-shrink-0" />
-                          <span>{blocker}</span>
-                        </div>
+                        <li key={i} className="flex items-start gap-2 text-red-300 p-2 bg-red-500/10 rounded-lg">
+                          <AlertTriangle size={16} className="mt-0.5 flex-shrink-0" />
+                          <span className="flex-1">{blocker}</span>
+                          {editMode && (
+                            <button 
+                              onClick={() => removeBlocker(init.id, i)}
+                              className="p-1 text-dark-400 hover:text-red-400"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          )}
+                        </li>
                       ))}
+                    </ul>
+                  ) : (
+                    <p className="text-dark-500 text-sm">Нет блокеров</p>
+                  )}
+                  {editMode && (
+                    <div className="mt-2">
+                      <input
+                        type="text"
+                        placeholder="Добавить блокер..."
+                        className="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-sm"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && e.currentTarget.value) {
+                            addBlocker(init.id, e.currentTarget.value)
+                            e.currentTarget.value = ''
+                          }
+                        }}
+                      />
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
 
                 {/* Notes */}
                 <div>
-                  <h4 className="font-medium text-dark-300 mb-3">📝 Заметки</h4>
-                  <EditableText
-                    value={notes[init.id] || ''}
-                    onSave={(value) => setNotes({ ...notes, [init.id]: value })}
+                  <h4 className="font-medium text-dark-300 mb-2">📝 Заметки</h4>
+                  <textarea
+                    value={init.notes}
+                    onChange={(e) => updateInitiative(init.id, { notes: e.target.value })}
                     placeholder="Добавить заметки..."
-                    multiline
-                    className="bg-dark-700/50 rounded-lg"
+                    className="w-full bg-dark-700/50 border border-dark-600 rounded-lg px-4 py-3 min-h-[80px] focus:outline-none focus:border-primary-500"
                   />
                 </div>
               </div>
             )}
           </Card>
         ))}
-      </div>
-
-      {/* Summary */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="p-4 bg-dark-700 rounded-xl text-center">
-          <div className="text-2xl font-bold">{strategicInitiatives.length}</div>
-          <div className="text-sm text-dark-400">Всего</div>
-        </div>
-        <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl text-center">
-          <div className="text-2xl font-bold text-yellow-400">
-            {strategicInitiatives.filter(i => i.status === 'yellow').length}
-          </div>
-          <div className="text-sm text-dark-400">Требуют внимания</div>
-        </div>
-        <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-center">
-          <div className="text-2xl font-bold text-red-400">
-            {strategicInitiatives.filter(i => i.status === 'red').length}
-          </div>
-          <div className="text-sm text-dark-400">Критично</div>
-        </div>
       </div>
     </div>
   )

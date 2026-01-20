@@ -1,12 +1,25 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ArrowLeft, ExternalLink, Plus, Edit2, X, Trash2, RefreshCw } from 'lucide-react'
 import CalendarView from '@/components/CalendarView'
+import Card from '@/components/Card'
+
+interface EventItem {
+  id: string
+  title: string
+  start: number[]
+  end: number[]
+  location: string
+  category: string
+  description: string
+  priority?: 'high'
+  notes?: string
+}
 
 // Выставки 2026
-const eventsData = [
+const defaultEventsData: EventItem[] = [
   // Январь
   { id: 'efea', title: 'EFEA 2026 — Евразийский Ивент Форум', start: [2026, 0, 21], end: [2026, 0, 23], location: 'СПб, ПетроКонгресс', category: 'marketing', description: 'Ивент-индустрия, Маркетинг, Реклама, HR', priority: 'high' as const },
   
@@ -57,9 +70,88 @@ const categories = [
 ]
 
 export default function EventsPage() {
+  const [events, setEvents] = useState<EventItem[]>(defaultEventsData)
   const [selectedEvent, setSelectedEvent] = useState<any>(null)
+  const [editingEvent, setEditingEvent] = useState<EventItem | null>(null)
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [newEvent, setNewEvent] = useState<Partial<EventItem>>({
+    title: '', location: '', category: 'marketing', description: '', notes: ''
+  })
 
-  const calendarEvents = eventsData.map(e => ({
+  // Load data
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const response = await fetch('/api/page-data?page=events')
+        if (response.ok) {
+          const saved = await response.json()
+          if (saved?.events && saved.events.length > 0) {
+            setEvents(saved.events)
+          }
+        }
+      } catch (error) {
+        console.error('Error loading:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadData()
+  }, [])
+
+  // Save data
+  const saveData = async (newEvents: EventItem[]) => {
+    setSaving(true)
+    setEvents(newEvents)
+    try {
+      await fetch('/api/page-data?page=events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ events: newEvents })
+      })
+    } catch (error) {
+      console.error('Error saving:', error)
+    }
+    setSaving(false)
+  }
+
+  // Add event
+  const addEvent = () => {
+    if (!newEvent.title) return
+    const event: EventItem = {
+      id: Date.now().toString(),
+      title: newEvent.title || '',
+      start: [2026, 0, 1],
+      end: [2026, 0, 1],
+      location: newEvent.location || '',
+      category: newEvent.category || 'marketing',
+      description: newEvent.description || '',
+      notes: newEvent.notes
+    }
+    saveData([...events, event])
+    setNewEvent({ title: '', location: '', category: 'marketing', description: '', notes: '' })
+    setShowAddModal(false)
+  }
+
+  // Update event
+  const updateEvent = (id: string, updates: Partial<EventItem>) => {
+    saveData(events.map(e => e.id === id ? { ...e, ...updates } : e))
+    setEditingEvent(null)
+  }
+
+  // Delete event
+  const deleteEvent = (id: string) => {
+    saveData(events.filter(e => e.id !== id))
+    setSelectedEvent(null)
+  }
+
+  // Update event notes
+  const updateEventNotes = (id: string, notes: string) => {
+    saveData(events.map(e => e.id === id ? { ...e, notes } : e))
+  }
+
+  const calendarEvents = events.map(e => ({
     id: e.id,
     title: e.title,
     startDate: new Date(e.start[0], e.start[1], e.start[2]),
@@ -69,7 +161,16 @@ export default function EventsPage() {
     location: e.location,
     description: e.description,
     priority: e.priority,
+    notes: e.notes,
   }))
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <RefreshCw className="animate-spin text-primary-500" size={32} />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -84,16 +185,76 @@ export default function EventsPage() {
             <p className="text-dark-400 mt-1">План посещения выставок и форумов</p>
           </div>
         </div>
-        <a
-          href="https://docs.google.com/spreadsheets/d/1JLZNhgD0aod1weiMqynKmY_oAhnP3bJTiCi1xuiwq_w/edit"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 px-4 py-2 bg-dark-700 hover:bg-dark-600 rounded-lg text-sm"
-        >
-          <ExternalLink size={16} />
-          Таблица
-        </a>
+        <div className="flex items-center gap-2">
+          {saving && (
+            <div className="flex items-center gap-2 text-primary-400 text-sm">
+              <RefreshCw size={14} className="animate-spin" />
+            </div>
+          )}
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-500 rounded-lg"
+          >
+            <Plus size={18} />
+            Добавить
+          </button>
+          <a
+            href="https://docs.google.com/spreadsheets/d/1JLZNhgD0aod1weiMqynKmY_oAhnP3bJTiCi1xuiwq_w/edit"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-4 py-2 bg-dark-700 hover:bg-dark-600 rounded-lg text-sm"
+          >
+            <ExternalLink size={16} />
+            Таблица
+          </a>
+        </div>
       </div>
+
+      {/* Add Event Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setShowAddModal(false)}>
+          <div className="bg-dark-800 rounded-2xl p-6 max-w-lg w-full" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold">Добавить выставку</h2>
+              <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-dark-700 rounded-lg">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <input
+                type="text"
+                value={newEvent.title || ''}
+                onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
+                placeholder="Название выставки"
+                className="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-2"
+              />
+              <input
+                type="text"
+                value={newEvent.location || ''}
+                onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
+                placeholder="Место проведения"
+                className="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-2"
+              />
+              <select
+                value={newEvent.category || 'marketing'}
+                onChange={(e) => setNewEvent({ ...newEvent, category: e.target.value })}
+                className="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-2"
+              >
+                {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+              <textarea
+                value={newEvent.description || ''}
+                onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
+                placeholder="Описание"
+                className="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 min-h-[80px]"
+              />
+            </div>
+            <button onClick={addEvent} className="w-full mt-4 py-2 bg-primary-600 hover:bg-primary-500 rounded-lg">
+              Добавить
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Calendar */}
       <CalendarView 
@@ -140,12 +301,35 @@ export default function EventsPage() {
                 )}
               </div>
             </div>
-            <button 
-              onClick={() => setSelectedEvent(null)}
-              className="mt-6 w-full py-2 bg-dark-700 hover:bg-dark-600 rounded-lg"
-            >
-              Закрыть
-            </button>
+            
+            {/* Notes */}
+            <div className="mt-4">
+              <label className="text-sm text-dark-400 mb-2 block">📝 Заметки</label>
+              <textarea
+                value={selectedEvent.notes || ''}
+                onChange={(e) => {
+                  updateEventNotes(selectedEvent.id, e.target.value)
+                  setSelectedEvent({ ...selectedEvent, notes: e.target.value })
+                }}
+                placeholder="Добавить заметки..."
+                className="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 min-h-[80px] text-sm"
+              />
+            </div>
+
+            <div className="flex gap-2 mt-4">
+              <button 
+                onClick={() => deleteEvent(selectedEvent.id)}
+                className="px-4 py-2 bg-red-600/20 text-red-400 hover:bg-red-600/30 rounded-lg"
+              >
+                <Trash2 size={18} />
+              </button>
+              <button 
+                onClick={() => setSelectedEvent(null)}
+                className="flex-1 py-2 bg-dark-700 hover:bg-dark-600 rounded-lg"
+              >
+                Закрыть
+              </button>
+            </div>
           </div>
         </div>
       )}
