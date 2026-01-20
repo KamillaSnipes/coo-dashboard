@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { TrendingUp, Clock, Users, Target, AlertTriangle, ArrowRight, RefreshCw, Plus, Trash2, Edit2, X, ClipboardList } from 'lucide-react'
+import { TrendingUp, Clock, Users, Target, AlertTriangle, ArrowRight, RefreshCw, Plus, Trash2, Edit2, X, ClipboardList, ChevronDown, ChevronRight } from 'lucide-react'
 import Card from '@/components/Card'
 import MetricCard from '@/components/MetricCard'
 import StatusBadge from '@/components/StatusBadge'
@@ -16,10 +16,21 @@ interface LeadershipIssue {
   department: string
 }
 
+// China team leads data
+const chinaTeamLeads = [
+  { name: 'Артём', members: 3, focus: 'Адаптация, мерч проработка', status: 'green' as const },
+  { name: 'Женя', members: 6, focus: 'Контроль статусов, отпуска', status: 'green' as const },
+  { name: 'Настя А', members: 3, focus: 'Ревизия задач, работа с браком', status: 'yellow' as const },
+  { name: 'Саша', members: 2, focus: '', status: 'green' as const },
+  { name: 'Сергей', members: 0, focus: 'Новая группа — интеграция', status: 'yellow' as const },
+  { name: 'Юлия', members: 0, focus: '', status: 'green' as const },
+]
+
 export default function Dashboard() {
   const { alerts, setAlerts, focus, setFocus, saving, loading } = useData()
   const [leadershipIssues, setLeadershipIssues] = useState<LeadershipIssue[]>([])
   const [avgCompletion, setAvgCompletion] = useState(0)
+  const [chinaExpanded, setChinaExpanded] = useState(false)
 
   // Load leadership reports data
   useEffect(() => {
@@ -409,17 +420,49 @@ export default function Dashboard() {
             </thead>
             <tbody className="divide-y divide-dark-700">
               {departments.map((dept) => (
-                <tr key={dept.id} className="hover:bg-dark-700/50 transition-colors">
-                  <td className="py-4 font-medium">{dept.shortName}</td>
-                  <td className="py-4 text-dark-300 text-sm">{getDepartmentHead(dept)}</td>
-                  <td className="py-4 text-dark-300">{getDepartmentEmployeeCount(dept)}</td>
-                  <td className="py-4 text-dark-400 text-sm max-w-[200px] truncate">
-                    {dept.focus || '—'}
-                  </td>
-                  <td className="py-4">
-                    <StatusBadge status={dept.status} size="sm" />
-                  </td>
-                </tr>
+                <>
+                  <tr 
+                    key={dept.id} 
+                    className={`hover:bg-dark-700/50 transition-colors ${dept.id === 'china' ? 'cursor-pointer' : ''}`}
+                    onClick={() => dept.id === 'china' && setChinaExpanded(!chinaExpanded)}
+                  >
+                    <td className="py-4 font-medium">
+                      <div className="flex items-center gap-2">
+                        {dept.id === 'china' && (
+                          chinaExpanded ? <ChevronDown size={16} className="text-primary-400" /> : <ChevronRight size={16} className="text-dark-400" />
+                        )}
+                        {dept.shortName}
+                      </div>
+                    </td>
+                    <td className="py-4 text-dark-300 text-sm">{getDepartmentHead(dept)}</td>
+                    <td className="py-4 text-dark-300">{getDepartmentEmployeeCount(dept)}</td>
+                    <td className="py-4 text-dark-400 text-sm max-w-[200px] truncate">
+                      {dept.focus || '—'}
+                    </td>
+                    <td className="py-4">
+                      <StatusBadge status={dept.status} size="sm" />
+                    </td>
+                  </tr>
+                  {/* China team leads expanded */}
+                  {dept.id === 'china' && chinaExpanded && chinaTeamLeads.map((lead, idx) => (
+                    <tr key={`china-${idx}`} className="bg-dark-800/50">
+                      <td className="py-3 pl-8 text-sm text-dark-300">
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-primary-500"></span>
+                          {lead.name}
+                        </div>
+                      </td>
+                      <td className="py-3 text-dark-400 text-sm">РГ</td>
+                      <td className="py-3 text-dark-400 text-sm">{lead.members}</td>
+                      <td className="py-3 text-dark-500 text-sm max-w-[200px] truncate">
+                        {lead.focus || '—'}
+                      </td>
+                      <td className="py-3">
+                        <StatusBadge status={lead.status} size="sm" />
+                      </td>
+                    </tr>
+                  ))}
+                </>
               ))}
             </tbody>
           </table>
