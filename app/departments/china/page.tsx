@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import { Users, TrendingUp, Clock, Target, ChevronRight, Plus, Trash2, RefreshCw, UserCheck, GitBranch, Calendar, GraduationCap } from 'lucide-react'
+import { Users, TrendingUp, Clock, Target, ChevronRight, Plus, Trash2, RefreshCw, UserCheck, GitBranch, Calendar, GraduationCap, ArrowRight, AlertTriangle, CheckCircle, FileText } from 'lucide-react'
 import Card from '@/components/Card'
 import MetricCard from '@/components/MetricCard'
 import StatusBadge from '@/components/StatusBadge'
@@ -11,78 +11,178 @@ import EditableText from '@/components/EditableText'
 interface GroupMember {
   id: string
   name: string
-  grade: string
   role: string
-  kpiProgress: number
 }
 
 interface Group {
   id: string
   name: string
   lead: string
+  leadFullName: string
   membersCount: number
   members: GroupMember[]
   focus: string
   status: 'green' | 'yellow' | 'red'
   avgKpiTime: number
   projects: number
+  weeklyPlan: string[]
+  weeklyFact: string[]
+  problems: string[]
 }
 
+// Real data synced with leadership reports
 const initialGroups: Group[] = [
   {
-    id: '1',
-    name: 'Группа 1',
-    lead: 'РГ 1',
+    id: 'artem',
+    name: 'Группа Артёма',
+    lead: 'Артём Василевский',
+    leadFullName: 'Артём',
+    membersCount: 3,
+    members: [
+      { id: '1', name: 'Арина', role: 'E2E менеджер' },
+      { id: '2', name: 'Света Л', role: 'E2E менеджер' },
+      { id: '3', name: 'Юля', role: 'E2E менеджер (новая)' },
+    ],
+    focus: 'Адаптация нового сотрудника, мерч проработка',
+    status: 'green',
+    avgKpiTime: 4,
+    projects: 15,
+    weeklyPlan: [
+      'Встреча с ОК',
+      'Сбор статистики, подготовка к концу сезона',
+      'Мерч проработка',
+      '1-1: Юля, Настя',
+      'Провести по калькулятору встречу по обновлениям',
+      'Проработать правила интересных товаров'
+    ],
+    weeklyFact: [
+      'Адаптация нового сотрудника',
+      'Встреча с ОК и ОК+Камилла',
+      'Встречи с ОМ (Костей) по мерчу',
+      'Подключение к решению горячих вопросов',
+      'Проверка гипотезы по интересным товарам',
+      'Проработка товаров с нуля как пилоты',
+      '1-1 с Ариной и Светой Л'
+    ],
+    problems: []
+  },
+  {
+    id: 'evgeny',
+    name: 'Группа Евгения',
+    lead: 'Евгений Косицын',
+    leadFullName: 'Женя',
     membersCount: 4,
-    members: [],
+    members: [
+      { id: '1', name: 'Саша', role: 'E2E менеджер' },
+      { id: '2', name: 'Настя', role: 'E2E менеджер' },
+      { id: '3', name: 'Марина', role: 'E2E менеджер' },
+      { id: '4', name: 'Анастасия', role: 'E2E менеджер' },
+    ],
+    focus: 'Контроль статусов, распределение отпусков',
+    status: 'green',
+    avgKpiTime: 5,
+    projects: 12,
+    weeklyPlan: [
+      'Контроль обновления статусов по производствам/доставкам/образцам',
+      'Встреча с ОК по компетенциям',
+      'Встреча с Камиллой по компетенциям',
+      'Распределение отпусков',
+      'Встреча с командой',
+      'Посчитать КПИ за прошлый квартал',
+      'Закрыть проекты',
+      'Провести 1-1: Саша, Настя, Марина',
+      'Анализ планируемых близких к запуску задач'
+    ],
+    weeklyFact: [],
+    problems: []
+  },
+  {
+    id: 'alexandra',
+    name: 'Группа Александры',
+    lead: 'Александра Комардина',
+    leadFullName: 'Саша',
+    membersCount: 2,
+    members: [
+      { id: '1', name: 'Сотрудник 1', role: 'E2E менеджер' },
+      { id: '2', name: 'Сотрудник 2', role: 'E2E менеджер' },
+    ],
     focus: '',
     status: 'green',
     avgKpiTime: 4,
-    projects: 15
+    projects: 10,
+    weeklyPlan: [],
+    weeklyFact: [],
+    problems: []
   },
   {
-    id: '2',
-    name: 'Группа 2',
-    lead: 'РГ 2',
-    membersCount: 3,
-    members: [],
-    focus: '',
-    status: 'green',
-    avgKpiTime: 5,
-    projects: 12
-  },
-  {
-    id: '3',
-    name: 'Группа 3',
-    lead: 'РГ 3',
+    id: 'nastya',
+    name: 'Группа Насти А.',
+    lead: 'Анастасия Андрианова',
+    leadFullName: 'Настя А',
     membersCount: 4,
-    members: [],
-    focus: '',
+    members: [
+      { id: '1', name: 'Сотрудник 1', role: 'E2E менеджер' },
+      { id: '2', name: 'Сотрудник 2', role: 'E2E менеджер' },
+      { id: '3', name: 'Сотрудник 3', role: 'E2E менеджер' },
+      { id: '4', name: 'Арина (выход)', role: 'E2E менеджер' },
+    ],
+    focus: 'Ревизия задач, работа с браком, выходная встреча',
     status: 'yellow',
-    avgKpiTime: 6,
-    projects: 10
+    avgKpiTime: 5,
+    projects: 18,
+    weeklyPlan: [
+      'Ревизия задач в статусах «КП согласование» и «КП согласовано»',
+      'Работа с браком по проектам (бадминтон)',
+      'Контроль новых запросов',
+      'Фиксация отпуска',
+      'Выходная встреча с Ариной',
+      'Встречи с руками МОК, Камиллой, Рэшадом (таблица компетенций)',
+      'Сбор данных по реализованным проектам',
+      'Запрос ОС'
+    ],
+    weeklyFact: [
+      'Собрали ОС по декабрьским просчетам - 2 получили проработку',
+      'Нашли решение по заказам с браком, перешли в этап переделки',
+      'Закрыли заказы за декабрь',
+      'Встреча с МОК и Камиллой по компетенциям',
+      'Протестировала новинки в инструменте'
+    ],
+    problems: [
+      'Проекты по Альфе кэмп и 8 марта отвалились',
+      '8 марта ОДК тоже в пролете',
+      'Работа с браком (бадминтон, очки)'
+    ]
   },
   {
-    id: '4',
-    name: 'Группа 4',
-    lead: 'РГ 4',
-    membersCount: 5,
+    id: 'yulia',
+    name: 'Группа Юлии',
+    lead: 'Юлия Лелик',
+    leadFullName: 'Юля',
+    membersCount: 2,
     members: [],
     focus: '',
     status: 'green',
     avgKpiTime: 4,
-    projects: 18
+    projects: 11
+    ,
+    weeklyPlan: [],
+    weeklyFact: [],
+    problems: []
   },
   {
-    id: '5',
-    name: 'Группа 5',
-    lead: 'РГ 5',
-    membersCount: 3,
+    id: 'sergey',
+    name: 'Группа Сергея',
+    lead: 'Сергей Кумашев',
+    leadFullName: 'Сергей',
+    membersCount: 1,
     members: [],
-    focus: '',
-    status: 'green',
+    focus: 'Новая группа — интеграция',
+    status: 'yellow',
     avgKpiTime: 5,
-    projects: 11
+    projects: 5,
+    weeklyPlan: [],
+    weeklyFact: [],
+    problems: []
   },
 ]
 
@@ -92,21 +192,35 @@ export default function ChinaDepartment() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [activeTab, setActiveTab] = useState<'overview' | 'structure' | 'changes'>('overview')
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null)
+  const [leadershipReports, setLeadershipReports] = useState<any[]>([])
 
-  // Load settings
+  // Load settings and leadership reports
   useEffect(() => {
     const loadData = async () => {
       try {
-        const response = await fetch('/api/settings')
-        if (response.ok) {
-          const data = await response.json()
+        // Load settings
+        const settingsResponse = await fetch('/api/settings')
+        if (settingsResponse.ok) {
+          const data = await settingsResponse.json()
           if (data.chinaGroups) {
             setGroups(data.chinaGroups)
           }
           setSettings(data)
         }
+        
+        // Load leadership reports to sync data
+        const reportsResponse = await fetch('/api/leadership-reports')
+        if (reportsResponse.ok) {
+          const data = await reportsResponse.json()
+          if (data.reports) {
+            setLeadershipReports(data.reports)
+            // Sync with groups
+            syncWithLeadershipReports(data.reports)
+          }
+        }
       } catch (error) {
-        console.error('Error loading settings:', error)
+        console.error('Error loading data:', error)
       } finally {
         setLoading(false)
       }
@@ -114,40 +228,72 @@ export default function ChinaDepartment() {
     loadData()
   }, [])
 
+  // Sync leadership reports with groups
+  const syncWithLeadershipReports = (reports: any[]) => {
+    const currentWeek = getMonday(new Date())
+    const thisWeekReports = reports.filter(r => r.weekStart === currentWeek)
+    
+    setGroups(prevGroups => {
+      return prevGroups.map(group => {
+        const report = thisWeekReports.find(r => 
+          r.salesPerson?.toLowerCase().includes(group.leadFullName.toLowerCase()) ||
+          group.leadFullName.toLowerCase().includes(r.salesPerson?.toLowerCase() || '')
+        )
+        if (report) {
+          return {
+            ...group,
+            weeklyPlan: report.plan || group.weeklyPlan,
+            weeklyFact: report.fact || group.weeklyFact,
+            problems: report.problems || group.problems,
+          }
+        }
+        return group
+      })
+    })
+  }
+
   // Save settings
-  const saveSettings = useCallback(async (newSettings: any) => {
+  const saveSettings = useCallback(async (newGroups: Group[]) => {
     setSaving(true)
     try {
       await fetch('/api/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newSettings)
+        body: JSON.stringify({ ...settings, chinaGroups: newGroups })
       })
     } catch (error) {
-      console.error('Error saving settings:', error)
+      console.error('Error saving:', error)
     } finally {
       setSaving(false)
     }
-  }, [])
+  }, [settings])
 
   const updateGroup = (index: number, field: keyof Group, value: any) => {
     const newGroups = [...groups]
     newGroups[index] = { ...newGroups[index], [field]: value }
     setGroups(newGroups)
-    saveSettings({ ...settings, chinaGroups: newGroups })
+    saveSettings(newGroups)
   }
 
   const totalEmployees = groups.reduce((sum, g) => sum + g.membersCount, 0) + groups.length
   const avgKpiTime = Math.round(groups.reduce((sum, g) => sum + g.avgKpiTime, 0) / groups.length)
   const totalProjects = groups.reduce((sum, g) => sum + g.projects, 0)
+  const totalProblems = groups.reduce((sum, g) => sum + (g.problems?.length || 0), 0)
 
   return (
     <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">🇨🇳 Отдел Китая</h1>
-          <p className="text-dark-400 mt-2">Управление закупками и производством</p>
+          <div className="flex items-center gap-3">
+            <Link href="/departments" className="text-dark-400 hover:text-white">
+              ← Отделы
+            </Link>
+          </div>
+          <h1 className="text-3xl font-bold mt-2">🇨🇳 Департамент по работе с Китаем</h1>
+          <p className="text-dark-400 mt-1">
+            {groups.map(g => g.lead).join(', ')} • {totalEmployees} чел.
+          </p>
         </div>
         <div className="flex items-center gap-4">
           {saving && (
@@ -156,7 +302,7 @@ export default function ChinaDepartment() {
               <span className="text-sm">Сохранение...</span>
             </div>
           )}
-          <StatusBadge status="green" size="md" />
+          <StatusBadge status={totalProblems > 0 ? 'yellow' : 'green'} size="md" />
         </div>
       </div>
 
@@ -180,7 +326,6 @@ export default function ChinaDepartment() {
           </button>
         ))}
         
-        {/* Link to Competencies */}
         <Link
           href="/departments/china/competencies"
           className="flex items-center gap-2 px-4 py-2 rounded-t-lg transition-colors text-primary-400 hover:text-primary-300 hover:bg-primary-500/10 ml-auto"
@@ -188,140 +333,122 @@ export default function ChinaDepartment() {
           <GraduationCap size={18} />
           <span>Матрица компетенций</span>
         </Link>
+        
+        <Link
+          href="/leadership-reports"
+          className="flex items-center gap-2 px-4 py-2 rounded-t-lg transition-colors text-green-400 hover:text-green-300 hover:bg-green-500/10"
+        >
+          <FileText size={18} />
+          <span>План/Факт рук-лей</span>
+        </Link>
       </div>
 
       {activeTab === 'overview' && (
         <>
-          {/* Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <MetricCard
-              title="Всего сотрудников"
-              value={`${totalEmployees}`}
-              subtitle={`${groups.length} РГ + ${totalEmployees - groups.length} менеджеров`}
-              icon={<Users size={24} />}
-            />
-            <MetricCard
-              title="Среднее время КП"
-              value={`${avgKpiTime} дн`}
-              subtitle="цель: 3 дня"
-              icon={<Clock size={24} />}
-              trend={avgKpiTime > 3 ? 'down' : 'up'}
-              trendValue={avgKpiTime > 3 ? 'нужно ускорить' : 'в норме'}
-            />
-            <MetricCard
-              title="Проектов в работе"
-              value={`${totalProjects}`}
-              subtitle="по всем группам"
-              icon={<Target size={24} />}
-            />
-            <MetricCard
-              title="Групп"
-              value={`${groups.length}`}
-              subtitle="скоро +1 (конец января)"
-              icon={<GitBranch size={24} />}
-              trend="up"
-              trendValue="+1 в январе"
-            />
-          </div>
-
-          {/* Key Info */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card title="⚡ Ключевые особенности">
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <span className="text-primary-400 mt-1">•</span>
-                  <span>Работают <strong>только с продажниками</strong>, не напрямую с клиентами</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-primary-400 mt-1">•</span>
-                  <span>Рабочие часы: <strong>9:00 — 16:00 МСК</strong> (синхрон с Китаем)</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-primary-400 mt-1">•</span>
-                  <span>E2E менеджеры: ведут проект <strong>от просчёта до доставки</strong></span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-primary-400 mt-1">•</span>
-                  <span>Решения принимаются <strong>коллегиально</strong> (все РГ + COO)</span>
-                </li>
-              </ul>
-            </Card>
-
-            <Card title="🎯 Текущий фокус">
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3 p-3 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
-                  <Clock size={20} className="text-yellow-400 mt-0.5 flex-shrink-0" />
-                  <span>Сократить время просчёта с <strong>5 до 3 дней</strong></span>
-                </li>
-                <li className="flex items-start gap-3 p-3 bg-primary-500/10 rounded-lg border border-primary-500/20">
-                  <TrendingUp size={20} className="text-primary-400 mt-0.5 flex-shrink-0" />
-                  <span>Внедрить <strong>новую систему грейдов</strong> и KPI</span>
-                </li>
-                <li className="flex items-start gap-3 p-3 bg-green-500/10 rounded-lg border border-green-500/20">
-                  <UserCheck size={20} className="text-green-400 mt-0.5 flex-shrink-0" />
-                  <span>Интегрировать <strong>+1 РГ</strong> в конце января</span>
-                </li>
-              </ul>
-            </Card>
-          </div>
-
-          {/* Groups Table */}
-          <Card title="👥 Группы">
-            {loading ? (
-              <div className="flex items-center justify-center py-8">
-                <RefreshCw size={24} className="animate-spin text-primary-400" />
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="text-left text-dark-400 text-sm border-b border-dark-700">
-                      <th className="pb-4 font-medium">Группа</th>
-                      <th className="pb-4 font-medium">РГ</th>
-                      <th className="pb-4 font-medium">Человек</th>
-                      <th className="pb-4 font-medium">Ср. время КП</th>
-                      <th className="pb-4 font-medium">Проектов</th>
-                      <th className="pb-4 font-medium">Фокус</th>
-                      <th className="pb-4 font-medium">Статус</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-dark-700">
-                    {groups.map((group, i) => (
-                      <tr key={group.id} className="hover:bg-dark-700/50 transition-colors">
-                        <td className="py-4 font-medium">{group.name}</td>
-                        <td className="py-4">
-                          <EditableText
-                            value={group.lead}
-                            onSave={(value) => updateGroup(i, 'lead', value)}
-                            placeholder="Имя РГ..."
-                            className="text-sm"
-                          />
-                        </td>
-                        <td className="py-4 text-dark-300">{group.membersCount}</td>
-                        <td className="py-4">
-                          <span className={group.avgKpiTime > 4 ? 'text-yellow-400' : 'text-green-400'}>
-                            {group.avgKpiTime} дн
-                          </span>
-                        </td>
-                        <td className="py-4 text-dark-300">{group.projects}</td>
-                        <td className="py-4">
-                          <EditableText
-                            value={group.focus}
-                            onSave={(value) => updateGroup(i, 'focus', value)}
-                            placeholder="Добавить фокус..."
-                            className="text-sm"
-                          />
-                        </td>
-                        <td className="py-4">
-                          <StatusBadge status={group.status} size="sm" />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+          {/* Current Focus */}
+          <Card title="🎯 Текущий фокус">
+            <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+              <EditableText
+                value={settings.chinaFocus || 'Сократить время просчёта с 5 до 3 дней'}
+                onSave={(value) => {
+                  const newSettings = { ...settings, chinaFocus: value }
+                  setSettings(newSettings)
+                  saveSettings(groups)
+                }}
+                className="font-medium"
+              />
+            </div>
           </Card>
+
+          {/* Teams Grid - Clickable */}
+          <Card title={`👥 Команды (${groups.length} групп)`}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {groups.map((group, i) => (
+                <div 
+                  key={group.id}
+                  onClick={() => setSelectedGroup(group)}
+                  className="p-4 bg-dark-700/50 hover:bg-dark-700 rounded-xl cursor-pointer transition-all border border-transparent hover:border-primary-500/50"
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="font-semibold text-primary-400">{group.name}</h3>
+                    <StatusBadge status={group.status} size="sm" />
+                  </div>
+                  <p className="text-dark-300">{group.lead}</p>
+                  <p className="text-sm text-dark-500">{group.membersCount} сотрудников</p>
+                  {group.focus && (
+                    <p className="text-xs text-dark-400 mt-2 truncate">{group.focus}</p>
+                  )}
+                  {group.problems && group.problems.length > 0 && (
+                    <div className="mt-2 flex items-center gap-1 text-yellow-400 text-xs">
+                      <AlertTriangle size={12} />
+                      <span>{group.problems.length} проблем</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          {/* Metrics */}
+          <Card title="📊 Метрики">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 bg-dark-700/50 rounded-lg">
+                <div className="text-sm text-dark-400">Время просчёта</div>
+                <div className="text-2xl font-bold">{avgKpiTime} дней</div>
+                <div className="text-xs text-dark-500">цель: 3 дня</div>
+              </div>
+              <div className="p-4 bg-dark-700/50 rounded-lg">
+                <div className="text-sm text-dark-400">Брак</div>
+                <div className="text-2xl font-bold">—</div>
+                <div className="text-xs text-dark-500">цель: &lt;1%</div>
+              </div>
+            </div>
+          </Card>
+
+          {/* Problems */}
+          {totalProblems > 0 && (
+            <Card title="⚠️ Проблемы/Блокеры">
+              <div className="space-y-2">
+                {groups.flatMap(g => (g.problems || []).map((p, i) => (
+                  <div key={`${g.id}-${i}`} className="flex items-start gap-2 text-yellow-400">
+                    <AlertTriangle size={16} className="mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">{p}</span>
+                  </div>
+                )))}
+                <div className="flex items-start gap-2 text-yellow-400">
+                  <AlertTriangle size={16} className="mt-0.5 flex-shrink-0" />
+                  <span className="text-sm">{avgKpiTime} дней на просчёт (цель: 3 дня)</span>
+                </div>
+                <div className="flex items-start gap-2 text-yellow-400">
+                  <AlertTriangle size={16} className="mt-0.5 flex-shrink-0" />
+                  <span className="text-sm">Разница во времени с Китаем</span>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {/* Notes */}
+          <Card title="📝 Заметки">
+            <EditableText
+              value={settings.chinaNotes || ''}
+              onSave={(value) => {
+                const newSettings = { ...settings, chinaNotes: value }
+                setSettings(newSettings)
+                saveSettings(groups)
+              }}
+              placeholder="Добавить заметки после 1:1 или наблюдений..."
+              multiline
+              className="min-h-[60px]"
+            />
+          </Card>
+
+          {/* Link to detailed page */}
+          <Link 
+            href="/departments/china/competencies"
+            className="block w-full p-4 bg-primary-600/20 hover:bg-primary-600/30 border border-primary-600/30 rounded-xl text-center text-primary-300 transition-colors"
+          >
+            Открыть подробную страницу Отдела Китая →
+          </Link>
         </>
       )}
 
@@ -342,17 +469,21 @@ export default function ChinaDepartment() {
               <div className="text-sm text-dark-400 mb-4">Коллегиальные решения</div>
               
               <div className="flex flex-wrap justify-center gap-4 max-w-4xl">
-                {groups.map((group, i) => (
-                  <div key={group.id} className="bg-dark-700 rounded-xl p-4 text-center min-w-[140px]">
+                {groups.map((group) => (
+                  <div 
+                    key={group.id} 
+                    onClick={() => setSelectedGroup(group)}
+                    className="bg-dark-700 hover:bg-dark-600 rounded-xl p-4 text-center min-w-[140px] cursor-pointer transition-all"
+                  >
                     <div className="text-xs text-dark-400 mb-1">{group.name}</div>
-                    <div className="font-medium">{group.lead || `РГ ${i + 1}`}</div>
+                    <div className="font-medium">{group.lead.split(' ')[0]}</div>
                     <div className="text-sm text-dark-400 mt-2">{group.membersCount} чел.</div>
                   </div>
                 ))}
                 <div className="bg-dark-800 border-2 border-dashed border-dark-600 rounded-xl p-4 text-center min-w-[140px]">
-                  <div className="text-xs text-dark-500 mb-1">Группа 6</div>
+                  <div className="text-xs text-dark-500 mb-1">Группа 7</div>
                   <div className="font-medium text-dark-500">Новый РГ</div>
-                  <div className="text-sm text-dark-500 mt-2">конец января</div>
+                  <div className="text-sm text-dark-500 mt-2">планируется</div>
                 </div>
               </div>
             </div>
@@ -380,10 +511,6 @@ export default function ChinaDepartment() {
                     <ChevronRight size={16} className="text-primary-400 mt-1 flex-shrink-0" />
                     <span>Участие в коллегиальных решениях</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <ChevronRight size={16} className="text-primary-400 mt-1 flex-shrink-0" />
-                    <span>Развитие и наставничество команды</span>
-                  </li>
                 </ul>
               </div>
               
@@ -405,10 +532,6 @@ export default function ChinaDepartment() {
                   <li className="flex items-start gap-2">
                     <ChevronRight size={16} className="text-green-400 mt-1 flex-shrink-0" />
                     <span>Грейды определяют сложность проектов</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <ChevronRight size={16} className="text-green-400 mt-1 flex-shrink-0" />
-                    <span>Функция наставника (опционально)</span>
                   </li>
                 </ul>
               </div>
@@ -432,17 +555,6 @@ export default function ChinaDepartment() {
                 </div>
                 
                 <div className="p-4 bg-dark-700 rounded-lg">
-                  <h4 className="font-semibold mb-2">20 человек, сложная иерархия:</h4>
-                  <ul className="text-sm text-dark-300 space-y-1">
-                    <li>• 2 руководителя отдела</li>
-                    <li>• Менеджеры закупок (только просчёты)</li>
-                    <li>• Менеджеры по проектам (весь цикл)</li>
-                    <li>• 1 тимлид с 5 сотрудниками (не считал, не вёл проекты)</li>
-                    <li>• Наставники (только онбординг)</li>
-                  </ul>
-                </div>
-                
-                <div className="p-4 bg-dark-700 rounded-lg">
                   <h4 className="font-semibold mb-2 text-red-400">Проблемы:</h4>
                   <ul className="text-sm text-dark-300 space-y-1">
                     <li>• Размытые зоны ответственности</li>
@@ -459,18 +571,8 @@ export default function ChinaDepartment() {
                 <div className="p-4 bg-green-500/10 rounded-lg border border-green-500/20">
                   <h4 className="font-semibold mb-2">Единый отдел с группами</h4>
                   <ul className="text-sm text-dark-300 space-y-1">
-                    <li>• 5 групп (скоро 6)</li>
+                    <li>• {groups.length} групп (планируется +1)</li>
                     <li>• Работают ТОЛЬКО с продажниками</li>
-                  </ul>
-                </div>
-                
-                <div className="p-4 bg-dark-700 rounded-lg">
-                  <h4 className="font-semibold mb-2">~25 человек, простая структура:</h4>
-                  <ul className="text-sm text-dark-300 space-y-1">
-                    <li>• COO — общее руководство</li>
-                    <li>• 5-6 РГ (руководители групп)</li>
-                    <li>• E2E менеджеры с грейдами</li>
-                    <li>• Функция наставника внутри групп</li>
                   </ul>
                 </div>
                 
@@ -501,14 +603,6 @@ export default function ChinaDepartment() {
               <div className="flex items-center gap-4 p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
                 <div className="w-3 h-3 rounded-full bg-yellow-400 animate-pulse"></div>
                 <div>
-                  <h4 className="font-semibold">Новая система KPI</h4>
-                  <p className="text-sm text-dark-400">Изменение KPI для РГ и менеджеров</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-4 p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
-                <div className="w-3 h-3 rounded-full bg-yellow-400 animate-pulse"></div>
-                <div>
                   <h4 className="font-semibold">Матрица компетенций</h4>
                   <p className="text-sm text-dark-400">Разработка матрицы для оценки и развития</p>
                 </div>
@@ -517,38 +611,126 @@ export default function ChinaDepartment() {
               <div className="flex items-center gap-4 p-4 bg-primary-500/10 rounded-lg border border-primary-500/20">
                 <Calendar size={20} className="text-primary-400" />
                 <div>
-                  <h4 className="font-semibold">Интеграция нового РГ</h4>
-                  <p className="text-sm text-dark-400">Конец января 2026 — добавление 6-й группы</p>
+                  <h4 className="font-semibold">Переход Тищук к Саше</h4>
+                  <p className="text-sm text-dark-400">Начинаем в январе 2026</p>
                 </div>
               </div>
             </div>
           </Card>
-
-          {/* Decision Making */}
-          <Card title="🤝 Принятие решений">
-            <div className="p-6 bg-dark-700 rounded-xl text-center">
-              <h4 className="font-semibold text-lg mb-4">Коллегиальная модель</h4>
-              <div className="flex items-center justify-center gap-4 flex-wrap">
-                <div className="bg-primary-500/20 px-4 py-2 rounded-lg">COO</div>
-                <span className="text-dark-500">+</span>
-                <div className="bg-dark-600 px-4 py-2 rounded-lg">РГ 1</div>
-                <span className="text-dark-500">+</span>
-                <div className="bg-dark-600 px-4 py-2 rounded-lg">РГ 2</div>
-                <span className="text-dark-500">+</span>
-                <div className="bg-dark-600 px-4 py-2 rounded-lg">РГ 3</div>
-                <span className="text-dark-500">+</span>
-                <div className="bg-dark-600 px-4 py-2 rounded-lg">РГ 4</div>
-                <span className="text-dark-500">+</span>
-                <div className="bg-dark-600 px-4 py-2 rounded-lg">РГ 5</div>
-              </div>
-              <p className="text-dark-400 text-sm mt-4">
-                Все стратегические решения по отделу принимаются совместно всеми руководителями групп и COO
-              </p>
-            </div>
-          </Card>
         </>
+      )}
+
+      {/* Group Detail Modal */}
+      {selectedGroup && (
+        <div 
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedGroup(null)}
+        >
+          <div 
+            className="bg-dark-800 rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold">{selectedGroup.name}</h2>
+                <p className="text-dark-400">{selectedGroup.lead} • {selectedGroup.membersCount} сотрудников</p>
+              </div>
+              <StatusBadge status={selectedGroup.status} />
+            </div>
+
+            {/* Metrics */}
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              <div className="p-3 bg-dark-700 rounded-lg text-center">
+                <div className="text-lg font-bold">{selectedGroup.avgKpiTime} дн</div>
+                <div className="text-xs text-dark-400">Ср. время КП</div>
+              </div>
+              <div className="p-3 bg-dark-700 rounded-lg text-center">
+                <div className="text-lg font-bold">{selectedGroup.projects}</div>
+                <div className="text-xs text-dark-400">Проектов</div>
+              </div>
+              <div className="p-3 bg-dark-700 rounded-lg text-center">
+                <div className="text-lg font-bold">{selectedGroup.members.length}</div>
+                <div className="text-xs text-dark-400">В команде</div>
+              </div>
+            </div>
+
+            {/* Members */}
+            {selectedGroup.members.length > 0 && (
+              <div className="mb-6">
+                <h3 className="font-semibold mb-3">👥 Команда</h3>
+                <div className="space-y-2">
+                  {selectedGroup.members.map(member => (
+                    <div key={member.id} className="flex items-center justify-between p-2 bg-dark-700/50 rounded-lg">
+                      <span>{member.name}</span>
+                      <span className="text-sm text-dark-400">{member.role}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Weekly Plan */}
+            {selectedGroup.weeklyPlan && selectedGroup.weeklyPlan.length > 0 && (
+              <div className="mb-6">
+                <h3 className="font-semibold mb-3 text-blue-400">📋 План на неделю</h3>
+                <div className="space-y-1">
+                  {selectedGroup.weeklyPlan.map((item, i) => (
+                    <div key={i} className="flex items-start gap-2 text-sm">
+                      <span className="text-dark-500">•</span>
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Weekly Fact */}
+            {selectedGroup.weeklyFact && selectedGroup.weeklyFact.length > 0 && (
+              <div className="mb-6">
+                <h3 className="font-semibold mb-3 text-green-400">✅ Факт за неделю</h3>
+                <div className="space-y-1">
+                  {selectedGroup.weeklyFact.map((item, i) => (
+                    <div key={i} className="flex items-start gap-2 text-sm">
+                      <CheckCircle size={14} className="text-green-400 mt-0.5 flex-shrink-0" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Problems */}
+            {selectedGroup.problems && selectedGroup.problems.length > 0 && (
+              <div className="mb-6">
+                <h3 className="font-semibold mb-3 text-yellow-400">⚠️ Проблемы</h3>
+                <div className="space-y-1">
+                  {selectedGroup.problems.map((item, i) => (
+                    <div key={i} className="flex items-start gap-2 text-sm">
+                      <AlertTriangle size={14} className="text-yellow-400 mt-0.5 flex-shrink-0" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <button
+              onClick={() => setSelectedGroup(null)}
+              className="w-full mt-4 py-3 bg-dark-700 hover:bg-dark-600 rounded-lg"
+            >
+              Закрыть
+            </button>
+          </div>
+        </div>
       )}
     </div>
   )
 }
 
+function getMonday(date: Date): string {
+  const d = new Date(date)
+  const day = d.getDay()
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1)
+  d.setDate(diff)
+  return d.toISOString().split('T')[0]
+}
