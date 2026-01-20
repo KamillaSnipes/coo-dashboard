@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import Card from '@/components/Card'
 import StatusBadge from '@/components/StatusBadge'
 import EditableText from '@/components/EditableText'
-import { AlertTriangle, CheckCircle, Clock, XCircle, Plus } from 'lucide-react'
+import { AlertTriangle, CheckCircle, Clock, XCircle, Plus, ArrowRight } from 'lucide-react'
 import { keyProblems } from '@/lib/data'
 
 interface Problem {
@@ -18,6 +19,12 @@ interface Problem {
   rootCause?: string[]
   plan?: { task: string; done: boolean }[]
   solution?: string
+}
+
+interface LeadershipIssue {
+  manager: string
+  issue: string
+  department: string
 }
 
 const initialProblems: Problem[] = keyProblems.map(p => ({
@@ -56,10 +63,45 @@ const categoryLabels: Record<string, string> = {
   hr: '👥 HR',
   culture: '🎭 Культура',
   hiring: '🎯 Наём',
+  leadership: '👔 От руководителей',
 }
 
 export default function ProblemsPage() {
   const [problems, setProblems] = useState<Problem[]>([...initialProblems, ...additionalProblems])
+  const [leadershipIssues, setLeadershipIssues] = useState<LeadershipIssue[]>([])
+  
+  // Load leadership issues
+  useEffect(() => {
+    const loadLeadershipData = async () => {
+      try {
+        const response = await fetch('/api/leadership-reports')
+        if (response.ok) {
+          const data = await response.json()
+          if (data.reports && data.reports.length > 0) {
+            const currentWeek = '2026-01-19'
+            const weekReports = data.reports.filter((r: any) => r.weekStart === currentWeek)
+            
+            const issues: LeadershipIssue[] = []
+            weekReports.forEach((report: any) => {
+              if (report.issues && report.issues.length > 0) {
+                report.issues.forEach((issue: string) => {
+                  issues.push({
+                    manager: report.manager,
+                    issue: issue,
+                    department: report.department
+                  })
+                })
+              }
+            })
+            setLeadershipIssues(issues)
+          }
+        }
+      } catch (error) {
+        console.error('Error loading leadership data:', error)
+      }
+    }
+    loadLeadershipData()
+  }, [])
   const [filter, setFilter] = useState<'all' | 'open' | 'in_progress' | 'resolved'>('all')
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
   const [notes, setNotes] = useState<Record<string, string>>({})
@@ -238,10 +280,40 @@ export default function ProblemsPage() {
         ))}
       </div>
 
+      {/* Leadership Issues Section */}
+      {leadershipIssues.length > 0 && (
+        <Card 
+          title="👔 Проблемы от руководителей (План/Факт)"
+          action={
+            <Link href="/leadership-reports" className="text-primary-400 hover:text-primary-300 text-sm flex items-center gap-1">
+              Все отчёты <ArrowRight size={14} />
+            </Link>
+          }
+          className="border border-orange-500/30"
+        >
+          <p className="text-dark-400 text-sm mb-4">
+            Проблемы выявленные из еженедельных отчётов руководителей
+          </p>
+          <div className="space-y-3">
+            {leadershipIssues.map((item, i) => (
+              <div key={i} className="flex items-start gap-3 p-3 bg-orange-500/10 rounded-lg border border-orange-500/20">
+                <AlertTriangle size={18} className="text-orange-400 mt-0.5 shrink-0" />
+                <div className="flex-1">
+                  <span className="text-orange-200">{item.issue}</span>
+                  <div className="text-xs text-dark-500 mt-1">
+                    {item.manager} • {item.department}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
       {/* Summary */}
       <div className="grid grid-cols-4 gap-4">
         <div className="p-4 bg-dark-800 rounded-xl text-center">
-          <div className="text-2xl font-bold">{problems.length}</div>
+          <div className="text-2xl font-bold">{problems.length + leadershipIssues.length}</div>
           <div className="text-sm text-dark-400">Всего</div>
         </div>
         <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-center">
@@ -250,11 +322,11 @@ export default function ProblemsPage() {
           </div>
           <div className="text-sm text-dark-400">Открытых</div>
         </div>
-        <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl text-center">
-          <div className="text-2xl font-bold text-yellow-400">
-            {problems.filter(p => p.status === 'in_progress').length}
+        <div className="p-4 bg-orange-500/10 border border-orange-500/30 rounded-xl text-center">
+          <div className="text-2xl font-bold text-orange-400">
+            {leadershipIssues.length}
           </div>
-          <div className="text-sm text-dark-400">В работе</div>
+          <div className="text-sm text-dark-400">От руководителей</div>
         </div>
         <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-xl text-center">
           <div className="text-2xl font-bold text-green-400">

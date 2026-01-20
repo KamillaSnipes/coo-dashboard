@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { TrendingUp, Clock, Users, Target, AlertTriangle, ArrowRight, RefreshCw, Plus, Trash2, Edit2, X } from 'lucide-react'
+import { TrendingUp, Clock, Users, Target, AlertTriangle, ArrowRight, RefreshCw, Plus, Trash2, Edit2, X, ClipboardList } from 'lucide-react'
 import Card from '@/components/Card'
 import MetricCard from '@/components/MetricCard'
 import StatusBadge from '@/components/StatusBadge'
@@ -10,8 +10,55 @@ import { departments, companyStats, getDepartmentEmployeeCount, getDepartmentHea
 import { useData } from '@/contexts/DataContext'
 import { totals, currentQuarter, formatMoney } from '@/lib/financials'
 
+interface LeadershipIssue {
+  manager: string
+  issue: string
+  department: string
+}
+
 export default function Dashboard() {
   const { alerts, setAlerts, focus, setFocus, saving, loading } = useData()
+  const [leadershipIssues, setLeadershipIssues] = useState<LeadershipIssue[]>([])
+  const [avgCompletion, setAvgCompletion] = useState(0)
+
+  // Load leadership reports data
+  useEffect(() => {
+    const loadLeadershipData = async () => {
+      try {
+        const response = await fetch('/api/leadership-reports')
+        if (response.ok) {
+          const data = await response.json()
+          if (data.reports && data.reports.length > 0) {
+            // Get current week's issues
+            const currentWeek = '2026-01-19' // TODO: make dynamic
+            const weekReports = data.reports.filter((r: any) => r.weekStart === currentWeek)
+            
+            const issues: LeadershipIssue[] = []
+            let totalCompletion = 0
+            
+            weekReports.forEach((report: any) => {
+              totalCompletion += report.completionRate || 0
+              if (report.issues && report.issues.length > 0) {
+                report.issues.forEach((issue: string) => {
+                  issues.push({
+                    manager: report.manager,
+                    issue: issue,
+                    department: report.department
+                  })
+                })
+              }
+            })
+            
+            setLeadershipIssues(issues)
+            setAvgCompletion(weekReports.length > 0 ? Math.round(totalCompletion / weekReports.length) : 0)
+          }
+        }
+      } catch (error) {
+        console.error('Error loading leadership data:', error)
+      }
+    }
+    loadLeadershipData()
+  }, [])
   
   const [editingAlert, setEditingAlert] = useState<string | null>(null)
   const [editingFocus, setEditingFocus] = useState(false)
@@ -296,6 +343,50 @@ export default function Dashboard() {
         </Card>
       </div>
 
+      {/* Leadership Issues from Plan/Fact */}
+      {leadershipIssues.length > 0 && (
+        <Card 
+          title="⚠️ Проблемы от руководителей"
+          action={
+            <Link href="/leadership-reports" className="text-primary-400 hover:text-primary-300 text-sm flex items-center gap-1">
+              План/Факт <ArrowRight size={14} />
+            </Link>
+          }
+        >
+          <div className="flex items-center gap-4 mb-4 p-3 bg-dark-700/50 rounded-lg">
+            <div className="flex items-center gap-2">
+              <ClipboardList size={18} className="text-primary-400" />
+              <span className="text-sm text-dark-300">Среднее выполнение:</span>
+              <span className={`font-medium ${avgCompletion >= 70 ? 'text-green-400' : avgCompletion >= 50 ? 'text-yellow-400' : 'text-red-400'}`}>
+                {avgCompletion}%
+              </span>
+            </div>
+            <div className="text-sm text-dark-400">
+              {leadershipIssues.length} проблем выявлено
+            </div>
+          </div>
+          <ul className="space-y-2 max-h-48 overflow-y-auto">
+            {leadershipIssues.slice(0, 6).map((item, i) => (
+              <li key={i} className="flex items-start gap-2 p-2 bg-orange-500/10 rounded-lg border border-orange-500/20">
+                <AlertTriangle size={14} className="text-orange-400 mt-1 shrink-0" />
+                <div>
+                  <span className="text-sm text-orange-200">{item.issue}</span>
+                  <div className="text-xs text-dark-500 mt-0.5">{item.manager} • {item.department}</div>
+                </div>
+              </li>
+            ))}
+          </ul>
+          {leadershipIssues.length > 6 && (
+            <Link 
+              href="/leadership-reports"
+              className="block text-center text-sm text-primary-400 hover:text-primary-300 mt-3 pt-3 border-t border-dark-700"
+            >
+              Показать все {leadershipIssues.length} проблем →
+            </Link>
+          )}
+        </Card>
+      )}
+
       {/* Departments Status */}
       <Card 
         title="📊 Статус по отделам"
@@ -336,11 +427,16 @@ export default function Dashboard() {
       </Card>
 
       {/* Quick Links */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
         <Link href="/financials" className="p-4 bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-500/30 hover:border-green-500/50 rounded-xl transition-colors text-center">
           <div className="text-2xl mb-2">📊</div>
           <div className="font-medium">Финансы COO</div>
           <div className="text-xs text-dark-400 mt-1">Ключевые метрики</div>
+        </Link>
+        <Link href="/departments" className="p-4 bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 hover:border-blue-500/50 rounded-xl transition-colors text-center">
+          <div className="text-2xl mb-2">📋</div>
+          <div className="font-medium">Отделы</div>
+          <div className="text-xs text-dark-400 mt-1">План/Факт рук-лей</div>
         </Link>
         <Link href="/org-structure" className="p-4 bg-dark-800 hover:bg-dark-700 rounded-xl transition-colors text-center">
           <div className="text-2xl mb-2">🏢</div>

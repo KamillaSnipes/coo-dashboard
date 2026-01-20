@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Card from '@/components/Card'
 import StatusBadge from '@/components/StatusBadge'
 import EditableText from '@/components/EditableText'
-import { ChevronDown, ChevronUp, XCircle, ArrowRight, Users } from 'lucide-react'
+import { ChevronDown, ChevronUp, XCircle, ArrowRight, Users, ClipboardList } from 'lucide-react'
 import { departments, getDepartmentEmployeeCount, getDepartmentHead, quarterFocus } from '@/lib/data'
 
 export default function DepartmentsPage() {
@@ -28,13 +28,22 @@ export default function DepartmentsPage() {
           <h1 className="text-3xl font-bold">Трекер по отделам</h1>
           <p className="text-dark-400 mt-2">Детальный статус каждого отдела и синхронизация с общим фокусом</p>
         </div>
-        <Link 
-          href="/org-structure"
-          className="flex items-center gap-2 px-4 py-2 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors"
-        >
-          <Users size={18} />
-          <span>Оргструктура</span>
-        </Link>
+        <div className="flex gap-2">
+          <Link 
+            href="/leadership-reports"
+            className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-500 rounded-lg transition-colors"
+          >
+            <ClipboardList size={18} />
+            <span>План/Факт рук-лей</span>
+          </Link>
+          <Link 
+            href="/org-structure"
+            className="flex items-center gap-2 px-4 py-2 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors"
+          >
+            <Users size={18} />
+            <span>Оргструктура</span>
+          </Link>
+        </div>
       </div>
 
       {/* Focus Reminder */}

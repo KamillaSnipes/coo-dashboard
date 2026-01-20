@@ -15,14 +15,12 @@ import {
   BarChart3,
   Target,
   Briefcase,
-  LogOut,
-  ClipboardList
+  LogOut
 } from 'lucide-react'
 
 const navigation = [
   { name: 'Главный дашборд', href: '/', icon: LayoutDashboard },
   { name: 'Мои KPI & OKR', href: '/my-okr', icon: Target },
-  { name: 'План/Факт рук-лей', href: '/leadership-reports', icon: ClipboardList },
   { name: 'Финансы COO', href: '/financials', icon: BarChart3 },
   { name: 'Оргструктура', href: '/org-structure', icon: Network },
   { name: 'Отделы', href: '/departments', icon: Building2 },
