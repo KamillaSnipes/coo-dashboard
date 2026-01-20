@@ -27,37 +27,17 @@ function LoginForm() {
     setLoading(true)
     setError('')
 
-    try {
-      const result = await signIn('credentials', {
-        login: login.trim().toLowerCase(),
-        password: password,
-        redirect: false,
-      })
-
-      if (!result) {
-        setError('Ошибка соединения')
-        setLoading(false)
-        return
-      }
-
-      if (result.error) {
-        setError('Неверный логин или пароль')
-        setLoading(false)
-        return
-      }
-
-      if (result.ok) {
-        // Успешная авторизация - редирект
-        window.location.replace('/')
-        return
-      }
-
-      setError('Неизвестная ошибка')
-      setLoading(false)
-    } catch (err) {
-      setError('Ошибка сервера. Попробуйте позже.')
-      setLoading(false)
-    }
+    // Используем redirect: true - NextAuth сам обработает редирект
+    await signIn('credentials', {
+      login: login.trim().toLowerCase(),
+      password: password,
+      callbackUrl: '/',
+      redirect: true,
+    })
+    
+    // Если мы здесь - значит была ошибка (неверный пароль)
+    setError('Неверный логин или пароль')
+    setLoading(false)
   }
 
   return (
