@@ -237,6 +237,40 @@ export default function DepartmentsPage() {
                       <ArrowRight size={20} />
                     </Link>
                   )}
+
+                  {/* Detail Links for Dubai */}
+                  {dept.id === 'uae' && (
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <Link 
+                        href="/departments/dubai"
+                        className="flex items-center justify-center gap-2 p-4 bg-amber-600/20 hover:bg-amber-600/30 border border-amber-600/30 rounded-xl transition-colors text-amber-300"
+                      >
+                        <span className="font-medium">🇦🇪 Подробная страница Дубая</span>
+                        <ArrowRight size={20} />
+                      </Link>
+                      <Link 
+                        href="/departments/dubai?tab=exhibitions"
+                        className="flex items-center justify-center gap-2 p-4 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-600/30 rounded-xl transition-colors text-purple-300"
+                      >
+                        <span className="font-medium">📅 Календарь выставок</span>
+                        <ArrowRight size={20} />
+                      </Link>
+                      <Link 
+                        href="/departments/dubai?tab=launches"
+                        className="flex items-center justify-center gap-2 p-4 bg-orange-600/20 hover:bg-orange-600/30 border border-orange-600/30 rounded-xl transition-colors text-orange-300"
+                      >
+                        <span className="font-medium">🚀 Календарь запусков</span>
+                        <ArrowRight size={20} />
+                      </Link>
+                      <Link 
+                        href="/departments/dubai?tab=plan"
+                        className="flex items-center justify-center gap-2 p-4 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-600/30 rounded-xl transition-colors text-blue-300"
+                      >
+                        <span className="font-medium">📋 Стратегический план</span>
+                        <ArrowRight size={20} />
+                      </Link>
+                    </div>
+                  )}
                 </div>
               )}
             </Card>

@@ -163,8 +163,7 @@ const initialGroups: Group[] = [
     focus: '',
     status: 'green',
     avgKpiTime: 4,
-    projects: 11
-    ,
+    projects: 11,
     weeklyPlan: [],
     weeklyFact: [],
     problems: []
