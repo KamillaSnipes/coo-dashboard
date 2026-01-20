@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Card from '@/components/Card'
-import { TrendingUp, DollarSign, Percent, BarChart3, Save, RefreshCw, Calculator, Edit2, Users } from 'lucide-react'
+import { TrendingUp, DollarSign, Percent, BarChart3, Save, RefreshCw, Edit2, Users } from 'lucide-react'
 
 // Нестандартные кварталы Headcorn
 // Q1: март-май
@@ -287,16 +287,6 @@ export default function FinancialsPage() {
             <div className="text-dark-400">ИТОГО ФОТ</div>
             <div className="font-bold text-primary-400">{formatMoney(totalFOT)}</div>
           </div>
-        </div>
-      </div>
-
-      {/* Formula */}
-      <div className="p-4 bg-dark-800/50 rounded-xl border border-dark-700">
-        <div className="flex items-center gap-2 text-dark-300 text-sm">
-          <Calculator size={16} />
-          <span className="font-medium">Формулы:</span>
-          <code className="bg-dark-700 px-2 py-1 rounded ml-2">ФОТ = ЗП + Бонусы + Расходы отдела</code>
-          <code className="bg-dark-700 px-2 py-1 rounded ml-2">Производительность = Сумма запусков / ФОТ</code>
         </div>
       </div>
 
