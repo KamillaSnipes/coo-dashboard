@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Plus, Calendar, Target, CheckSquare, Package, Truck, CreditCard, Save, ChevronDown, ChevronUp, RefreshCw, FileText } from 'lucide-react'
+import { ArrowLeft, Plus, Calendar, Target, CheckSquare, Package, Truck, CreditCard, Save, ChevronDown, ChevronUp, RefreshCw, FileText, Upload, X } from 'lucide-react'
 import Card from '@/components/Card'
 
 interface WeeklyPlan {
@@ -35,11 +35,348 @@ const salesTeam = [
   'Диёр Дадаев',
 ]
 
-// Initial plans data for week 12-16 January
+// Initial plans data
 const initialPlans: WeeklySummary[] = [
+  {
+    weekStart: '2026-01-19',
+    plans: [
+      {
+        id: 'plan-natasha-0119',
+        salesPerson: 'Наталья Лактистова',
+        weekStart: '2026-01-19',
+        goals: `Клиенты: общение в чатах, договоренности
+Баира, одеяла - вернуться с материалами и сроками нового образца 
+Прислать идеи варианты по термосам клиенту
+Конструктор - вернуться к клиенту с ответами
+Нина шлемы ОС, Нина игрушки ОС
+Магниты на холодильник Лавка, 8 марта Лавка
+Найти еще варианты зонтов Галкиной
+Галкина рюкзаки ОС, другие проекты ОС`,
+        tasks: `Клиенты: общение звонки
+• Сабина Яндекс - связаться, начать коммуникацию, вывести на звонок/встречу
+• Созвон с Еленой А - обсудить качество наших товаров
+• Созвон Ольга Альфа кожа 20.01 11:30
+• Бутылки и таблетницы Корал - обсудить помощь
+• Встреча бетбум 19.01 - перенос, согласовать новую дату
+• Созвон Шумилина 19.01
+• Созвон Пастухова 19.01
+
+МК общение:
+• Прислать идеи варианты по термосам в задачу МК
+• Термосы Лизогуб - обсудить с МК задачу 
+• Задачи Альфа новые - обсудить с МК 
+• Сроки тубусы и статуэтки - свести тайминг
+
+Новые задачи:
+• Лиза транспорт - задача на просчет (пружинки)
+• Термосы Виктория 
+• Альфа А-клуб
+• Очки Настя Пин`,
+        projects: `КП:
+• Просчет конструктор актуализировать 
+• РусГидро КП 
+• Каталог Шумилина
+• Раздатка Альфа новые позиции 
+• Лиза транспорт пружинки
+• Термосы Виктория 
+• Альфа А-клуб
+• Очки Настя Пин
+• Игрушки Нина
+• ВП Пэй
+• Магниты Лавка
+
+Документы:
+• Отправить договор с Пула Нине
+
+Внутренние встречи:
+• Встреча Олег 20.01
+• Подготовке к встрече Олег 
+• Встреча Диер 21.01`,
+        productionLogistics: `Отгрузки:
+• Стаканы ПИМС
+
+Образцы:
+• Статуэтка + выкрасы + тубус Виктория
+• Сейф-теги`,
+        payment: `Запуски:
+• Статуэтки и тубусы утвердить
+• Шлемы - продвинуть к запуску всю помощью документов
+
+Дополнительно:
+• Общение с агентом в КЗ - вернуться с решением по сумкам 
+• Обработать сводку созвона с Шумилиной Альфа
+• Обработать сводку созвона с Ольгой Альфа
+• Просчет логистика доп тираж - утвердить доп сумму
+• План факт
+• План 2026 добить!
+• Стратегию Олега изучить`,
+        createdAt: '2026-01-19T09:00:00.000Z'
+      },
+      {
+        id: 'plan-lelya-0119',
+        salesPerson: 'Елизавета Барабаш',
+        weekStart: '2026-01-19',
+        goals: `Агенство Директория - пригласила на встречу, планируют, жду
+1:1 Диёр планы 2026`,
+        tasks: `Клиенты и проекты:
+
+ОТП Банк:
+• Провели встречу
+• Сформировали интересные позиции, ближайшее событие МЭФ
+• Фильтруем то, что берем на просчет в 1-ую очередь
+
+RWB:
+• Отдали просчет маскота
+• Ведем разработку концепта НГ подарков
+• Назначили встречу на 3 февраля 
+
+ВодоходЪ:
+• Пр-во завершено/отгрузка в Иркутск
+• Клиент заказал сигнальный - монеты(получил)
+• Ждем ОС от начальницы после 25 января`,
+        projects: `Эдельвейс:
+• Клиент заказал все образцы таблетниц на кемеровском маркетплейсе
+• Ждем ОС по дальнейшим действиям, на связи
+
+Molecule:
+• Отправили образцы тканей
+• Отдали расчет на гипсовые саше
+
+Директория:
+• ВиТ результаты в конце января
+• Отдали КП на ручки
+• Ждем КП по полочкам для Тануки
+
+NLG:
+• По МТС до сих пор нет результата
+• Поставили на просчет Йети
+
+Таврида Арт:
+• Брелки - отдали КП - ждем ОС
+
+Никомед:
+• Участие в тендере, отдали КП, результатов пока нет
+
+Беру в работу новые запросы`,
+        productionLogistics: `ВодоходЪ - отгрузка в Иркутск`,
+        payment: `Ожидаем результаты по КП`,
+        createdAt: '2026-01-19T09:00:00.000Z'
+      },
+      {
+        id: 'plan-maxim-0119',
+        salesPerson: 'Максим Можкин',
+        weekStart: '2026-01-19',
+        goals: `Шнурки S7, ПН брак, новые клиенты`,
+        tasks: `• Петербургская недвижимость - ждем ОС по браку рюкзаков, отправляю дождевики на замену 
+• Лампы СДМ - запустились, ждем тираж 
+• Семена - перенос доставки на эту неделю 
+• Шнурки S7 - готовлю документы, ждем запуск 
+• Компасы - запустились, ждем тираж 
+• Дождевики - запустились, ждем тираж 
+• Губин - дожать футляры и салфетки, начать подготовку коллекции к лету`,
+        projects: `• Медиалаб - КП отдаю сегодня 
+• Полати ПБ - ОС по павербанкам 
+• Авиасейлз - преза 
+• Самолет - запланировать встречу 
+• Воя - начинаем презу 
+• Пикабу - заказать аромат и планируем встречу 
+• Флаувау - попробовать реанимировать 
+• Зелински - попробовать реанимировать 
+• Сравни - запланировать встречу 
+• Иллан - взять ОС по расчетам 
+• Почистить ПФ 
+• Индасофт - запланировать встречу/зум по планам на год 
+• Белые пески - напомнить`,
+        productionLogistics: `• Лампы СДМ - запустились, ждем тираж 
+• Шнурки S7 - готовлю документы
+• Компасы - запустились, ждем тираж 
+• Дождевики - запустились, ждем тираж`,
+        payment: `Ожидаем оплаты по текущим проектам`,
+        createdAt: '2026-01-19T09:00:00.000Z'
+      },
+      {
+        id: 'plan-alina-0119',
+        salesPerson: 'Алина Титова',
+        weekStart: '2026-01-19',
+        goals: `Итоги прошлой недели: Продуктивно эффективно
+
+Цели недели/месяца:
+• Кроссовки S7 тендер – новый статус: перешли в тест по носке, цена нравится – 11 100 678 руб
+• Забрать победу S7 детские наборы дальнего следования – ожидаем
+• Сумка машиниста верить и забрать победу – боремся за мин 26 000 000 идеально 50 000 000 руб 
+• S7 забрать победу по органайзерам – отправила эталонку 19.01 курьером - ждем результат до 2.02`,
+        tasks: `Запуски/образцы:
+• БСК – переделываем брак + комплимент в Проекте 111 
+• S7 запуск тиража органайзеры контроль 
+• Перекресток селект – производим тираж, все хорошо 
+• Готовим новые запуски образцов для Солнца Москвы – ждем оплату
+• Мармеладыч – готовим с Костей дизайн проект
+• Косметички S7 контролируем эталоны качества + подать цены до 26.01
+• Точка банк – запускаем тираж 100 000 шт брелоков – 13 440 000 руб 
+• S7 мини тендер позиция – запустить тиражик
+• Контроль прихода вентиляторов Сувинир Медиа 
+• Контроль прихода бутылки к 3.02 Апельбург`,
+        projects: `Дожимы срочные:
+• ГК РОСТ – дожать клиента на отшив сигнальных образцов 
+• Полотенчики для S7 – жду ОС
+• Подержим на контроле порядок в ПФ
+• Шопперы для НФ ГРУПП контроль – получить в Москве отправить клиенту 
+• Перекресток селект – тяжелая бюрократия, решаю вопросы
+• Подговить идии до 21.01 (для 2ГИС) 
+
+Отчеты:
+• План продаж 2025 и 2026 - отредактировать до 19.01
+• МИРО что же делают продажи? Скрины примеров крейзи лидов`,
+        productionLogistics: `• БСК – переделываем брак
+• S7 тираж органайзеры
+• Перекресток селект – тираж
+• Точка банк – тираж 100 000 шт брелоков
+• Контроль вентиляторов и бутылок`,
+        payment: `• Ждем оплату от Солнца Москвы
+• Точка банк – 13 440 000 руб
+
+Встречи:
+• 22.01 2ГИС – партнерство + знакомство + планы + подарки на НГ 
+• 1:1 с Викой`,
+        createdAt: '2026-01-19T09:00:00.000Z'
+      },
+      {
+        id: 'plan-polina-0119',
+        salesPerson: 'Полина Коник',
+        weekStart: '2026-01-19',
+        goals: `Цели недели: выжить и запустить образцы/тиражи по максимуму
+Итоги предыдущей недели: не все вышло, но 60% выполнения плана`,
+        tasks: `Тбанк: 
+• КП по бомберам дополняем, утвердили тираж 800 шт
+• Обновление данных по задаче с питомцами + запуск образцов
+• По фестивалям направить фото/видео
+• В идеале запуск лизинга и авто
+• Вернуться с новостями по рюкзаку новым
+• Преза по детским подаркам
+• КП сумки и рюкзаки
+
+Иллан:
+• Сумки Тедди - Утверждение тиража + запуск пакетов
+• Варежки - новости по производству 
+• Решение по запуску ГПБ шнурков
+• Обновление по тиражу ручек 
+• ОС по фарфору новому
+• + задачки новые`,
+        projects: `Зейтс:
+• Новости по доставке коробок
+• Новости по отгрузке тиража весны
+• Вопросы по ростиксу оплаты
+• Отслеживание по образцам к Лету
+
+Конфест: 
+• ВК - уточнение деталей + запуск
+• Игла - новая задача поставить
+
+Гроуп:
+• Награды - решаем вопросики по открытке еще + завершение производства
+
+Зеркала:
+• Решение проблем с браком
+
+Внутренние задачи:
+• Анализ клиента
+• Подготовить презу по клиенту 
+• Проанализировать план на год
+• Продумать план встреч на январь`,
+        productionLogistics: `Т-банк:
+• Кармашки - доставка
+• Ланъярды - отгрузка
+• Кликеры - производство
+• Рюкзак - образец производство
+• Веер - образец производство
+
+Зейтс:
+• Ростикс - доставка + отгрузки
+• Холодовые пады - отгрузки
+• Спейс - уточнение по СС 
+• Ручки инъектран - отгрузка 2 тиражей
+
+Иллан:
+• ДомКлик — отгрузка с фабрики
+• Варежки ВТБ - производство
+• Тедди сумки - утверждение образца в тираж`,
+        payment: `Документы:
+• Полароиды Конфест - оплаты`,
+        createdAt: '2026-01-19T09:00:00.000Z'
+      },
+      {
+        id: 'plan-timur-0119',
+        salesPerson: 'Сизиков Тимур',
+        weekStart: '2026-01-19',
+        goals: `1) Запустить проекты до китайского НГ
+2) Выйти на ВК`,
+        tasks: `Работа над проектами:
+• ВБ - до конца недели отдать КП по Базе
+• ВБ - с Лелей работаем над подарками на НГ 
+• Конфест - перерасчет по последним правкам 
+• Сбер - пытаюсь предложить клиенту решение по его факапу по 8 марта
+• Альфа 8 марта - косметичка посчитана, добиваю платок 
+• Деловые линии - посчитать НГ наборы как наши 
+• Аскона - расчет на визитки и папки`,
+        projects: `Внутренние задачи:
+• Продолжаю собирать клиентскую базу`,
+        productionLogistics: `Подготовка документов для запусков до китайского НГ`,
+        payment: `Ожидаем оплаты по расчётам`,
+        createdAt: '2026-01-19T09:00:00.000Z'
+      },
+      {
+        id: 'plan-irina-0119',
+        salesPerson: 'Ирина Ветера',
+        weekStart: '2026-01-19',
+        goals: `Запустить награды. Провести встречу с ЦУМ. Выйти на +3 нового клиента.`,
+        tasks: `Отдать расчеты:
+• ЦУМ (нг подарки)
+• Банк Казани (дополнение просчета)
+• Альбина (награды-дополнение)
+• Иллан (ручки, подборка каталога)
+
+Работа над проектами:
+• Инъектран - возобновить работу над прошлыми просчетами
+• Альбина (награды) - итоговое обсуждение тиражей и позиций. Запуск
+• Иллан Холдмарк - второй запуск образцов, согласовать сводку по коже
+• ЦУМ - жду ОС по презентации. Готовлю просчёт по нг подаркам. В среду провести встречу
+• Банк Казани - готовлю предложение по сувенирке на год. Первая часть согласована
+• Сколково - сформировать проект в готовый кейс
+• Юристы - созвон по кепкам, дожать в запуск
+• Левел. НГ подарки, проработка
+• НЛМК. Напомнить о себе, выйти во встречу`,
+        projects: `Тендер:
+• Инвитро - жду итог
+• Русагро - жду итог
+• Рюкзаки ОЗОН - жду образец
+• Награды ОЗОН - жду образец, доделать презентацию`,
+        productionLogistics: `• Провей - контроль поставки тиражей
+• Инъектран - контроль поставки
+• Ирина - контроль производства паракордов
+• ОЗОН - контроль образцов: рюкзак, награда`,
+        payment: `Ожидаем решения и оплаты по тендерам`,
+        createdAt: '2026-01-19T09:00:00.000Z'
+      }
+    ]
+  },
   {
     weekStart: '2026-01-12',
     plans: [
+      {
+        id: 'plan-timur-0112',
+        salesPerson: 'Сизиков Тимур',
+        weekStart: '2026-01-12',
+        goals: `1. Получить ОС по КП отданным в том году
+2. Провести брейншторм по 8 марта Альфа`,
+        tasks: `1. Составить план на 2026 год
+2. Разобрать старую клиентскую базу 
+3. Постараться запуститься по отданным КП`,
+        projects: `Внутренние задачи:
+• Подготовка к собранию по продажам`,
+        productionLogistics: `—`,
+        payment: `—`,
+        createdAt: '2026-01-12T09:00:00.000Z'
+      },
       {
         id: 'plan-alina-0112',
         salesPerson: 'Алина Титова',
@@ -72,7 +409,7 @@ S7 забрать победу по органайзерам`,
         createdAt: '2026-01-12T09:00:00.000Z'
       },
       {
-        id: 'plan-natasha-0119',
+        id: 'plan-natasha-0112',
         salesPerson: 'Наталья Лактистова',
         weekStart: '2026-01-12',
         goals: `Альфа - получить даты образцов, сориентировать клиента
@@ -287,14 +624,85 @@ Molecule - косметички отдали КП, на стадии приня�
   }
 ]
 
+// Function to parse raw text into plan structure
+function parseRawPlan(rawText: string, personName: string): Partial<WeeklyPlan> {
+  const text = rawText.trim()
+  const lines = text.split('\n').filter(l => l.trim())
+  
+  let goals = ''
+  let tasks = ''
+  let projects = ''
+  let productionLogistics = ''
+  let payment = ''
+  
+  // Try to find sections
+  const sections = {
+    goals: ['цели', 'цель', 'goals', '🎯'],
+    tasks: ['задачи', 'задача', 'tasks', '📝', 'клиенты'],
+    projects: ['проекты', 'project', '📑', 'работа над проектами', 'кп'],
+    production: ['производство', 'логистика', 'отгрузки', 'образцы', '📦'],
+    payment: ['оплата', 'документы', 'запуски', 'payment', '💰']
+  }
+  
+  let currentSection = 'goals'
+  let sectionContent: { [key: string]: string[] } = {
+    goals: [],
+    tasks: [],
+    projects: [],
+    production: [],
+    payment: []
+  }
+  
+  for (const line of lines) {
+    const lowerLine = line.toLowerCase()
+    
+    // Check if this line starts a new section
+    let foundSection = false
+    for (const [section, keywords] of Object.entries(sections)) {
+      if (keywords.some(kw => lowerLine.includes(kw))) {
+        currentSection = section === 'production' ? 'production' : section
+        foundSection = true
+        // Add the rest of the line if there's content after the keyword
+        const content = line.trim()
+        if (content.length > 20) { // If there's substantial content
+          sectionContent[currentSection].push(content)
+        }
+        break
+      }
+    }
+    
+    if (!foundSection) {
+      sectionContent[currentSection].push(line)
+    }
+  }
+  
+  goals = sectionContent.goals.join('\n').trim()
+  tasks = sectionContent.tasks.join('\n').trim()
+  projects = sectionContent.projects.join('\n').trim()
+  productionLogistics = sectionContent.production.join('\n').trim()
+  payment = sectionContent.payment.join('\n').trim()
+  
+  // If no clear sections found, put most content in tasks
+  if (!goals && !tasks && !projects) {
+    tasks = text
+  }
+  
+  return { goals, tasks, projects, productionLogistics, payment }
+}
+
 export default function SalesWeeklyPage() {
   const [weeklyData, setWeeklyData] = useState<WeeklySummary[]>([])
-  const [selectedWeek, setSelectedWeek] = useState<string>(getMonday(new Date()))
+  const [selectedWeek, setSelectedWeek] = useState<string>('2026-01-19')
   const [expandedPerson, setExpandedPerson] = useState<string | null>(null)
   const [editingPlan, setEditingPlan] = useState<WeeklyPlan | null>(null)
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
   const [showSummary, setShowSummary] = useState(false)
+  
+  // Import modal state
+  const [showImportModal, setShowImportModal] = useState(false)
+  const [importText, setImportText] = useState('')
+  const [importPerson, setImportPerson] = useState('')
 
   // Get Monday of current week
   function getMonday(date: Date): string {
@@ -309,7 +717,7 @@ export default function SalesWeeklyPage() {
   function formatWeek(dateStr: string): string {
     const date = new Date(dateStr)
     const endDate = new Date(date)
-    endDate.setDate(endDate.getDate() + 6)
+    endDate.setDate(endDate.getDate() + 4) // Monday to Friday
     return `${date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })} - ${endDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })}`
   }
 
@@ -321,11 +729,19 @@ export default function SalesWeeklyPage() {
         if (response.ok) {
           const data = await response.json()
           if (data.weeklyData && data.weeklyData.length > 0) {
-            setWeeklyData(data.weeklyData)
+            // Merge with initial plans to ensure we have all data
+            const merged = [...initialPlans]
+            for (const week of data.weeklyData) {
+              const existingIndex = merged.findIndex(w => w.weekStart === week.weekStart)
+              if (existingIndex >= 0) {
+                merged[existingIndex] = week
+              } else {
+                merged.push(week)
+              }
+            }
+            setWeeklyData(merged)
           } else {
-            // No saved data - use initial plans and save them
             setWeeklyData(initialPlans)
-            setSelectedWeek('2026-01-12')
             // Save initial data
             await fetch('/api/sales-weekly', {
               method: 'POST',
@@ -336,9 +752,7 @@ export default function SalesWeeklyPage() {
         }
       } catch (error) {
         console.error('Error loading:', error)
-        // On error, still show initial data
         setWeeklyData(initialPlans)
-        setSelectedWeek('2026-01-12')
       } finally {
         setLoading(false)
       }
@@ -358,7 +772,6 @@ export default function SalesWeeklyPage() {
   const savePlan = async (plan: WeeklyPlan) => {
     setSaving(true)
     try {
-      // Update local state
       const updatedWeeklyData = [...weeklyData]
       const weekIndex = updatedWeeklyData.findIndex(w => w.weekStart === selectedWeek)
       
@@ -375,7 +788,6 @@ export default function SalesWeeklyPage() {
 
       setWeeklyData(updatedWeeklyData)
 
-      // Save to API
       await fetch('/api/sales-weekly', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -404,6 +816,29 @@ export default function SalesWeeklyPage() {
     })
   }
 
+  // Import plan from raw text
+  const handleImport = () => {
+    if (!importPerson || !importText.trim()) return
+    
+    const parsed = parseRawPlan(importText, importPerson)
+    const newPlan: WeeklyPlan = {
+      id: `plan-${Date.now()}`,
+      salesPerson: importPerson,
+      weekStart: selectedWeek,
+      goals: parsed.goals || '',
+      tasks: parsed.tasks || '',
+      projects: parsed.projects || '',
+      productionLogistics: parsed.productionLogistics || '',
+      payment: parsed.payment || '',
+      createdAt: new Date().toISOString()
+    }
+    
+    setEditingPlan(newPlan)
+    setShowImportModal(false)
+    setImportText('')
+    setImportPerson('')
+  }
+
   // Generate summary
   const generateSummary = (): string => {
     const plans = currentWeekData.plans
@@ -413,21 +848,30 @@ export default function SalesWeeklyPage() {
     summary += `Отчёты подали: ${plans.length} из ${salesTeam.length} менеджеров\n\n`
 
     // Goals summary
-    summary += `🎯 **Цели:**\n`
+    summary += `🎯 **Ключевые цели:**\n`
     plans.forEach(p => {
-      if (p.goals) summary += `• ${p.salesPerson}: ${p.goals.substring(0, 100)}${p.goals.length > 100 ? '...' : ''}\n`
+      if (p.goals) {
+        const firstLine = p.goals.split('\n')[0]
+        summary += `• ${p.salesPerson}: ${firstLine.substring(0, 100)}${firstLine.length > 100 ? '...' : ''}\n`
+      }
     })
 
-    // Projects summary
-    summary += `\n📁 **Проекты:**\n`
+    // Key projects
+    summary += `\n📁 **Активные проекты:**\n`
     plans.forEach(p => {
-      if (p.projects) summary += `• ${p.salesPerson}: ${p.projects.substring(0, 100)}${p.projects.length > 100 ? '...' : ''}\n`
+      if (p.projects) {
+        const firstLine = p.projects.split('\n')[0]
+        summary += `• ${p.salesPerson}: ${firstLine.substring(0, 100)}${firstLine.length > 100 ? '...' : ''}\n`
+      }
     })
 
-    // Payment summary
-    summary += `\n💰 **Оплаты:**\n`
+    // Production summary
+    summary += `\n🚚 **Производство и отгрузки:**\n`
     plans.forEach(p => {
-      if (p.payment) summary += `• ${p.salesPerson}: ${p.payment.substring(0, 100)}${p.payment.length > 100 ? '...' : ''}\n`
+      if (p.productionLogistics) {
+        const firstLine = p.productionLogistics.split('\n')[0]
+        summary += `• ${p.salesPerson}: ${firstLine.substring(0, 80)}${firstLine.length > 80 ? '...' : ''}\n`
+      }
     })
 
     return summary
@@ -435,18 +879,17 @@ export default function SalesWeeklyPage() {
 
   // Get previous weeks
   const getPreviousWeeks = (): string[] => {
-    const weeks: string[] = []
+    const weeks: string[] = ['2026-01-19', '2026-01-12']
     const today = new Date()
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 10; i++) {
       const d = new Date(today)
       d.setDate(d.getDate() - (i * 7))
-      weeks.push(getMonday(d))
+      const monday = getMonday(d)
+      if (!weeks.includes(monday)) {
+        weeks.push(monday)
+      }
     }
-    // Ensure 2026-01-12 is included
-    if (!weeks.includes('2026-01-12')) {
-      weeks.push('2026-01-12')
-    }
-    return weeks
+    return weeks.sort().reverse()
   }
 
   if (loading) {
@@ -462,7 +905,7 @@ export default function SalesWeeklyPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/" className="p-2 hover:bg-dark-700 rounded-lg">
+          <Link href="/departments" className="p-2 hover:bg-dark-700 rounded-lg">
             <ArrowLeft size={20} />
           </Link>
           <div>
@@ -470,13 +913,22 @@ export default function SalesWeeklyPage() {
             <p className="text-dark-400 mt-1">Планы и отчёты отдела продаж</p>
           </div>
         </div>
-        <button
-          onClick={() => setShowSummary(!showSummary)}
-          className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-500 rounded-lg"
-        >
-          <FileText size={18} />
-          {showSummary ? 'Скрыть саммари' : 'Показать саммари'}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowImportModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 rounded-lg"
+          >
+            <Upload size={18} />
+            Импорт текста
+          </button>
+          <button
+            onClick={() => setShowSummary(!showSummary)}
+            className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-500 rounded-lg"
+          >
+            <FileText size={18} />
+            {showSummary ? 'Скрыть саммари' : 'Показать саммари'}
+          </button>
+        </div>
       </div>
 
       {/* Week selector */}
@@ -514,6 +966,67 @@ export default function SalesWeeklyPage() {
         </Card>
       )}
 
+      {/* Import Modal */}
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-dark-800 rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold">Импорт плана из текста</h3>
+              <button onClick={() => setShowImportModal(false)} className="p-2 hover:bg-dark-700 rounded-lg">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <p className="text-dark-400 text-sm mb-4">
+              Вставьте текст плана - система автоматически распределит информацию по категориям
+            </p>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Менеджер</label>
+                <select
+                  value={importPerson}
+                  onChange={(e) => setImportPerson(e.target.value)}
+                  className="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:border-primary-500"
+                >
+                  <option value="">Выберите менеджера</option>
+                  {salesTeam.map(person => (
+                    <option key={person} value={person}>{person}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Текст плана</label>
+                <textarea
+                  value={importText}
+                  onChange={(e) => setImportText(e.target.value)}
+                  className="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-3 focus:outline-none focus:border-primary-500 min-h-[300px] font-mono text-sm"
+                  placeholder="Вставьте сюда полный текст плана менеджера..."
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setShowImportModal(false)}
+                className="px-4 py-2 bg-dark-700 hover:bg-dark-600 rounded-lg"
+              >
+                Отмена
+              </button>
+              <button
+                onClick={handleImport}
+                disabled={!importPerson || !importText.trim()}
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 disabled:opacity-50 rounded-lg"
+              >
+                <Upload size={18} />
+                Импортировать
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Edit modal */}
       {editingPlan && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -547,7 +1060,7 @@ export default function SalesWeeklyPage() {
                 <textarea
                   value={editingPlan.tasks}
                   onChange={(e) => setEditingPlan({ ...editingPlan, tasks: e.target.value })}
-                  className="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-3 focus:outline-none focus:border-primary-500 min-h-[80px]"
+                  className="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-3 focus:outline-none focus:border-primary-500 min-h-[120px]"
                   placeholder="Задачи на неделю..."
                 />
               </div>
@@ -560,7 +1073,7 @@ export default function SalesWeeklyPage() {
                 <textarea
                   value={editingPlan.projects}
                   onChange={(e) => setEditingPlan({ ...editingPlan, projects: e.target.value })}
-                  className="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-3 focus:outline-none focus:border-primary-500 min-h-[80px]"
+                  className="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-3 focus:outline-none focus:border-primary-500 min-h-[120px]"
                   placeholder="Какие проекты в работе..."
                 />
               </div>
@@ -581,13 +1094,13 @@ export default function SalesWeeklyPage() {
               <div>
                 <label className="flex items-center gap-2 text-sm font-medium mb-2">
                   <CreditCard size={16} className="text-emerald-400" />
-                  Оплата (Предоплата / Постоплата)
+                  Оплата / Документы / Запуски
                 </label>
                 <textarea
                   value={editingPlan.payment}
                   onChange={(e) => setEditingPlan({ ...editingPlan, payment: e.target.value })}
                   className="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-3 focus:outline-none focus:border-primary-500 min-h-[80px]"
-                  placeholder="Ожидаемые оплаты..."
+                  placeholder="Ожидаемые оплаты, документы, запуски..."
                 />
               </div>
             </div>
@@ -688,7 +1201,7 @@ export default function SalesWeeklyPage() {
                   <div className="md:col-span-2">
                     <div className="flex items-center gap-2 text-sm font-medium text-emerald-400 mb-1">
                       <CreditCard size={14} />
-                      Оплата
+                      Оплата / Документы
                     </div>
                     <p className="text-sm text-dark-300 whitespace-pre-wrap">{plan.payment || '—'}</p>
                   </div>
@@ -707,4 +1220,3 @@ export default function SalesWeeklyPage() {
     </div>
   )
 }
-
