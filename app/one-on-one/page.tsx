@@ -115,6 +115,8 @@ export default function OneOnOnePage() {
   const [showNewMeeting, setShowNewMeeting] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
   const [importText, setImportText] = useState('')
+  const [useGeminiForParsing, setUseGeminiForParsing] = useState(false)
+  const [parsingWithGemini, setParsingWithGemini] = useState(false)
   const [showTranskriptorModal, setShowTranskriptorModal] = useState(false)
   const [transkriptorFiles, setTranskriptorFiles] = useState<any[]>([])
   const [loadingTranskriptor, setLoadingTranskriptor] = useState(false)
@@ -150,15 +152,57 @@ export default function OneOnOnePage() {
   const selectedPersonData = people.find(p => p.name === selectedPerson)
 
   // Handle import
-  const handleImport = () => {
-    const parsed = parseImportedText(importText)
-    setNewMeeting({
-      ...newMeeting,
-      ...parsed
-    })
-    setImportText('')
-    setShowImportModal(false)
-    setShowNewMeeting(true)
+  const handleImport = async () => {
+    if (useGeminiForParsing) {
+      setParsingWithGemini(true)
+      try {
+        const response = await fetch('/api/gemini', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'categorize',
+            text: importText,
+            context: selectedPerson || '1:1 встреча'
+          })
+        })
+        const data = await response.json()
+        
+        if (data.error) {
+          alert('Ошибка Gemini: ' + data.error + '. Использую простой парсинг.')
+          const parsed = parseImportedText(importText)
+          setNewMeeting({ ...newMeeting, ...parsed })
+        } else {
+          // Gemini вернул структурированные данные
+          setNewMeeting({
+            ...newMeeting,
+            goals: data.result.goals || '',
+            planFact: data.result.planFact || '',
+            risksProblems: data.result.risksProblems || '',
+            initiatives: data.result.initiatives || '',
+            personalPriorities: data.result.personalPriorities || '',
+            summary: data.result.text || data.result.summary || ''
+          })
+        }
+      } catch (err) {
+        alert('Ошибка при использовании Gemini. Использую простой парсинг.')
+        const parsed = parseImportedText(importText)
+        setNewMeeting({ ...newMeeting, ...parsed })
+      } finally {
+        setParsingWithGemini(false)
+        setImportText('')
+        setShowImportModal(false)
+        setShowNewMeeting(true)
+      }
+    } else {
+      const parsed = parseImportedText(importText)
+      setNewMeeting({
+        ...newMeeting,
+        ...parsed
+      })
+      setImportText('')
+      setShowImportModal(false)
+      setShowNewMeeting(true)
+    }
   }
 
   // Load Transkriptor files
@@ -378,13 +422,39 @@ export default function OneOnOnePage() {
               className="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-3 min-h-[300px] font-mono text-sm"
             />
 
+            <div className="mt-4 p-3 bg-dark-700/50 rounded-lg">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={useGeminiForParsing}
+                  onChange={(e) => setUseGeminiForParsing(e.target.checked)}
+                  className="w-4 h-4 rounded border-dark-600 bg-dark-600 text-primary-600 focus:ring-primary-500"
+                />
+                <span className="text-sm">
+                  <span className="text-purple-400 font-medium">✨ Использовать Gemini Pro</span> для более точного парсинга
+                </span>
+              </label>
+              <p className="text-xs text-dark-500 mt-1 ml-6">
+                Gemini лучше понимает контекст и точнее распределяет текст по категориям
+              </p>
+            </div>
+
             <button
               onClick={handleImport}
-              disabled={!importText.trim() || !selectedPerson}
-              className="w-full mt-4 py-3 bg-primary-600 hover:bg-primary-500 disabled:opacity-50 rounded-lg flex items-center justify-center gap-2"
+              disabled={!importText.trim() || !selectedPerson || parsingWithGemini}
+              className="w-full mt-3 py-3 bg-primary-600 hover:bg-primary-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg flex items-center justify-center gap-2"
             >
-              <Upload size={18} />
-              {selectedPerson ? 'Импортировать и заполнить форму' : 'Сначала выберите человека слева'}
+              {parsingWithGemini ? (
+                <>
+                  <Loader className="animate-spin" size={18} />
+                  Gemini анализирует...
+                </>
+              ) : (
+                <>
+                  <Upload size={18} />
+                  {selectedPerson ? 'Импортировать и заполнить форму' : 'Сначала выберите человека слева'}
+                </>
+              )}
             </button>
           </div>
         </div>
