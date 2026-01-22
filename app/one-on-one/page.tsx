@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Card from '@/components/Card'
 import StatusBadge from '@/components/StatusBadge'
-import { ChevronDown, ChevronUp, Calendar, Plus, Save, Trash2, FileText, Clock, Target, AlertTriangle, Lightbulb, User } from 'lucide-react'
+import { ChevronDown, ChevronUp, Calendar, Plus, Save, Trash2, FileText, Clock, Target, AlertTriangle, Lightbulb, User, Upload, X } from 'lucide-react'
 import { oneOnOnePeople, departments } from '@/lib/data'
 
 interface Meeting {
@@ -26,6 +26,82 @@ interface PersonData {
   meetings: Meeting[]
 }
 
+// Parse imported text into meeting fields
+function parseImportedText(text: string): Partial<Meeting> {
+  const result: Partial<Meeting> = {
+    goals: '',
+    planFact: '',
+    risksProblems: '',
+    initiatives: '',
+    personalPriorities: '',
+    summary: ''
+  }
+  
+  const lines = text.split('\n')
+  let currentSection = 'summary'
+  let currentContent: string[] = []
+  
+  const saveCurrentSection = () => {
+    const content = currentContent.join('\n').trim()
+    if (content) {
+      switch (currentSection) {
+        case 'goals': result.goals = content; break
+        case 'planFact': result.planFact = content; break
+        case 'risks': result.risksProblems = content; break
+        case 'initiatives': result.initiatives = content; break
+        case 'personal': result.personalPriorities = content; break
+        case 'summary': result.summary = (result.summary ? result.summary + '\n' : '') + content; break
+      }
+    }
+    currentContent = []
+  }
+  
+  for (const line of lines) {
+    const lowerLine = line.toLowerCase()
+    
+    // Detect section headers
+    if (lowerLine.includes('цел') || lowerLine.includes('план на') || lowerLine.includes('приоритет') && lowerLine.includes('недел')) {
+      saveCurrentSection()
+      currentSection = 'goals'
+      continue
+    }
+    if (lowerLine.includes('план') && lowerLine.includes('факт') || lowerLine.includes('что сделан') || lowerLine.includes('выполнен')) {
+      saveCurrentSection()
+      currentSection = 'planFact'
+      continue
+    }
+    if (lowerLine.includes('риск') || lowerLine.includes('проблем') || lowerLine.includes('блокер') || lowerLine.includes('сложност')) {
+      saveCurrentSection()
+      currentSection = 'risks'
+      continue
+    }
+    if (lowerLine.includes('инициатив') || lowerLine.includes('идеи') || lowerLine.includes('предложен')) {
+      saveCurrentSection()
+      currentSection = 'initiatives'
+      continue
+    }
+    if (lowerLine.includes('личн') || lowerLine.includes('персонал') || lowerLine.includes('мотивац') || lowerLine.includes('настроен')) {
+      saveCurrentSection()
+      currentSection = 'personal'
+      continue
+    }
+    if (lowerLine.includes('итог') || lowerLine.includes('резюме') || lowerLine.includes('вывод') || lowerLine.includes('саммари')) {
+      saveCurrentSection()
+      currentSection = 'summary'
+      continue
+    }
+    
+    // Add line to current section
+    if (line.trim()) {
+      currentContent.push(line.trim())
+    }
+  }
+  
+  saveCurrentSection()
+  
+  return result
+}
+
 export default function OneOnOnePage() {
   const [people, setPeople] = useState<PersonData[]>(
     oneOnOnePeople.map(p => ({
@@ -36,6 +112,8 @@ export default function OneOnOnePage() {
   )
   const [selectedPerson, setSelectedPerson] = useState<string | null>(null)
   const [showNewMeeting, setShowNewMeeting] = useState(false)
+  const [showImportModal, setShowImportModal] = useState(false)
+  const [importText, setImportText] = useState('')
   const [newMeeting, setNewMeeting] = useState<Partial<Meeting>>({
     date: new Date().toISOString().split('T')[0],
     goals: '',
@@ -66,6 +144,18 @@ export default function OneOnOnePage() {
   }, [])
 
   const selectedPersonData = people.find(p => p.name === selectedPerson)
+
+  // Handle import
+  const handleImport = () => {
+    const parsed = parseImportedText(importText)
+    setNewMeeting({
+      ...newMeeting,
+      ...parsed
+    })
+    setImportText('')
+    setShowImportModal(false)
+    setShowNewMeeting(true)
+  }
 
   const addMeeting = async () => {
     if (!selectedPerson || !newMeeting.date) return
@@ -156,6 +246,62 @@ export default function OneOnOnePage() {
           <div className="text-sm text-dark-400">человек</div>
         </div>
       </div>
+
+      {/* Import Modal */}
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setShowImportModal(false)}>
+          <div className="bg-dark-800 rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold">📥 Импорт заметок 1:1</h2>
+              <button onClick={() => setShowImportModal(false)} className="p-2 hover:bg-dark-700 rounded-lg">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <p className="text-dark-400 text-sm mb-4">
+              Вставьте текст заметок — система автоматически распределит по блокам.
+              <br /><br />
+              <strong>Ключевые слова для распределения:</strong>
+              <br />• <span className="text-blue-400">Цели / Планы:</span> "цели", "план на неделю", "приоритеты недели"
+              <br />• <span className="text-green-400">План/Факт:</span> "план/факт", "что сделано", "выполнено"
+              <br />• <span className="text-yellow-400">Риски/Проблемы:</span> "риски", "проблемы", "блокеры", "сложности"
+              <br />• <span className="text-purple-400">Инициативы:</span> "инициативы", "идеи", "предложения"
+              <br />• <span className="text-pink-400">Личное:</span> "личное", "мотивация", "настроение"
+            </p>
+
+            <textarea
+              value={importText}
+              onChange={(e) => setImportText(e.target.value)}
+              placeholder={`Пример:
+
+Цели на неделю:
+- Закрыть проект X
+- Встреча с клиентом Y
+
+План/Факт:
+План: завершить дизайн
+Факт: дизайн готов на 80%
+
+Проблемы:
+- Задержка от подрядчика
+- Нехватка ресурсов
+
+Личное:
+Настроение хорошее, мотивация высокая`}
+              className="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-3 min-h-[300px] font-mono text-sm"
+            />
+
+            <button
+              onClick={handleImport}
+              disabled={!importText.trim() || !selectedPerson}
+              className="w-full mt-4 py-3 bg-primary-600 hover:bg-primary-500 disabled:opacity-50 rounded-lg flex items-center justify-center gap-2"
+            >
+              <Upload size={18} />
+              {selectedPerson ? 'Импортировать и заполнить форму' : 'Сначала выберите человека слева'}
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* People List */}
@@ -353,13 +499,22 @@ export default function OneOnOnePage() {
                     </button>
                   </div>
                 ) : (
-                  <button
-                    onClick={() => setShowNewMeeting(true)}
-                    className="w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed border-dark-600 hover:border-primary-500 rounded-xl text-dark-400 hover:text-primary-400 transition-colors"
-                  >
-                    <Plus size={20} />
-                    <span>Добавить встречу</span>
-                  </button>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setShowNewMeeting(true)}
+                      className="flex-1 flex items-center justify-center gap-2 p-4 border-2 border-dashed border-dark-600 hover:border-primary-500 rounded-xl text-dark-400 hover:text-primary-400 transition-colors"
+                    >
+                      <Plus size={20} />
+                      <span>Добавить встречу</span>
+                    </button>
+                    <button
+                      onClick={() => setShowImportModal(true)}
+                      className="flex items-center justify-center gap-2 p-4 bg-green-600/20 hover:bg-green-600/30 border border-green-600/30 rounded-xl text-green-400 transition-colors"
+                    >
+                      <Upload size={20} />
+                      <span>Импорт текста</span>
+                    </button>
+                  </div>
                 )}
 
                 {/* Meeting Archive */}
@@ -392,7 +547,7 @@ export default function OneOnOnePage() {
                                 <div className="flex items-center gap-2 text-dark-400 mb-1">
                                   <Target size={14} /> Цели / Планы
                                 </div>
-                                <div className="text-dark-200 pl-5">{meeting.goals}</div>
+                                <div className="text-dark-200 pl-5 whitespace-pre-wrap">{meeting.goals}</div>
                               </div>
                             )}
                             {meeting.planFact && (
@@ -400,7 +555,7 @@ export default function OneOnOnePage() {
                                 <div className="flex items-center gap-2 text-dark-400 mb-1">
                                   <FileText size={14} /> План / Факт
                                 </div>
-                                <div className="text-dark-200 pl-5">{meeting.planFact}</div>
+                                <div className="text-dark-200 pl-5 whitespace-pre-wrap">{meeting.planFact}</div>
                               </div>
                             )}
                             {meeting.risksProblems && (
@@ -408,7 +563,7 @@ export default function OneOnOnePage() {
                                 <div className="flex items-center gap-2 text-dark-400 mb-1">
                                   <AlertTriangle size={14} /> Риски / Проблемы
                                 </div>
-                                <div className="text-dark-200 pl-5">{meeting.risksProblems}</div>
+                                <div className="text-dark-200 pl-5 whitespace-pre-wrap">{meeting.risksProblems}</div>
                               </div>
                             )}
                             {meeting.initiatives && (
@@ -416,7 +571,7 @@ export default function OneOnOnePage() {
                                 <div className="flex items-center gap-2 text-dark-400 mb-1">
                                   <Lightbulb size={14} /> Инициативы
                                 </div>
-                                <div className="text-dark-200 pl-5">{meeting.initiatives}</div>
+                                <div className="text-dark-200 pl-5 whitespace-pre-wrap">{meeting.initiatives}</div>
                               </div>
                             )}
                             {meeting.personalPriorities && (
@@ -424,13 +579,13 @@ export default function OneOnOnePage() {
                                 <div className="flex items-center gap-2 text-dark-400 mb-1">
                                   <User size={14} /> Личные приоритеты
                                 </div>
-                                <div className="text-dark-200 pl-5">{meeting.personalPriorities}</div>
+                                <div className="text-dark-200 pl-5 whitespace-pre-wrap">{meeting.personalPriorities}</div>
                               </div>
                             )}
                             {meeting.summary && (
                               <div className="pt-2 border-t border-dark-600">
                                 <div className="text-dark-400 mb-1">📋 Саммари</div>
-                                <div className="text-dark-300 pl-5">{meeting.summary}</div>
+                                <div className="text-dark-300 pl-5 whitespace-pre-wrap">{meeting.summary}</div>
                               </div>
                             )}
                           </div>
