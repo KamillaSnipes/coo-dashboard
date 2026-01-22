@@ -15,7 +15,8 @@ import {
   BarChart3,
   Target,
   Briefcase,
-  LogOut
+  LogOut,
+  Mic
 } from 'lucide-react'
 
 const navigation = [
@@ -26,6 +27,7 @@ const navigation = [
   { name: 'Отделы', href: '/departments', icon: Building2 },
   { name: 'Клиенты', href: '/clients', icon: Briefcase },
   { name: '1:1 Встречи', href: '/one-on-one', icon: Users },
+  { name: 'Записи встреч', href: '/recordings', icon: Mic },
   { name: 'Стратегия', href: '/initiatives', icon: Rocket },
   { name: 'Неделя', href: '/weekly', icon: Calendar },
   { name: 'Проблемы', href: '/problems', icon: AlertTriangle },

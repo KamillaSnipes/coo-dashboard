@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import Card from '@/components/Card'
 import StatusBadge from '@/components/StatusBadge'
-import { ChevronDown, ChevronUp, Calendar, Plus, Save, Trash2, FileText, Clock, Target, AlertTriangle, Lightbulb, User, Upload, X } from 'lucide-react'
+import { ChevronDown, ChevronUp, Calendar, Plus, Save, Trash2, FileText, Clock, Target, AlertTriangle, Lightbulb, User, Upload, X, Mic, Loader } from 'lucide-react'
+import Link from 'next/link'
 import { oneOnOnePeople, departments } from '@/lib/data'
 
 interface Meeting {
@@ -114,6 +115,9 @@ export default function OneOnOnePage() {
   const [showNewMeeting, setShowNewMeeting] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
   const [importText, setImportText] = useState('')
+  const [showTranskriptorModal, setShowTranskriptorModal] = useState(false)
+  const [transkriptorFiles, setTranskriptorFiles] = useState<any[]>([])
+  const [loadingTranskriptor, setLoadingTranskriptor] = useState(false)
   const [newMeeting, setNewMeeting] = useState<Partial<Meeting>>({
     date: new Date().toISOString().split('T')[0],
     goals: '',
@@ -155,6 +159,36 @@ export default function OneOnOnePage() {
     setImportText('')
     setShowImportModal(false)
     setShowNewMeeting(true)
+  }
+
+  // Load Transkriptor files
+  const loadTranskriptorFiles = async () => {
+    setLoadingTranskriptor(true)
+    try {
+      const response = await fetch('/api/transkriptor')
+      const data = await response.json()
+      const files = data.files || data.transcriptions || data.data || []
+      setTranskriptorFiles(Array.isArray(files) ? files.filter((f: any) => f.status === 'completed') : [])
+    } catch (e) {
+      console.error('Error loading Transkriptor files:', e)
+      setTranskriptorFiles([])
+    }
+    setLoadingTranskriptor(false)
+  }
+
+  // Import from Transkriptor
+  const importFromTranskriptor = async (file: any) => {
+    const text = file.text || file.transcript || ''
+    if (text) {
+      const parsed = parseImportedText(text)
+      setNewMeeting({
+        ...newMeeting,
+        ...parsed,
+        summary: text.substring(0, 2000) // Полный текст в саммари
+      })
+      setShowTranskriptorModal(false)
+      setShowNewMeeting(true)
+    }
   }
 
   const addMeeting = async () => {
@@ -246,6 +280,59 @@ export default function OneOnOnePage() {
           <div className="text-sm text-dark-400">человек</div>
         </div>
       </div>
+
+      {/* Transkriptor Modal */}
+      {showTranskriptorModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setShowTranskriptorModal(false)}>
+          <div className="bg-dark-800 rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold">🎙️ Импорт из Transkriptor</h2>
+              <button onClick={() => setShowTranskriptorModal(false)} className="p-2 hover:bg-dark-700 rounded-lg">
+                <X size={20} />
+              </button>
+            </div>
+            
+            {loadingTranskriptor ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader className="animate-spin text-primary-400" size={32} />
+                <span className="ml-3 text-dark-400">Загрузка транскрипций...</span>
+              </div>
+            ) : transkriptorFiles.length === 0 ? (
+              <div className="text-center py-8 text-dark-400">
+                <Mic size={48} className="mx-auto mb-4 opacity-50" />
+                <p>Нет готовых транскрипций</p>
+                <Link 
+                  href="/recordings" 
+                  className="mt-4 inline-block px-4 py-2 bg-primary-600 hover:bg-primary-500 rounded-lg"
+                >
+                  Открыть Записи встреч
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {transkriptorFiles.map((file: any) => (
+                  <button
+                    key={file.id}
+                    onClick={() => importFromTranskriptor(file)}
+                    className="w-full p-4 bg-dark-700/50 hover:bg-dark-700 rounded-xl text-left transition-colors"
+                  >
+                    <div className="font-medium">{file.name || `Запись ${file.id}`}</div>
+                    <div className="text-sm text-dark-400 mt-1">
+                      {file.created_at && new Date(file.created_at).toLocaleDateString('ru-RU')}
+                      {file.duration && ` • ${Math.floor(file.duration / 60)} мин`}
+                    </div>
+                    {file.text && (
+                      <p className="text-xs text-dark-500 mt-2 line-clamp-2">
+                        {file.text.substring(0, 150)}...
+                      </p>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Import Modal */}
       {showImportModal && (
@@ -505,14 +592,24 @@ export default function OneOnOnePage() {
                       className="flex-1 flex items-center justify-center gap-2 p-4 border-2 border-dashed border-dark-600 hover:border-primary-500 rounded-xl text-dark-400 hover:text-primary-400 transition-colors"
                     >
                       <Plus size={20} />
-                      <span>Добавить встречу</span>
+                      <span>Добавить</span>
                     </button>
                     <button
                       onClick={() => setShowImportModal(true)}
                       className="flex items-center justify-center gap-2 p-4 bg-green-600/20 hover:bg-green-600/30 border border-green-600/30 rounded-xl text-green-400 transition-colors"
                     >
                       <Upload size={20} />
-                      <span>Импорт текста</span>
+                      <span>Текст</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        loadTranskriptorFiles()
+                        setShowTranskriptorModal(true)
+                      }}
+                      className="flex items-center justify-center gap-2 p-4 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-600/30 rounded-xl text-purple-400 transition-colors"
+                    >
+                      <Mic size={20} />
+                      <span>Transkriptor</span>
                     </button>
                   </div>
                 )}
