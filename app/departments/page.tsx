@@ -271,6 +271,17 @@ export default function DepartmentsPage() {
                       </Link>
                     </div>
                   )}
+
+                  {/* Detail Link for VED */}
+                  {dept.id === 'ved' && (
+                    <Link 
+                      href="/departments/ved"
+                      className="flex items-center justify-center gap-2 p-4 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-600/30 rounded-xl transition-colors text-purple-300"
+                    >
+                      <span className="font-medium">📦 Анализ процессов ВЭД</span>
+                      <ArrowRight size={20} />
+                    </Link>
+                  )}
                 </div>
               )}
             </Card>
