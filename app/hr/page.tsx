@@ -21,11 +21,25 @@ interface Vacancy {
   link?: string
 }
 
+interface HrbpCandidate {
+  id: string
+  name: string
+  seniority: string
+  experience: string
+  strengths: string
+  risks: string
+  cultureFit: string
+  salaryExpectations: string
+  status: 'new' | 'in_process' | 'offer' | 'rejected'
+  notes?: string
+}
+
 interface HRData {
   mainGoal: string
   goals: HRGoal[]
   vacancies: Vacancy[]
   problems: string[]
+  hrbpCandidates?: HrbpCandidate[]
   notes: string
 }
 
@@ -51,6 +65,7 @@ const defaultData: HRData = {
     'Не формализованы HR-процессы',
     'Нет системы оценки компетенций',
   ],
+  hrbpCandidates: [],
   notes: '',
 }
 
@@ -64,6 +79,18 @@ export default function HRPage() {
   const [newGoal, setNewGoal] = useState('')
   const [newVacancy, setNewVacancy] = useState({ title: '', priority: 'medium' as const })
   const [newProblem, setNewProblem] = useState('')
+  const [expandedCandidate, setExpandedCandidate] = useState<string | null>(null)
+  const [newCandidate, setNewCandidate] = useState<Partial<HrbpCandidate>>({
+    name: '',
+    seniority: '',
+    experience: '',
+    strengths: '',
+    risks: '',
+    cultureFit: '',
+    salaryExpectations: '',
+    status: 'new',
+    notes: '',
+  })
 
   // Load data
   useEffect(() => {
@@ -160,6 +187,69 @@ export default function HRPage() {
       case 'medium': return <span className="text-xs px-2 py-0.5 bg-yellow-500/20 text-yellow-400 rounded">Средний</span>
       default: return <span className="text-xs px-2 py-0.5 bg-green-500/20 text-green-400 rounded">Низкий</span>
     }
+  }
+
+  const getCandidateStatusBadge = (status: HrbpCandidate['status']) => {
+    switch (status) {
+      case 'new':
+        return <span className="text-xs px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded-full">Новый</span>
+      case 'in_process':
+        return <span className="text-xs px-2 py-0.5 bg-yellow-500/20 text-yellow-300 rounded-full">В процессе</span>
+      case 'offer':
+        return <span className="text-xs px-2 py-0.5 bg-green-500/20 text-green-300 rounded-full">Оффер</span>
+      case 'rejected':
+        return <span className="text-xs px-2 py-0.5 bg-red-500/20 text-red-300 rounded-full">Отказ</span>
+      default:
+        return null
+    }
+  }
+
+  const updateCandidate = (id: string, updates: Partial<HrbpCandidate>) => {
+    const current = data.hrbpCandidates || []
+    saveData({
+      ...data,
+      hrbpCandidates: current.map(c => (c.id === id ? { ...c, ...updates } : c)),
+    })
+  }
+
+  const addCandidate = () => {
+    if (!newCandidate.name?.trim()) return
+    const current = data.hrbpCandidates || []
+    const candidate: HrbpCandidate = {
+      id: Date.now().toString(),
+      name: newCandidate.name || '',
+      seniority: newCandidate.seniority || '',
+      experience: newCandidate.experience || '',
+      strengths: newCandidate.strengths || '',
+      risks: newCandidate.risks || '',
+      cultureFit: newCandidate.cultureFit || '',
+      salaryExpectations: newCandidate.salaryExpectations || '',
+      status: newCandidate.status || 'new',
+      notes: newCandidate.notes || '',
+    }
+    saveData({
+      ...data,
+      hrbpCandidates: [...current, candidate],
+    })
+    setNewCandidate({
+      name: '',
+      seniority: '',
+      experience: '',
+      strengths: '',
+      risks: '',
+      cultureFit: '',
+      salaryExpectations: '',
+      status: 'new',
+      notes: '',
+    })
+  }
+
+  const deleteCandidate = (id: string) => {
+    const current = data.hrbpCandidates || []
+    saveData({
+      ...data,
+      hrbpCandidates: current.filter(c => c.id !== id),
+    })
   }
 
   if (loading) {
@@ -416,6 +506,286 @@ export default function HRPage() {
             </button>
           </div>
         )}
+      </Card>
+
+      {/* HRBP Candidates Profiles */}
+      <Card title="🧩 Профили кандидатов HRBP">
+        <div className="space-y-4">
+          {(data.hrbpCandidates || []).length === 0 && !editMode && (
+            <p className="text-dark-500 text-sm">
+              Здесь будет удобная сводка по кандидатам HRBP (профиль, сильные стороны, риски, fit под Headcorn).
+              Добавь кандидатов в режиме редактирования.
+            </p>
+          )}
+
+          {(data.hrbpCandidates || []).map((candidate) => (
+            <div
+              key={candidate.id}
+              className="p-4 bg-dark-700/50 rounded-xl border border-dark-600"
+            >
+              <div
+                className="flex items-start justify-between cursor-pointer"
+                onClick={() =>
+                  setExpandedCandidate(expandedCandidate === candidate.id ? null : candidate.id)
+                }
+              >
+                <div>
+                  <div className="flex items-center gap-3">
+                    <h3 className="font-semibold text-lg">{candidate.name}</h3>
+                    {getCandidateStatusBadge(candidate.status)}
+                  </div>
+                  {candidate.seniority && (
+                    <p className="text-sm text-dark-400 mt-1">{candidate.seniority}</p>
+                  )}
+                  {candidate.experience && (
+                    <p className="text-xs text-dark-500 mt-1 line-clamp-1">
+                      Опыт: {candidate.experience}
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  {expandedCandidate === candidate.id ? (
+                    <ChevronUp size={18} className="text-dark-400" />
+                  ) : (
+                    <ChevronDown size={18} className="text-dark-400" />
+                  )}
+                  {editMode && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        deleteCandidate(candidate.id)
+                      }}
+                      className="p-1 text-dark-400 hover:text-red-400"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {expandedCandidate === candidate.id && (
+                <div className="mt-4 grid md:grid-cols-2 gap-4 text-sm">
+                  <div className="space-y-2">
+                    <div>
+                      <div className="text-dark-400 mb-1">Опыт</div>
+                      {editMode ? (
+                        <textarea
+                          value={candidate.experience}
+                          onChange={(e) =>
+                            updateCandidate(candidate.id, { experience: e.target.value })
+                          }
+                          className="w-full bg-dark-800 border border-dark-600 rounded-lg px-3 py-2 min-h-[60px]"
+                        />
+                      ) : (
+                        <p className="text-dark-200 whitespace-pre-wrap">
+                          {candidate.experience || '—'}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <div className="text-dark-400 mb-1">Сильные стороны</div>
+                      {editMode ? (
+                        <textarea
+                          value={candidate.strengths}
+                          onChange={(e) =>
+                            updateCandidate(candidate.id, { strengths: e.target.value })
+                          }
+                          className="w-full bg-dark-800 border border-dark-600 rounded-lg px-3 py-2 min-h-[60px]"
+                        />
+                      ) : (
+                        <p className="text-dark-200 whitespace-pre-wrap">
+                          {candidate.strengths || '—'}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <div className="text-dark-400 mb-1">Риски / слабые стороны</div>
+                      {editMode ? (
+                        <textarea
+                          value={candidate.risks}
+                          onChange={(e) =>
+                            updateCandidate(candidate.id, { risks: e.target.value })
+                          }
+                          className="w-full bg-dark-800 border border-dark-600 rounded-lg px-3 py-2 min-h-[60px]"
+                        />
+                      ) : (
+                        <p className="text-dark-200 whitespace-pre-wrap">
+                          {candidate.risks || '—'}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div>
+                      <div className="text-dark-400 mb-1">Culture/Fit под Headcorn</div>
+                      {editMode ? (
+                        <textarea
+                          value={candidate.cultureFit}
+                          onChange={(e) =>
+                            updateCandidate(candidate.id, { cultureFit: e.target.value })
+                          }
+                          className="w-full bg-dark-800 border border-dark-600 rounded-lg px-3 py-2 min-h-[60px]"
+                        />
+                      ) : (
+                        <p className="text-dark-200 whitespace-pre-wrap">
+                          {candidate.cultureFit || '—'}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <div className="text-dark-400 mb-1">Ожидания по деньгам</div>
+                      {editMode ? (
+                        <input
+                          type="text"
+                          value={candidate.salaryExpectations}
+                          onChange={(e) =>
+                            updateCandidate(candidate.id, { salaryExpectations: e.target.value })
+                          }
+                          className="w-full bg-dark-800 border border-dark-600 rounded-lg px-3 py-2"
+                          placeholder="Например: 250–300k фикс + бонус"
+                        />
+                      ) : (
+                        <p className="text-dark-200">
+                          {candidate.salaryExpectations || '—'}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <div className="text-dark-400 mb-1">Заметки / вывод по кандидату</div>
+                      {editMode ? (
+                        <textarea
+                          value={candidate.notes || ''}
+                          onChange={(e) =>
+                            updateCandidate(candidate.id, { notes: e.target.value })
+                          }
+                          className="w-full bg-dark-800 border border-dark-600 rounded-lg px-3 py-2 min-h-[60px]"
+                        />
+                      ) : (
+                        <p className="text-dark-200 whitespace-pre-wrap">
+                          {candidate.notes || '—'}
+                        </p>
+                      )}
+                    </div>
+                    {editMode && (
+                      <div>
+                        <div className="text-dark-400 mb-1">Статус кандидата</div>
+                        <select
+                          value={candidate.status}
+                          onChange={(e) =>
+                            updateCandidate(candidate.id, {
+                              status: e.target.value as HrbpCandidate['status'],
+                            })
+                          }
+                          className="bg-dark-800 border border-dark-600 rounded-lg px-3 py-2 text-sm"
+                        >
+                          <option value="new">Новый</option>
+                          <option value="in_process">В процессе</option>
+                          <option value="offer">Оффер</option>
+                          <option value="rejected">Отказ</option>
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+
+          {editMode && (
+            <div className="mt-6 border-t border-dark-700 pt-4 space-y-3">
+              <div className="text-sm text-dark-400">
+                Заполни краткий профиль нового кандидата HRBP (как ты присылаешь в чат/док) и зафиксируй его здесь.
+              </div>
+              <div className="grid md:grid-cols-2 gap-4 text-sm">
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    value={newCandidate.name || ''}
+                    onChange={(e) => setNewCandidate({ ...newCandidate, name: e.target.value })}
+                    placeholder="Имя кандидата"
+                    className="w-full bg-dark-800 border border-dark-600 rounded-lg px-3 py-2"
+                  />
+                  <input
+                    type="text"
+                    value={newCandidate.seniority || ''}
+                    onChange={(e) =>
+                      setNewCandidate({ ...newCandidate, seniority: e.target.value })
+                    }
+                    placeholder="Уровень (Senior/Middle, продуктовый/корпоративный HRBP и т.п.)"
+                    className="w-full bg-dark-800 border border-dark-600 rounded-lg px-3 py-2"
+                  />
+                  <textarea
+                    value={newCandidate.experience || ''}
+                    onChange={(e) =>
+                      setNewCandidate({ ...newCandidate, experience: e.target.value })
+                    }
+                    placeholder="Опыт: компании, команды, ключевые проекты"
+                    className="w-full bg-dark-800 border border-dark-600 rounded-lg px-3 py-2 min-h-[80px]"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <textarea
+                    value={newCandidate.strengths || ''}
+                    onChange={(e) =>
+                      setNewCandidate({ ...newCandidate, strengths: e.target.value })
+                    }
+                    placeholder="Сильные стороны"
+                    className="w-full bg-dark-800 border border-dark-600 rounded-lg px-3 py-2 min-h-[60px]"
+                  />
+                  <textarea
+                    value={newCandidate.risks || ''}
+                    onChange={(e) => setNewCandidate({ ...newCandidate, risks: e.target.value })}
+                    placeholder="Риски/красные флажки"
+                    className="w-full bg-dark-800 border border-dark-600 rounded-lg px-3 py-2 min-h-[60px]"
+                  />
+                  <textarea
+                    value={newCandidate.cultureFit || ''}
+                    onChange={(e) =>
+                      setNewCandidate({ ...newCandidate, cultureFit: e.target.value })
+                    }
+                    placeholder="Fit под Headcorn (ценности, скорость, стиль)"
+                    className="w-full bg-dark-800 border border-dark-600 rounded-lg px-3 py-2 min-h-[60px]"
+                  />
+                  <div className="flex gap-2 items-center">
+                    <input
+                      type="text"
+                      value={newCandidate.salaryExpectations || ''}
+                      onChange={(e) =>
+                        setNewCandidate({ ...newCandidate, salaryExpectations: e.target.value })
+                      }
+                      placeholder="Ожидания по деньгам"
+                      className="flex-1 bg-dark-800 border border-dark-600 rounded-lg px-3 py-2"
+                    />
+                    <select
+                      value={newCandidate.status || 'new'}
+                      onChange={(e) =>
+                        setNewCandidate({
+                          ...newCandidate,
+                          status: e.target.value as HrbpCandidate['status'],
+                        })
+                      }
+                      className="bg-dark-800 border border-dark-600 rounded-lg px-3 py-2 text-sm"
+                    >
+                      <option value="new">Новый</option>
+                      <option value="in_process">В процессе</option>
+                      <option value="offer">Оффер</option>
+                      <option value="rejected">Отказ</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <button
+                  onClick={addCandidate}
+                  className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-500 rounded-lg text-sm"
+                >
+                  <Plus size={16} />
+                  Добавить кандидата HRBP
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </Card>
 
       {/* Notes */}
