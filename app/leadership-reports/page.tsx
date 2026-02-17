@@ -138,10 +138,10 @@ function calculateCompletionRate(plan: string, fact: string): number {
 // Initial reports data
 const initialReports: WeeklyReport[] = [
   {
-    id: 'vika-0119',
+    id: 'vika-0126',
     manager: 'Виктория Бакирова',
     department: 'Отдел продаж',
-    weekStart: '2026-01-19',
+    weekStart: '2026-01-26',
     plan: `На этой неделе два общих блока:
 
 1. Максимально провести 1:1 с командой и руководителями, чтобы погрузиться в работу и проекты
@@ -180,10 +180,10 @@ const initialReports: WeeklyReport[] = [
     createdAt: '2026-01-19T09:00:00.000Z'
   },
   {
-    id: 'kostya-0119',
+    id: 'kostya-0126',
     manager: 'Константин',
     department: 'Маркетинг',
-    weekStart: '2026-01-19',
+    weekStart: '2026-01-26',
     plan: `- подготовка предложения ко встрече с Wildberries (пришли с запросом на 10.000 НГ подарков)
 - подготовка отчета план/факт за 2025-2026 год
 - подготовка стратегии маркетинга на 2026-2027 год
@@ -203,10 +203,10 @@ const initialReports: WeeklyReport[] = [
     createdAt: '2026-01-19T09:00:00.000Z'
   },
   {
-    id: 'artem-0119',
+    id: 'artem-0126',
     manager: 'Артем',
     department: 'Китай/МОК',
-    weekStart: '2026-01-19',
+    weekStart: '2026-01-26',
     plan: `1. Встреча с ОК
 2. Сбор статистики, подготовка к концу сезона
 3. Мерч проработка
@@ -237,10 +237,10 @@ const initialReports: WeeklyReport[] = [
     createdAt: '2026-01-19T09:00:00.000Z'
   },
   {
-    id: 'nastya-a-0119',
+    id: 'nastya-a-0126',
     manager: 'Настя А',
     department: 'Китай/МОК',
-    weekStart: '2026-01-19',
+    weekStart: '2026-01-26',
     plan: `Операционка:
 - ревизия задач в статусах «КП согласование» и «КП согласовано» от прямых клиентов
 - работа с браком по проектам, а именно бадминтон
@@ -274,10 +274,10 @@ const initialReports: WeeklyReport[] = [
     createdAt: '2026-01-19T09:00:00.000Z'
   },
   {
-    id: 'petr-0119',
+    id: 'petr-0126',
     manager: 'Петр',
     department: 'HR',
-    weekStart: '2026-01-19',
+    weekStart: '2026-01-26',
     plan: `Рекрутмент:
 - Встречаемся в офисе с кандидатом в HRBP
 - Назначены встречи с разработчиками, аккаунтами, тендерными специалистами
@@ -327,10 +327,10 @@ const initialReports: WeeklyReport[] = [
     createdAt: '2026-01-19T09:00:00.000Z'
   },
   {
-    id: 'nikita-0119',
+    id: 'nikita-0126',
     manager: 'Никита',
     department: 'Дубай',
-    weekStart: '2026-01-19',
+    weekStart: '2026-01-26',
     plan: `- операционка, фин. учет
 - встреча с Henkel, контроль новых запусков
 - аккаунтинг текущих клиентов
@@ -354,10 +354,10 @@ const initialReports: WeeklyReport[] = [
     createdAt: '2026-01-19T09:00:00.000Z'
   },
   {
-    id: 'zhenya-0112',
+    id: 'zhenya-0119',
     manager: 'Женя',
     department: 'Китай',
-    weekStart: '2026-01-12',
+    weekStart: '2026-01-19',
     plan: `- Контроль обновления статусов по производствам/доставкам/образцам
 - Встреча с ОК по компетенциям
 - Встреча с Камиллой по компетенциям
@@ -374,10 +374,10 @@ const initialReports: WeeklyReport[] = [
     createdAt: '2026-01-12T09:00:00.000Z'
   },
   {
-    id: 'nastya-m-0112',
+    id: 'nastya-m-0119',
     manager: 'Настя Мирскова',
     department: 'МОК',
-    weekStart: '2026-01-12',
+    weekStart: '2026-01-19',
     plan: `1. Выполненные проекты декабря
 2. Закрыть проекты
 3. Просчет мерча Headcorn
@@ -392,10 +392,10 @@ const initialReports: WeeklyReport[] = [
     createdAt: '2026-01-12T09:00:00.000Z'
   },
   {
-    id: 'pavel-0112',
+    id: 'pavel-0119',
     manager: 'Павел',
     department: 'Логистика',
-    weekStart: '2026-01-12',
+    weekStart: '2026-01-19',
     plan: `- Подготовка к отправке прибывающих грузов Яндекса (общебренд + подарки на НГ) - отправляем в страны СНГ из РФ
 - Финализирую метрики по KPI
 - Отпуска
@@ -410,9 +410,145 @@ const initialReports: WeeklyReport[] = [
   }
 ]
 
+// Russian holidays 2026 (official non-working days)
+const holidays2026 = new Set([
+  // New Year holidays (January 1-8)
+  '2026-01-01', '2026-01-02', '2026-01-03', '2026-01-04', 
+  '2026-01-05', '2026-01-06', '2026-01-07', '2026-01-08',
+  
+  // Defender of the Fatherland Day (February 23)
+  '2026-02-23',
+  
+  // International Women's Day (March 8 is Sunday, March 9 may be day off)
+  '2026-03-09', // Transferred day off
+  
+  // Spring and Labour Day (May 1)
+  '2026-05-01',
+  
+  // Victory Day (May 9 is Saturday, May 11 may be day off)
+  '2026-05-11', // Transferred day off
+  
+  // Russia Day (June 12)
+  '2026-06-12',
+  
+  // Unity Day (November 4)
+  '2026-11-04',
+])
+
+// Check if date is a working day (not weekend or holiday)
+function isWorkingDay(date: Date): boolean {
+  const dayOfWeek = date.getDay()
+  if (dayOfWeek === 0 || dayOfWeek === 6) return false // Weekend
+  
+  const dateStr = date.toISOString().split('T')[0]
+  return !holidays2026.has(dateStr)
+}
+
+// Get next working day
+function getNextWorkingDay(date: Date): Date {
+  const next = new Date(date)
+  next.setDate(next.getDate() + 1)
+  while (!isWorkingDay(next)) {
+    next.setDate(next.getDate() + 1)
+  }
+  return next
+}
+
+// Get Monday of week
+function getMonday(date: Date): string {
+  const d = new Date(date)
+  const day = d.getDay()
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1)
+  d.setDate(diff)
+  return d.toISOString().split('T')[0]
+}
+
+// Format week for display (start day to end of that work week)
+function formatWeek(dateStr: string): string {
+  const date = new Date(dateStr)
+  
+  // Find the Friday of this week (or last working day if Friday is a holiday)
+  const startDay = date.getDay() // 1=Mon, 2=Tue, etc.
+  const daysUntilFriday = 5 - startDay // 5 = Friday
+  
+  const endDate = new Date(date)
+  endDate.setDate(endDate.getDate() + daysUntilFriday)
+  
+  // If Friday is a holiday, find the last working day before it
+  while (!isWorkingDay(endDate) && endDate > date) {
+    endDate.setDate(endDate.getDate() - 1)
+  }
+  
+  return `${date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })} - ${endDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })}`
+}
+
+// Generate working weeks for 2026
+// Logic: Each week starts on Monday (or next working day if Monday is a holiday)
+// and runs through Friday, skipping weekends and public holidays.
+// Example: After report ending Jan 23, next week is Jan 26-30, then Feb 2-6, etc.
+function generateWorkingWeeks2026(): string[] {
+  const weeks: string[] = []
+  
+  // Start from first Monday after New Year holidays (Jan 1-8)
+  // January 9, 2026 is Friday (first working day after holidays)
+  // First full working week starts on Monday, January 12, 2026
+  let currentDate = new Date('2026-01-12') // First Monday after holidays
+  const endOfYear = new Date('2026-12-31')
+  
+  while (currentDate <= endOfYear) {
+    // Check if this Monday is a working day (could be a holiday)
+    let weekStart = new Date(currentDate)
+    
+    // If Monday is a holiday, find next working day in that week
+    if (!isWorkingDay(weekStart)) {
+      // Find next working day within the same week
+      const weekEnd = new Date(weekStart)
+      weekEnd.setDate(weekEnd.getDate() + 4) // Friday of the same week
+      
+      while (!isWorkingDay(weekStart) && weekStart <= weekEnd) {
+        weekStart.setDate(weekStart.getDate() + 1)
+      }
+      
+      // If no working days in this week, skip to next week
+      if (weekStart > weekEnd) {
+        currentDate.setDate(currentDate.getDate() + 7)
+        continue
+      }
+    }
+    
+    const weekStartStr = weekStart.toISOString().split('T')[0]
+    weeks.push(weekStartStr)
+    
+    // Move to next Monday (add 7 days)
+    currentDate.setDate(currentDate.getDate() + 7)
+  }
+  
+  return weeks.reverse() // Most recent first
+}
+
+// Get current working week
+function getCurrentWorkingWeek(): string {
+  const today = new Date()
+  const weeks = generateWorkingWeeks2026()
+  
+  // Find the week that includes today or the most recent past week
+  for (const week of weeks) {
+    const weekStart = new Date(week)
+    const weekEnd = new Date(week)
+    weekEnd.setDate(weekEnd.getDate() + 4) // Friday
+    
+    if (today >= weekStart && today <= weekEnd) {
+      return week
+    }
+  }
+  
+  // If not found, return the most recent week
+  return weeks[0] || '2026-01-12'
+}
+
 export default function LeadershipReportsPage() {
   const [reports, setReports] = useState<WeeklyReport[]>([])
-  const [selectedWeek, setSelectedWeek] = useState<string>('2026-01-19')
+  const [selectedWeek, setSelectedWeek] = useState<string>(getCurrentWorkingWeek())
   const [expandedManager, setExpandedManager] = useState<string | null>(null)
   const [editingReport, setEditingReport] = useState<WeeklyReport | null>(null)
   const [saving, setSaving] = useState(false)
@@ -421,23 +557,6 @@ export default function LeadershipReportsPage() {
   const [importText, setImportText] = useState('')
   const [importManager, setImportManager] = useState('')
   const [showAnalytics, setShowAnalytics] = useState(false)
-
-  // Get Monday of week
-  function getMonday(date: Date): string {
-    const d = new Date(date)
-    const day = d.getDay()
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1)
-    d.setDate(diff)
-    return d.toISOString().split('T')[0]
-  }
-
-  // Format week for display
-  function formatWeek(dateStr: string): string {
-    const date = new Date(dateStr)
-    const endDate = new Date(date)
-    endDate.setDate(endDate.getDate() + 4)
-    return `${date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })} - ${endDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })}`
-  }
 
   // Load data
   useEffect(() => {
@@ -593,7 +712,7 @@ export default function LeadershipReportsPage() {
 
   // Get weeks
   const getWeeks = (): string[] => {
-    return ['2026-01-19', '2026-01-12', '2026-01-05', '2025-12-29']
+    return generateWorkingWeeks2026()
   }
 
   if (loading) {
@@ -645,11 +764,14 @@ export default function LeadershipReportsPage() {
             onChange={(e) => setSelectedWeek(e.target.value)}
             className="bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:border-primary-500"
           >
-            {getWeeks().map(week => (
-              <option key={week} value={week}>
-                {formatWeek(week)}
-              </option>
-            ))}
+            {getWeeks().map(week => {
+              const isCurrent = week === getCurrentWorkingWeek()
+              return (
+                <option key={week} value={week}>
+                  {formatWeek(week)} {isCurrent ? '(текущая)' : ''}
+                </option>
+              )
+            })}
           </select>
           <div className="ml-auto flex items-center gap-4 text-sm">
             <span className="text-dark-400">

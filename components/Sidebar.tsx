@@ -16,7 +16,8 @@ import {
   Target,
   Briefcase,
   LogOut,
-  Mic
+  Mic,
+  BookOpen
 } from 'lucide-react'
 
 const navigation = [
@@ -31,6 +32,7 @@ const navigation = [
   { name: 'Стратегия', href: '/initiatives', icon: Rocket },
   { name: 'Неделя', href: '/weekly', icon: Calendar },
   { name: 'Проблемы', href: '/problems', icon: AlertTriangle },
+  { name: 'База знаний', href: '/context', icon: BookOpen },
 ]
 
 export default function Sidebar() {

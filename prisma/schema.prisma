@@ -119,3 +119,15 @@ model WeeklyReview {
   updatedAt            DateTime @updatedAt
 }
 
+// Контекстные документы — база знаний компании
+model ContextDocument {
+  id        String   @id @default(uuid())
+  slug      String   @unique
+  title     String
+  category  String   // company, strategy, operations, ai-ecosystem, clients, processes, plans, hr, instructions
+  content   String   // Full markdown content
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
